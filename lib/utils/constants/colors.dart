@@ -35,4 +35,8 @@ class AppColors {
   static const syncing = Color(0xFF38BDF8);
   static const synced = Color(0xFF10B981);
   static const offline = Color(0xFFF43F5E);
+
+  static const progressSuccess = Color(0xFF4EDEA3);
+  static const progressWarning = Color(0xFFFFB95F);
+  static const progressDanger = Color(0xFFFFB4AB);
 }
