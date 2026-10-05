@@ -3,7 +3,7 @@ import 'package:micro_lending_app/utils/constants/sizes.dart';
 
 class AppIconButton extends StatelessWidget {
   final IconData icon;
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
   final String? tooltip;
   final Color? color; // icon color, defaults to primary
   final Color? backgroundColor; // set it for a filled button

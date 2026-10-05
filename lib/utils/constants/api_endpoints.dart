@@ -7,6 +7,9 @@ class ApiEndpoints {
   static const String loginWithPhone = '/auth/login/phone';
   static const String refreshToken = '/auth/refresh';
   static const String logout = '/auth/logout';
+  static const String sendOtp = '/auth/otp/request';
+  static const String verifyOtp = '/auth/otp/verify';
+  static const String resetPassword = '/auth/password/reset';
 
   static const String issueLoan = '/loans/issue';
   static const String collectPayment = '/loans/collect';

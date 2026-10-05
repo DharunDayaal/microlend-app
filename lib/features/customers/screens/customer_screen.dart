@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/common/widgets/app_button.dart';
+import 'package:micro_lending_app/data/services/auth_service.dart';
 
 class CustomerScreen extends StatefulWidget {
   const new({super.key});
@@ -13,7 +15,20 @@ class _CustomerScreenState extends State<CustomerScreen> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(child: Text("customer screen")),
+          child: SingleChildScrollView(
+            child: Column(
+              spacing: 20,
+              children: [
+                Text("customer screen"),
+                AppButton(
+                  label: "Logout",
+                  onPressed: () async {
+                    await AuthService.logout();
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

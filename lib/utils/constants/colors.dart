@@ -11,7 +11,7 @@ class AppColors {
   static const darkOnSurface = Color(0xFFDAE2FD);
   static const darkOnSurfaceMuted = Color(0xFF94A3B8);
   static const darkPrimary = Color(0xFF4F46E5);
-  static const darkAppBar = Color(0xFF1E1B4B);
+  static const darkAppBar = Color(0xFF0F172A);
 
   static const lightBackground = Color(0xFFF8FAFC);
   static const lightSurface = Color(0xFFFFFFFF);
