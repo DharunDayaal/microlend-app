@@ -143,7 +143,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
     try {
       await AuthService.loginWithPhone(
         phoneNumber: '+91${_phoneController.text.trim()}',
-        purpose: "VERIFY_PHONE_NUMBER",
+        purpose: "LOGIN",
         optCode: _otp.text.trim(),
       );
     } on ApiException catch (e) {
@@ -394,6 +394,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
             label: "Phone Number",
             hint: "Enter your phone number...",
             prefixIcon: Icons.phone_android_rounded,
+            prefixText: "+91",
             showValidIcon: true,
             controller: _phoneController,
             validator: (v) => AppValidators.phone(v),

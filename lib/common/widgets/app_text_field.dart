@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
+import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
 
 class AppTextField extends StatefulWidget {
@@ -19,6 +20,7 @@ class AppTextField extends StatefulWidget {
   final bool isPassword;
   final bool enabled;
   final ValueChanged<String>? onChanged;
+  final FocusNode? focusNode;
 
   const AppTextField({
     super.key,
@@ -36,6 +38,7 @@ class AppTextField extends StatefulWidget {
     this.isPassword = false,
     this.enabled = true,
     this.onChanged,
+    this.focusNode,
   });
 
   @override
@@ -43,13 +46,39 @@ class AppTextField extends StatefulWidget {
 }
 
 class _AppTextFieldState extends State<AppTextField> {
+  late final FocusNode _focusNode;
+  late final bool _ownsFocusNode;
+  bool _hasFocus = false;
+  bool _hasText = false;
+
   late bool _obscure = widget.isPassword;
   bool _isValid = false;
 
   @override
   void initState() {
     super.initState();
-    _isValid = _check(widget.controller?.text ?? '');
+    _ownsFocusNode = widget.focusNode == null;
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_onFocusChange);
+
+    final initial = widget.controller?.text ?? '';
+    _isValid = _check(initial);
+    _hasText = initial.isNotEmpty;
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    if (_ownsFocusNode) _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus != _hasFocus) {
+      setState(() {
+        _hasFocus = _focusNode.hasFocus;
+      });
+    }
   }
 
   bool _check(String value) {
@@ -59,7 +88,13 @@ class _AppTextFieldState extends State<AppTextField> {
 
   void _handleChanged(String value) {
     final valid = _check(value);
-    if (valid != _isValid) setState(() => _isValid = valid);
+    final hasText = value.isNotEmpty;
+    if (valid != _isValid || hasText != _hasText) {
+      setState(() {
+        _isValid = valid;
+        _hasText = hasText;
+      });
+    }
     widget.onChanged?.call(value);
   }
 
@@ -87,6 +122,7 @@ class _AppTextFieldState extends State<AppTextField> {
         AppGap.h8,
         TextFormField(
           controller: widget.controller,
+          focusNode: _focusNode,
           validator: widget.validator,
           keyboardType: widget.keyboardType,
           textInputAction: widget.textInputAction,
@@ -97,10 +133,15 @@ class _AppTextFieldState extends State<AppTextField> {
           style: text.bodyLarge,
           decoration: InputDecoration(
             hintText: widget.hint,
-            prefixText: widget.prefixText,
             prefixIcon: widget.prefixIcon == null
                 ? null
                 : Icon(widget.prefixIcon),
+            prefix: (widget.prefixText != null && (_hasFocus || _hasText))
+                ? Padding(
+                    padding: const EdgeInsets.only(right: AppSizes.sm),
+                    child: Text(widget.prefixText!, style: text.bodyLarge),
+                  )
+                : null,
             suffixIcon: _suffix(),
           ),
         ),
