@@ -110,7 +110,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
     try {
       await AuthService.sendOtpCode(
         phoneNumber: '+91${_phoneController.text.trim()}',
-        purpose: "RESEND_OTP",
+        purpose: "LOGIN",
       );
       if (!mounted) return;
 

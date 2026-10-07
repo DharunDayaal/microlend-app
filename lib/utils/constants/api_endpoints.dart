@@ -3,6 +3,7 @@ class ApiEndpoints {
 
   static const String baseUrl = "https://microlending-backend.vercel.app/api";
 
+  static const String register = '/auth/register';
   static const String loginWithEmail = '/auth/login/email';
   static const String loginWithPhone = '/auth/login/phone';
   static const String refreshToken = '/auth/refresh';

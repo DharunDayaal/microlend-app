@@ -136,7 +136,92 @@ class AuthService {
 
       final otpReponse = response as Map<String, dynamic>;
       return Otp.fromjson(otpReponse);
-    } on ApiException catch (e) {
+    } on ApiException {
+      rethrow;
+    }
+  }
+
+  static Future<Otp> verifyOtpCode({
+    required String phoneNumber,
+    required String otpCode,
+    required String purpose,
+  }) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.verifyOtp,
+        data: {
+          "phone_number": phoneNumber,
+          "otp_code": otpCode,
+          "purpose": purpose,
+        },
+      );
+
+      final otpReponse = response as Map<String, dynamic>;
+      return Otp.fromjson(otpReponse);
+    } on ApiException {
+      rethrow;
+    }
+  }
+
+  static Future<ResetPassword> resetPassword(
+    String? phoneNumber,
+    String? email, {
+    required String newPassword,
+  }) async {
+    try {
+      final Map<String, dynamic> payload = {
+        if (email != null && email.isNotEmpty) "email": email,
+        if (phoneNumber != null && phoneNumber.isNotEmpty)
+          "phone_number": phoneNumber,
+        "new_password": newPassword,
+      };
+
+      final response = await _api.post(
+        ApiEndpoints.resetPassword,
+        data: payload,
+      );
+
+      final resetPasswordResponse = response as Map<String, dynamic>;
+
+      return ResetPassword.fromjson(resetPasswordResponse);
+    } on ApiException {
+      rethrow;
+    }
+  }
+
+  static Future<Register?> register({
+    required String userName,
+    required String phoneNumber,
+    String? email,
+    required String password,
+    required double defaultUpfrontFeePercentage,
+    required double defaultInterestPercentage,
+    required double defaultTotalMonths,
+  }) async {
+    try {
+      final Map<String, dynamic> payload = {
+        "user_name": userName,
+        "phone_number": phoneNumber,
+        if (email != null && email.isNotEmpty) "email": email,
+        "password": password,
+        "default_upfront_fee_percentage": defaultUpfrontFeePercentage,
+        "default_interest_percentage": defaultInterestPercentage,
+        "default_total_months": defaultTotalMonths,
+      };
+
+      final Map<String, dynamic> response = await _api.post(
+        ApiEndpoints.register,
+        data: payload,
+      );
+
+      if (response["success"]) {
+        AuthNotifier.instance.pendingApproval();
+
+        return Register.fromJson(response["data"]["admin"]);
+      }
+
+      return null;
+    } on ApiException {
       rethrow;
     }
   }

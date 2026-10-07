@@ -15,12 +15,15 @@ class AppTextField extends StatefulWidget {
   final String? hint;
   final String? prefixText;
   final IconData? prefixIcon;
-  final Widget? suffixIcon; // custom suffix (ignored for password fields)
-  final bool showValidIcon; // green tick when the value passes the validator
+  final Widget? suffixIcon;
+  final bool showValidIcon;
   final bool isPassword;
   final bool enabled;
   final ValueChanged<String>? onChanged;
   final FocusNode? focusNode;
+  final IconData? labelIcon;
+  final bool? isRequired;
+  final bool? showHeader;
 
   const AppTextField({
     super.key,
@@ -39,6 +42,9 @@ class AppTextField extends StatefulWidget {
     this.enabled = true,
     this.onChanged,
     this.focusNode,
+    this.labelIcon,
+    this.isRequired,
+    this.showHeader = true,
   });
 
   @override
@@ -118,7 +124,39 @@ class _AppTextFieldState extends State<AppTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(TextFormatter.label(widget.label), style: text.labelMedium),
+        if (widget.showHeader!) ...[
+          SizedBox(
+            width: double.infinity,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (widget.labelIcon != null) ...[
+                  Icon(
+                    widget.labelIcon,
+                    color: AppColors.darkOnSurface,
+                    size: AppSizes.lg,
+                  ),
+                  AppGap.w8,
+                ],
+                Text(
+                  TextFormatter.titleCase(widget.label),
+                  style: text.labelLarge,
+                ),
+                if (widget.isRequired != null && widget.isRequired!) ...[
+                  const Spacer(),
+                  Text(
+                    "*Required",
+                    style: text.labelMedium?.copyWith(
+                      color: AppColors.progressWarning,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+
         AppGap.h8,
         TextFormField(
           controller: widget.controller,

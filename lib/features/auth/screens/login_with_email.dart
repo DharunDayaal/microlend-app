@@ -84,6 +84,14 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                             borderRadius: BorderRadius.all(
                               Radius.circular(AppSizes.radiusLg),
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.lightPrimary.withAlpha(40),
+                                blurRadius: AppSizes.lg,
+                                spreadRadius: AppSizes.sm,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(AppSizes.sm),

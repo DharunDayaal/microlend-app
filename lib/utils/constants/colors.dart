@@ -39,4 +39,6 @@ class AppColors {
   static const progressSuccess = Color(0xFF4EDEA3);
   static const progressWarning = Color(0xFFFFB95F);
   static const progressDanger = Color(0xFFFFB4AB);
+
+  static const stepCurrentLabel = Color(0xFFC3C0FF);
 }
