@@ -41,4 +41,8 @@ class AppColors {
   static const progressDanger = Color(0xFFFFB4AB);
 
   static const stepCurrentLabel = Color(0xFFC3C0FF);
+
+  static const approvalBase = Color(0xFF131B2E);
+  static const approvalGlowWarm = Color(0xFF885500);
+  static const approvalGlowIndigo = Color(0xFF312E81);
 }
