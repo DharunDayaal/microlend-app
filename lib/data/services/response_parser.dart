@@ -21,9 +21,12 @@ class ResponseParser {
     var d = _data(res);
     if (d is Map && d[key] is List) d = d[key];
     if (d is! List) return [];
-    return d
-        .whereType<Map>()
-        .map((e) => Map<String, dynamic>.from(e))
-        .toList();
+    return d.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList();
+  }
+
+  static bool hasNextPage(dynamic res) {
+    final data = res is Map ? res['data'] : null;
+    final meta = data is Map ? data['metadata'] : null;
+    return meta is Map && meta['has_next_page'] == true;
   }
 }

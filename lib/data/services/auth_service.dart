@@ -1,6 +1,8 @@
+import 'package:micro_lending_app/data/models/auth_modal.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
 import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/local_storage/token_storage.dart';
+import 'package:micro_lending_app/utils/loggers/app_logger.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 
@@ -28,17 +30,58 @@ class AuthService {
     );
   }
 
+  static bool _isNotVerified(ApiException e) {
+    if (e.statusCode != 403) return false;
+    if (e.code == 'ACCOUNT_PENDING_APPROVAL') {
+      return true;
+    }
+    return e.message.toLowerCase().contains('pending approval');
+  }
+
+  static bool _isNotActive(ApiException e) {
+    if (e.statusCode != 403) return false;
+    if (e.code == 'ACCOUNT_DEACTIVATED') {
+      return true;
+    }
+
+    return e.message.toLowerCase().contains('deactivated');
+  }
+
   static Future<void> loginWithEmail({
     required String email,
     required String password,
   }) async {
-    final response = await _api.post(
-      ApiEndpoints.loginWithEmail,
-      data: {"email": email, "password": password},
-      auth: false,
-    );
-    await _saveTokens(response);
-    AuthNotifier.instance.signedIn();
+    try {
+      final response = await _api.post(
+        ApiEndpoints.loginWithEmail,
+        data: {"email": email, "password": password},
+        auth: false,
+      );
+      AppLogger.info(response.toString());
+      if (response is Map) {
+        if (response["data"]["is_verified"] == false) {
+          AuthNotifier.instance.pendingApproval();
+          return;
+        }
+        if (response["data"]["is_active"] == false) {
+          AuthNotifier.instance.signedOut();
+          return;
+        }
+      }
+
+      await _saveTokens(response);
+      AuthNotifier.instance.signedIn();
+    } on ApiException catch (e) {
+      if (_isNotVerified(e)) {
+        AuthNotifier.instance.pendingApproval();
+        return;
+      }
+      if (_isNotActive(e)) {
+        AuthNotifier.instance.signedOut();
+        return;
+      }
+      rethrow;
+    }
   }
 
   static Future<void> loginWithPhone({
@@ -46,17 +89,141 @@ class AuthService {
     required String optCode,
     required String purpose,
   }) async {
-    final response = await _api.post(
-      ApiEndpoints.loginWithPhone,
-      data: {
-        "phone_number": phoneNumber,
-        "otp_code": optCode,
-        "purpose": purpose,
-      },
-    );
+    try {
+      final response = await _api.post(
+        ApiEndpoints.loginWithPhone,
+        data: {
+          "phone_number": phoneNumber,
+          "otp_code": optCode,
+          "purpose": purpose,
+        },
+      );
+      AppLogger.info(response.toString());
+      if (response is Map) {
+        if (response["data"]["is_verified"] == false) {
+          AuthNotifier.instance.pendingApproval();
+          return;
+        }
+        if (response["data"]["is_active"] == false) {
+          AuthNotifier.instance.signedOut();
+          return;
+        }
+      }
+      await _saveTokens(response);
+      AuthNotifier.instance.signedIn();
+    } on ApiException catch (e) {
+      if (_isNotVerified(e)) {
+        AuthNotifier.instance.pendingApproval();
+        return;
+      }
+      if (_isNotActive(e)) {
+        AuthNotifier.instance.signedOut();
+        return;
+      }
+      rethrow;
+    }
+  }
 
-    await _saveTokens(response);
-    AuthNotifier.instance.signedIn();
+  static Future<Otp> sendOtpCode({
+    required String phoneNumber,
+    required String purpose,
+  }) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.sendOtp,
+        data: {"phone_number": phoneNumber, "purpose": purpose},
+      );
+
+      final otpReponse = response as Map<String, dynamic>;
+      return Otp.fromjson(otpReponse);
+    } on ApiException {
+      rethrow;
+    }
+  }
+
+  static Future<Otp> verifyOtpCode({
+    required String phoneNumber,
+    required String otpCode,
+    required String purpose,
+  }) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.verifyOtp,
+        data: {
+          "phone_number": phoneNumber,
+          "otp_code": otpCode,
+          "purpose": purpose,
+        },
+      );
+
+      final otpReponse = response as Map<String, dynamic>;
+      return Otp.fromjson(otpReponse);
+    } on ApiException {
+      rethrow;
+    }
+  }
+
+  static Future<ResetPassword> resetPassword(
+    String? phoneNumber,
+    String? email, {
+    required String newPassword,
+  }) async {
+    try {
+      final Map<String, dynamic> payload = {
+        if (email != null && email.isNotEmpty) "email": email,
+        if (phoneNumber != null && phoneNumber.isNotEmpty)
+          "phone_number": phoneNumber,
+        "new_password": newPassword,
+      };
+
+      final response = await _api.post(
+        ApiEndpoints.resetPassword,
+        data: payload,
+      );
+
+      final resetPasswordResponse = response as Map<String, dynamic>;
+
+      return ResetPassword.fromjson(resetPasswordResponse);
+    } on ApiException {
+      rethrow;
+    }
+  }
+
+  static Future<Register?> register({
+    required String userName,
+    required String phoneNumber,
+    String? email,
+    required String password,
+    required double defaultUpfrontFeePercentage,
+    required double defaultInterestPercentage,
+    required double defaultTotalMonths,
+  }) async {
+    try {
+      final Map<String, dynamic> payload = {
+        "user_name": userName,
+        "phone_number": phoneNumber,
+        if (email != null && email.isNotEmpty) "email": email,
+        "password": password,
+        "default_upfront_fee_percentage": defaultUpfrontFeePercentage,
+        "default_interest_percentage": defaultInterestPercentage,
+        "default_total_months": defaultTotalMonths,
+      };
+
+      final Map<String, dynamic> response = await _api.post(
+        ApiEndpoints.register,
+        data: payload,
+      );
+
+      if (response["success"]) {
+        AuthNotifier.instance.pendingApproval();
+
+        return Register.fromJson(response["data"]["admin"]);
+      }
+
+      return null;
+    } on ApiException {
+      rethrow;
+    }
   }
 
   static Future<void> logout() async {
