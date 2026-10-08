@@ -12,6 +12,9 @@ class ApiEndpoints {
   static const String verifyOtp = '/auth/otp/verify';
   static const String resetPassword = '/auth/password/reset';
 
+  static const String getSummary = '/users/today-summary';
+  static const String getCustomersByWeekday = '/users/weekday';
+
   static const String issueLoan = '/loans/issue';
   static const String collectPayment = '/loans/collect';
 }

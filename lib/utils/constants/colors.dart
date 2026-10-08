@@ -45,4 +45,7 @@ class AppColors {
   static const approvalBase = Color(0xFF131B2E);
   static const approvalGlowWarm = Color(0xFF885500);
   static const approvalGlowIndigo = Color(0xFF312E81);
+
+  static const darkFieldFill = Color(0xFF171F33);
+  static const darkHint = Color(0xFF918FA1);
 }

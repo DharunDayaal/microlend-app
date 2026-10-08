@@ -39,7 +39,7 @@ class AppIconButton extends StatelessWidget {
           : IconButton.styleFrom(
               backgroundColor: backgroundColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                borderRadius: BorderRadius.circular(AppSizes.radiusLg),
               ),
             ),
       icon: isLoading
