@@ -210,7 +210,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
       floatingActionButton: _showFloatingActionButton
           ? AppButton(
               label: "Add Borrower",
-              onPressed: () {},
+              onPressed: () => context.push(AppRoutes.addCustomer),
               prefixIcon: Icons.person_outline_rounded,
               width: 180,
             )
@@ -232,6 +232,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     hint: "Search borrower, street, city, district...",
                     controller: _searchController,
                     onChanged: _onSearchChanged,
+                    textInputAction: TextInputAction.done,
                   ),
                   AppChipSelect(
                     selected: _weekday,

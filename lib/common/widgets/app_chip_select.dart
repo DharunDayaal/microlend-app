@@ -34,6 +34,8 @@ class AppChipSelect<T> extends StatefulWidget {
   final double radius;
   final EdgeInsetsGeometry chipPadding;
   final bool showSelectedDot;
+  final double? chipWidth;
+  final double? chipHeight;
 
   const AppChipSelect({
     super.key,
@@ -56,6 +58,8 @@ class AppChipSelect<T> extends StatefulWidget {
       vertical: AppSizes.sm + 2,
     ),
     this.showSelectedDot = true,
+    this.chipWidth,
+    this.chipHeight,
   });
 
   @override
@@ -124,6 +128,8 @@ class _AppChipSelectState<T> extends State<AppChipSelect<T>> {
             key: _keys[i],
             child: AppChip(
               label: option.text,
+              width: widget.chipWidth,
+              height: widget.chipHeight,
               textStyle: style,
               radius: widget.radius,
               padding: widget.chipPadding,

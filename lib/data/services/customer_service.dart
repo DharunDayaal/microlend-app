@@ -41,4 +41,36 @@ class CustomerService {
       hasNextPage: ResponseParser.hasNextPage(response),
     );
   }
+
+  static Future<CreateCustomer> addCustomer({
+    required String name,
+    required String phoneNumber,
+    required String weekday,
+    String? streetName,
+    String? referrerId,
+    required String city,
+    required String district,
+  }) async {
+    final payload = {
+      "customer_name": name,
+      "phone_number": phoneNumber,
+      "preferred_payment_day": weekday,
+      if (referrerId != null && referrerId.isNotEmpty)
+        "referred_by_id": referrerId,
+      if (streetName != null && streetName.isNotEmpty)
+        "street_name": streetName,
+      "city": city,
+      "district": district,
+    };
+    final response = await _api.post(ApiEndpoints.addCustomer, data: payload);
+
+    print(response.toString());
+
+    final customer = ResponseParser.object(response, 'user');
+
+    return CreateCustomer.fromJson({
+      "success": response['success'],
+      ...customer,
+    });
+  }
 }

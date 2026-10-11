@@ -28,6 +28,9 @@ class AppChip extends StatelessWidget {
   final VoidCallback? onTap;
   final Duration animationDuration;
 
+  final double? width;
+  final double? height;
+
   const AppChip({
     super.key,
     required this.label,
@@ -48,6 +51,8 @@ class AppChip extends StatelessWidget {
     this.trailing,
     this.onTap,
     this.animationDuration = const Duration(milliseconds: 150),
+    this.width,
+    this.height
   });
 
   @override
@@ -65,6 +70,8 @@ class AppChip extends StatelessWidget {
     final chip = AnimatedContainer(
       duration: animationDuration,
       padding: padding,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(radius),

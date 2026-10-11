@@ -77,3 +77,28 @@ class DashboardSummary {
     );
   }
 }
+
+class CreateCustomer {
+  final bool success;
+  final String id;
+  final String customerName;
+  final String customerPhoneNumber;
+
+  const CreateCustomer({
+    required this.success,
+    required this.id,
+    required this.customerName,
+    required this.customerPhoneNumber,
+  });
+
+  factory CreateCustomer.fromJson(Map<String, dynamic> json) {
+    String s(String key) => '${json[key] ?? ''}';
+
+    return CreateCustomer(
+      success: json['success'] as bool? ?? false,
+      id: s('id'),
+      customerName: s('customer_name'),
+      customerPhoneNumber: s('phone_number'),
+    );
+  }
+}
