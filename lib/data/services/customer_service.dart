@@ -64,8 +64,6 @@ class CustomerService {
     };
     final response = await _api.post(ApiEndpoints.addCustomer, data: payload);
 
-    print(response.toString());
-
     final customer = ResponseParser.object(response, 'user');
 
     return CreateCustomer.fromJson({
