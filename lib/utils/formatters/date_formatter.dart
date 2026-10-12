@@ -50,6 +50,20 @@ class DateFormatter {
     return d == null ? fallback : _time.format(d);
   }
 
+  static String formatTimeString(String rawTime, {String? fallback}) {
+  try {
+    String cleanedTime = rawTime.split('.').first;
+    DateTime parsedTime = DateFormat("HH:mm:ss").parse(cleanedTime);
+
+    return DateFormat.jm().format(parsedTime);
+  } catch (e) {
+    if (fallback != null) {
+      return fallback; 
+    }
+    return DateFormat.jm().format(DateTime.now());
+  }
+}
+
   /// 03 Oct 2026, 11:56 AM
   static String dateTime(dynamic value, {String fallback = '-'}) {
     final d = parse(value);

@@ -71,4 +71,32 @@ class CustomerService {
       ...customer,
     });
   }
+
+  static Future<CustomerDetails> getCustomerDetails({
+    required String customerId,
+  }) async {
+    final response = await _api.get(
+      ApiEndpoints.getCustomerDetails(customerId),
+    );
+
+    return CustomerDetails.fromJson(response);
+  }
+
+  static Future<CustomerLoans> getCustomerLoans({
+    required String customerId,
+  }) async {
+    final response = await _api.get(ApiEndpoints.getCustomerLoans(customerId));
+
+    return CustomerLoans.fromJson(response);
+  }
+
+  static Future<CustomerReferrals> getCustomerReferrals({
+    required String customerId,
+  }) async {
+    final response = await _api.get(
+      ApiEndpoints.getCustomerReferrals(customerId),
+    );
+
+    return CustomerReferrals.fromJson(response);
+  }
 }

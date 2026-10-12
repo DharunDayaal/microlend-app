@@ -1,3 +1,5 @@
+import 'package:micro_lending_app/data/models/loan_model.dart';
+
 class LoanBreakdown {
   final double principal;
   final double upfrontFee;
@@ -107,5 +109,42 @@ class LoanHelper {
     final start = _dateOnly(from ?? DateTime.now());
     final diff = (weekday - start.weekday) % 7;
     return start.add(Duration(days: diff));
+  }
+
+  /// First unpaid week = the next installment due. null when every week is paid.
+  static LoanTrackModel? nextDueTrack(LoanModel loan) {
+    final unpaid =
+        loan.tracks
+            .where((t) => t.status != 'PAID' && t.remainingBalance > 0)
+            .toList()
+          ..sort((a, b) => a.weekNumber.compareTo(b.weekNumber));
+    return unpaid.isEmpty ? null : unpaid.first;
+  }
+
+  /// Date the next installment is due, or null when nothing is left to pay.
+  static DateTime? nextDueDate(LoanModel loan) {
+    final track = nextDueTrack(loan);
+    return track == null
+        ? null
+        : dueDateForWeek(loan.issuedAt, track.weekNumber);
+  }
+
+  /// Next day the borrower should pay: their next preferred weekday, today
+  /// included. null when nothing is left to pay or the loan isn't active.
+  static DateTime? nextPaymentDate(
+    LoanModel loan,
+    String? preferredDay, {
+    DateTime? now,
+  }) {
+    if (!(loan.status == 'ACTIVE') && loan.status.toUpperCase() != 'OVERDUE') {
+      return null;
+    }
+    if (nextDueTrack(loan) == null) return null;
+
+    final weekday = preferredDay == null ? null : weekdayFromName(preferredDay);
+    if (weekday == null) {
+      return nextDueDate(loan);
+    }
+    return nextWeekday(weekday, from: now);
   }
 }

@@ -15,7 +15,13 @@ class ApiEndpoints {
   static const String getSummary = '/users/today-summary';
   static const String getCustomersByWeekday = '/users/weekday';
   static const String addCustomer = '/users/create';
+  static String getCustomerDetails(String customerId) => '/users/$customerId';
+  static String getCustomerLoans(String customerId) =>
+      '/users/loans/$customerId';
+  static String getCustomerReferrals(String customerId) =>
+      '/users/referrals/$customerId';
 
   static const String issueLoan = '/loans/issue';
+  static String getLoanDetails(String loanId) => '/loans/details/$loanId';
   static const String collectPayment = '/loans/collect';
 }
