@@ -497,12 +497,9 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                         AppGap.h24,
                       ],
                       CreditHistoryCard(cycles: _completedCycles),
-                      AppGap.h24,
                       SocialNetworkCard(
-                        referrerName:
-                            _customerDetails?.referredByName, // field assumed
-                        customerName: _customerDetails?.customerName ?? '',
-                        referredCount: _customerReferrals.length,
+                        customerDetails: _customerDetails,
+                        referrals: _customerReferrals,
                       ),
                       AppGap.h24,
                       AddressCard(

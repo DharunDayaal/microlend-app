@@ -10,6 +10,7 @@ class AppSectionCard extends StatelessWidget {
   final String title;
   final Widget? trailing;
   final Widget child;
+  final EdgeInsets? margin;
 
   const AppSectionCard({
     super.key,
@@ -18,6 +19,7 @@ class AppSectionCard extends StatelessWidget {
     required this.title,
     this.trailing,
     required this.child,
+    this.margin,
   });
 
   @override
@@ -27,6 +29,7 @@ class AppSectionCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSizes.lg),
+      margin: margin,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),

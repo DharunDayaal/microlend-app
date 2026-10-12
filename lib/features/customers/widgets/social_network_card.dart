@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_section_cards.dart';
+import 'package:micro_lending_app/data/models/customer_model.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
 
-/// Who referred this customer, and how many borrowers they referred.
-/// Draws nothing when both are empty.
+/// Shows this customer's guarantor and the borrowers they referred.
 class SocialNetworkCard extends StatelessWidget {
-  final String? referrerName;
-  final String customerName;
-  final int referredCount;
+  final CustomerDetails? customerDetails;
+  final List<ReferralItem> referrals;
 
   const SocialNetworkCard({
     super.key,
-    required this.referrerName,
-    required this.customerName,
-    required this.referredCount,
+    required this.customerDetails,
+    required this.referrals,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasReferrer = referrerName != null && referrerName!.trim().isNotEmpty;
-    if (!hasReferrer && referredCount == 0) return const SizedBox.shrink();
+    final referrerName = customerDetails?.referredByName;
+    final hasReferrer = referrerName != null && referrerName.trim().isNotEmpty;
+    if (!hasReferrer && referrals.isEmpty) return const SizedBox.shrink();
 
     final text = Theme.of(context).textTheme;
 
@@ -30,13 +29,14 @@ class SocialNetworkCard extends StatelessWidget {
       icon: Icons.groups_outlined,
       iconColor: AppColors.success,
       title: 'Social Network & Guarantees',
+      margin: EdgeInsets.only(top: AppSizes.xl),
       child: Column(
         children: [
           if (hasReferrer)
             AppInfoTile(
               child: Row(
                 children: [
-                  AppNameCard(name: referrerName!, width: 40, height: 40),
+                  AppNameCard(name: referrerName, width: 40, height: 40),
                   const SizedBox(width: AppSizes.md),
                   Expanded(
                     child: Column(
@@ -44,33 +44,40 @@ class SocialNetworkCard extends StatelessWidget {
                       children: [
                         Text('Referred By Guarantor', style: text.labelMedium),
                         Text(
-                          TextFormatter.titleCase(referrerName!),
+                          TextFormatter.titleCase(referrerName),
                           style: text.bodyLarge,
                         ),
+                        if (customerDetails?.referredById?.isNotEmpty ?? false)
+                          Text(
+                            TextFormatter.dummyId(
+                              customerDetails!.referredById!,
+                              'USR',
+                            ),
+                            style: text.labelMedium,
+                          ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-          if (hasReferrer && referredCount > 0)
+          if (hasReferrer && referrals.isNotEmpty)
             const SizedBox(height: AppSizes.sm),
-          if (referredCount > 0)
+          if (referrals.isNotEmpty)
             AppInfoTile(
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.group_add_outlined),
-                  const SizedBox(width: AppSizes.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Borrowers Referred by ${TextFormatter.firstName(customerName)}',
-                          style: text.labelMedium,
-                        ),
-                        Text('$referredCount Field Members', style: text.bodyLarge),
-                      ],
+                  Text('Borrowers Referred', style: text.labelMedium),
+                  const SizedBox(height: AppSizes.sm),
+                  ...referrals.indexed.map(
+                    (entry) => Padding(
+                      padding: EdgeInsets.only(
+                        bottom: entry.$1 == referrals.length - 1
+                            ? 0
+                            : AppSizes.sm,
+                      ),
+                      child: _ReferralRow(referral: entry.$2),
                     ),
                   ),
                 ],
@@ -78,6 +85,39 @@ class SocialNetworkCard extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _ReferralRow extends StatelessWidget {
+  final ReferralItem referral;
+
+  const _ReferralRow({required this.referral});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
+    return Row(
+      children: [
+        AppNameCard(name: referral.customerName, width: 40, height: 40),
+        const SizedBox(width: AppSizes.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                TextFormatter.titleCase(referral.customerName),
+                style: text.bodyLarge,
+              ),
+              Text(
+                TextFormatter.dummyId(referral.id, 'USR'),
+                style: text.labelMedium,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
