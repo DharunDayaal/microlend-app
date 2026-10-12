@@ -14,10 +14,8 @@ import 'package:micro_lending_app/utils/constants/alphas.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/device/launcher_utils.dart';
-import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
 import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
 import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
-import 'package:micro_lending_app/utils/helpers/loan_helper.dart';
 import 'package:micro_lending_app/utils/helpers/snackbar_helper.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 import 'package:micro_lending_app/features/customers/widgets/active_facility_card.dart';
@@ -37,7 +35,6 @@ class CustomerDetailScreen extends StatefulWidget {
 class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   CustomerDetails? _customerDetails;
   final List<LoanItem> _customerLoans = [];
-  LoanModel? _loanDetails;
   LoanModel? _activeOrOverdueLoanDetails;
   final List<ReferralItem> _customerReferrals = [];
   bool _isLoading = true;
@@ -182,8 +179,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final loan = _activeOrOverdueLoanDetails;
-    final nextDue = loan == null ? null : LoanHelper.nextDueDate(loan);
-    final nextTrack = loan == null ? null : LoanHelper.nextDueTrack(loan);
     return Scaffold(
       body: SafeArea(
         child: LayoutBuilder(
