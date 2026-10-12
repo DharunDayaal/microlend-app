@@ -1,10 +1,12 @@
 class AppRoutes {
   AppRoutes._();
 
+  static const login = "/login";
   static const loginWithEmail = "/login/email";
   static const loginWithPhone = "/login/phone";
   static const register = "/register";
   static const approvalPending = "/approval-pending";
+  static const forgetPassword = "/reset-password";
 
   static const customersList = "/customers"; // starting screen
   static const addCustomer = "/customers/add";
@@ -15,6 +17,8 @@ class AppRoutes {
   static String issueLoan(num stepNo) => "/loans/issue/$stepNo";
   static String loanTrack(String id) => "/loans/$id/tracks";
   static String loanPayment(String id) => "/loans/$id/payments";
+
+  static String borrowersList = "/borrowers";
 
   static const reports = "/reports";
 }

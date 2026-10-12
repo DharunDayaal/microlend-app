@@ -32,13 +32,25 @@ class AppInputDecorationTheme {
     filled: true,
     fillColor: AppColors.darkInputFill,
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-    border: _border(4, AppColors.darkRim),
-    enabledBorder: _border(4, AppColors.darkRim),
-    focusedBorder: _border(4, AppColors.darkPrimary, 2),
-    errorBorder: _border(4, AppColors.danger),
-    focusedErrorBorder: _border(4, AppColors.danger, 2),
-    hintStyle: AppTextTheme.base.bodyMedium!.copyWith(
-      color: AppColors.darkOnSurfaceMuted,
+    border: _border(12, Colors.transparent),
+    enabledBorder: _border(12, Colors.transparent),
+    disabledBorder: _border(12, Colors.transparent),
+    focusedBorder: _border(12, AppColors.darkPrimary, 1.5),
+    errorBorder: _border(12, AppColors.danger),
+    focusedErrorBorder: _border(12, AppColors.danger, 1.5),
+    hintStyle: AppTextTheme.base.bodyLarge!.copyWith(
+      color: AppColors.darkHint,
+      fontWeight: FontWeight.w400,
+    ),
+    prefixIconColor: WidgetStateColor.resolveWith(
+      (states) => states.contains(WidgetState.focused)
+          ? AppColors.darkOnSurface
+          : AppColors.darkHint,
+    ),
+    suffixIconColor: WidgetStateColor.resolveWith(
+      (states) => states.contains(WidgetState.focused)
+          ? AppColors.darkOnSurface
+          : AppColors.darkHint,
     ),
   );
 }

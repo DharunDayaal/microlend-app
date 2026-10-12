@@ -2,10 +2,10 @@ class LoanModel {
   final String id;
   final String customerId;
   final int nominalAmount;
-  final int upfrontFee;
-  final int disbursedAmount;
-  final int totalPayableAmount;
-  final int weeklyPayableAmount;
+  final double upfrontFee;
+  final double disbursedAmount;
+  final double totalPayableAmount;
+  final double weeklyPayableAmount;
   final double totalMonths;
   final int totalWeeks;
   final String status;
@@ -13,9 +13,12 @@ class LoanModel {
   final String issuedByAdminId;
   final DateTime updatedAt;
   final String owningAdminId;
-  final String customerName;
-  final String phoneNumber;
-  final int totalCollected;
+  final DateTime? closedAt;
+  final double totalCollected;
+  final int paidWeeks;
+  final int partialWeeks;
+  final List<LoanTrackModel> tracks;
+  final double outstandingAmount;
   final bool isOverdue;
 
   const LoanModel({
@@ -33,32 +36,86 @@ class LoanModel {
     required this.issuedByAdminId,
     required this.updatedAt,
     required this.owningAdminId,
-    required this.customerName,
-    required this.phoneNumber,
+    this.closedAt,
     required this.totalCollected,
+    required this.paidWeeks,
+    required this.partialWeeks,
+    required this.tracks,
+    required this.outstandingAmount,
     required this.isOverdue,
   });
 
   factory LoanModel.fromJson(Map<String, dynamic> json) {
+    final trackList = json['tracks'] as List? ?? [];
+
     return LoanModel(
-      id: json['id'] as String,
-      customerId: json['customer_id'] as String,
-      nominalAmount: (json['nominal_amount'] as num).toInt(),
-      upfrontFee: (json['upfront_fee'] as num).toInt(),
-      disbursedAmount: (json['disbursed_amount'] as num).toInt(),
-      totalPayableAmount: (json['total_payable_amount'] as num).toInt(),
-      weeklyPayableAmount: (json['weekly_payable_amount'] as num).toInt(),
-      totalMonths: (json['total_months'] as num).toDouble(),
-      totalWeeks: (json['total_weeks'] as num).toInt(),
-      status: json['status'] as String,
-      issuedAt: DateTime.parse(json['issued_at'] as String),
-      issuedByAdminId: json['issued_by_admin_id'] as String,
-      updatedAt: DateTime.parse(json['updated_at'] as String),
-      owningAdminId: json['owning_admin_id'] as String,
-      customerName: json['customer_name'] as String,
-      phoneNumber: json['phone_number'] as String,
-      totalCollected: (json['total_collected'] as num).toInt(),
-      isOverdue: json['is_overdue'] as bool,
+      id: json['id']?.toString() ?? '',
+      customerId: json['customer_id']?.toString() ?? '',
+      nominalAmount: (json['nominal_amount'] as num? ?? 0).toInt(),
+      upfrontFee: (json['upfront_fee'] as num? ?? 0).toDouble(),
+      disbursedAmount: (json['disbursed_amount'] as num? ?? 0).toDouble(),
+      totalPayableAmount: (json['total_payable_amount'] as num? ?? 0)
+          .toDouble(),
+      weeklyPayableAmount: (json['weekly_payable_amount'] as num? ?? 0)
+          .toDouble(),
+      totalMonths: (json['total_months'] as num? ?? 0).toDouble(),
+      totalWeeks: (json['total_weeks'] as num? ?? 0).toInt(),
+      status: json['status']?.toString() ?? 'UNKNOWN',
+      issuedAt: json['issued_at'] != null
+          ? DateTime.parse(json['issued_at'].toString())
+          : DateTime.now(),
+      issuedByAdminId: json['issued_by_admin_id']?.toString() ?? '',
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'].toString())
+          : DateTime.now(),
+      owningAdminId: json['owning_admin_id']?.toString() ?? '',
+      closedAt: json['closed_at'] != null
+          ? DateTime.parse(json['closed_at'].toString())
+          : null,
+
+      totalCollected: (json['total_collected'] as num? ?? 0).toDouble(),
+      paidWeeks: (json['paid_weeks'] as num? ?? 0).toInt(),
+      partialWeeks: (json['partial_weeks'] as num? ?? 0).toInt(),
+      tracks: trackList
+          .map((t) => LoanTrackModel.fromJson(t as Map<String, dynamic>))
+          .toList(),
+      outstandingAmount: (json['outstanding_amount'] as num? ?? 0).toDouble(),
+      isOverdue: json['is_overdue'] as bool? ?? false,
+    );
+  }
+}
+
+class LoanTrackModel {
+  final String id;
+  final String loanId;
+  final int weekNumber;
+  final double totalCollected;
+  final double targetAmount;
+  final String status;
+  final bool isOverdued;
+  final double remainingBalance;
+
+  const LoanTrackModel({
+    required this.id,
+    required this.loanId,
+    required this.weekNumber,
+    required this.totalCollected,
+    required this.targetAmount,
+    required this.status,
+    required this.isOverdued,
+    required this.remainingBalance,
+  });
+
+  factory LoanTrackModel.fromJson(Map<String, dynamic> json) {
+    return LoanTrackModel(
+      id: json['id']?.toString() ?? '',
+      loanId: json['loan_id']?.toString() ?? '',
+      weekNumber: (json['week_number'] as num? ?? 0).toInt(),
+      totalCollected: (json['total_collected'] as num? ?? 0).toDouble(),
+      targetAmount: (json['target_amount'] as num? ?? 0).toDouble(),
+      status: json['status']?.toString() ?? 'UNPAID',
+      isOverdued: json['is_overdued'] as bool? ?? false,
+      remainingBalance: (json['remaining_balance'] as num? ?? 0).toDouble(),
     );
   }
 }
