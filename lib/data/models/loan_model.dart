@@ -20,6 +20,8 @@ class LoanModel {
   final List<LoanTrackModel> tracks;
   final double outstandingAmount;
   final bool isOverdue;
+  final String? customerName;
+  final String? phoneNumber;
 
   const LoanModel({
     required this.id,
@@ -43,6 +45,8 @@ class LoanModel {
     required this.tracks,
     required this.outstandingAmount,
     required this.isOverdue,
+    this.customerName,
+    this.phoneNumber,
   });
 
   factory LoanModel.fromJson(Map<String, dynamic> json) {
@@ -81,6 +85,45 @@ class LoanModel {
           .toList(),
       outstandingAmount: (json['outstanding_amount'] as num? ?? 0).toDouble(),
       isOverdue: json['is_overdue'] as bool? ?? false,
+    );
+  }
+
+  factory LoanModel.fromListJson(Map<String, dynamic> json) {
+    final double totalPayable = (json['total_payable_amount'] as num? ?? 0)
+        .toDouble();
+    final double collected = (json['total_collected'] as num? ?? 0).toDouble();
+
+    return LoanModel(
+      id: json['id']?.toString() ?? '',
+      customerId: json['customer_id']?.toString() ?? '',
+      nominalAmount: (json['nominal_amount'] as num? ?? 0).toInt(),
+      upfrontFee: (json['upfront_fee'] as num? ?? 0).toDouble(),
+      disbursedAmount: (json['disbursed_amount'] as num? ?? 0).toDouble(),
+      totalPayableAmount: totalPayable,
+      weeklyPayableAmount: (json['weekly_payable_amount'] as num? ?? 0)
+          .toDouble(),
+      totalMonths: (json['total_months'] as num? ?? 0).toDouble(),
+      totalWeeks: (json['total_weeks'] as num? ?? 0).toInt(),
+      status: json['status']?.toString() ?? 'UNKNOWN',
+      issuedAt: json['issued_at'] != null
+          ? DateTime.parse(json['issued_at'].toString())
+          : DateTime.now(),
+      issuedByAdminId: json['issued_by_admin_id']?.toString() ?? '',
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'].toString())
+          : DateTime.now(),
+      owningAdminId: json['owning_admin_id']?.toString() ?? '',
+      closedAt: json['closed_at'] != null
+          ? DateTime.parse(json['closed_at'].toString())
+          : null,
+      totalCollected: collected,
+      isOverdue: json['is_overdue'] as bool? ?? false,
+      paidWeeks: 0,
+      partialWeeks: 0,
+      tracks: const [],
+      outstandingAmount: totalPayable - collected,
+      customerName: json['customer_name']?.toString() ?? 'N/A',
+      phoneNumber: json['phone_number']?.toString() ?? '',
     );
   }
 }
