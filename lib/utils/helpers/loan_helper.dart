@@ -147,4 +147,20 @@ class LoanHelper {
     }
     return nextWeekday(weekday, from: now);
   }
+
+  /// Automatically calculates the next consecutive installment week number.
+  /// Works infinitely past the loan term if the borrower is overdue and extending payments.
+  static int nextCollectableWeek(List<LoanTrackModel> tracks) {
+    if (tracks.isEmpty) {
+      return 1; // Brand new loan with no recorded activity starts at Week 1
+    }
+
+    // Find the highest week number currently registered in the database tracks
+    final maxWeek = tracks
+        .map((t) => t.weekNumber)
+        .fold<int>(0, (max, current) => current > max ? current : max);
+
+    // The next collectable target is ALWAYS the next consecutive linear step
+    return maxWeek + 1;
+  }
 }

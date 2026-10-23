@@ -1,3 +1,6 @@
+import 'package:micro_lending_app/data/models/paged_modal.dart';
+import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
+
 class LoanModel {
   final String id;
   final String customerId;
@@ -19,6 +22,7 @@ class LoanModel {
   final int partialWeeks;
   final List<LoanTrackModel> tracks;
   final double outstandingAmount;
+  final String preferredPaymentDay;
   final bool isOverdue;
   final String? customerName;
   final String? phoneNumber;
@@ -44,6 +48,7 @@ class LoanModel {
     required this.partialWeeks,
     required this.tracks,
     required this.outstandingAmount,
+    required this.preferredPaymentDay,
     required this.isOverdue,
     this.customerName,
     this.phoneNumber,
@@ -84,7 +89,10 @@ class LoanModel {
           .map((t) => LoanTrackModel.fromJson(t as Map<String, dynamic>))
           .toList(),
       outstandingAmount: (json['outstanding_amount'] as num? ?? 0).toDouble(),
+      preferredPaymentDay: json['preferred_payment_day']?.toString() ?? '',
       isOverdue: json['is_overdue'] as bool? ?? false,
+      customerName: json['customer_name']?.toString(),
+      phoneNumber: json['phone_number']?.toString(),
     );
   }
 
@@ -117,6 +125,7 @@ class LoanModel {
           ? DateTime.parse(json['closed_at'].toString())
           : null,
       totalCollected: collected,
+      preferredPaymentDay: json['preferred_payment_day']?.toString() ?? '',
       isOverdue: json['is_overdue'] as bool? ?? false,
       paidWeeks: 0,
       partialWeeks: 0,
@@ -124,6 +133,35 @@ class LoanModel {
       outstandingAmount: totalPayable - collected,
       customerName: json['customer_name']?.toString() ?? 'N/A',
       phoneNumber: json['phone_number']?.toString() ?? '',
+    );
+  }
+
+  LoanModel copyWith({List<LoanTrackModel>? tracks}) {
+    return LoanModel(
+      id: id,
+      customerId: customerId,
+      nominalAmount: nominalAmount,
+      upfrontFee: upfrontFee,
+      disbursedAmount: disbursedAmount,
+      totalPayableAmount: totalPayableAmount,
+      weeklyPayableAmount: weeklyPayableAmount,
+      totalMonths: totalMonths,
+      totalWeeks: totalWeeks,
+      status: status,
+      issuedAt: issuedAt,
+      issuedByAdminId: issuedByAdminId,
+      updatedAt: updatedAt,
+      owningAdminId: owningAdminId,
+      closedAt: closedAt,
+      totalCollected: totalCollected,
+      paidWeeks: paidWeeks,
+      partialWeeks: partialWeeks,
+      tracks: tracks ?? this.tracks,
+      outstandingAmount: outstandingAmount,
+      preferredPaymentDay: preferredPaymentDay,
+      isOverdue: isOverdue,
+      customerName: customerName,
+      phoneNumber: phoneNumber,
     );
   }
 }
@@ -137,6 +175,7 @@ class LoanTrackModel {
   final String status;
   final bool isOverdued;
   final double remainingBalance;
+  final bool? success;
 
   const LoanTrackModel({
     required this.id,
@@ -147,6 +186,7 @@ class LoanTrackModel {
     required this.status,
     required this.isOverdued,
     required this.remainingBalance,
+    this.success,
   });
 
   factory LoanTrackModel.fromJson(Map<String, dynamic> json) {
@@ -161,4 +201,68 @@ class LoanTrackModel {
       remainingBalance: (json['remaining_balance'] as num? ?? 0).toDouble(),
     );
   }
+
+  factory LoanTrackModel.fromPaymentJson(Map<String, dynamic> json) {
+    return LoanTrackModel(
+      success: json['success'] as bool? ?? false,
+      id: json['data']['track']['id']?.toString() ?? '',
+      loanId: json['data']['track']['loan_id']?.toString() ?? '',
+      weekNumber: (json['data']['track']['week_number'] as num? ?? 0).toInt(),
+      totalCollected: (json['data']['track']['total_collected'] as num? ?? 0)
+          .toDouble(),
+      targetAmount: (json['data']['track']['target_amount'] as num? ?? 0)
+          .toDouble(),
+      status: json['data']['track']['status']?.toString() ?? 'UNPAID',
+      isOverdued: json['data']['track']['is_overdued'] as bool? ?? false,
+      remainingBalance:
+          (json['data']['track']['remaining_balance'] as num? ?? 0).toDouble(),
+    );
+  }
+}
+
+class Summary {
+  final int totalCustomers;
+  final int totalActiveLoans;
+  final int totalOverdueLoans;
+  final int totalReferredCustomers;
+
+  const Summary({
+    required this.totalCustomers,
+    required this.totalActiveLoans,
+    required this.totalOverdueLoans,
+    required this.totalReferredCustomers,
+  });
+
+  factory Summary.fromJson(Map<String, dynamic> json) {
+    int i(String key) => CurrencyFormatter.toNum(json[key]).toInt();
+
+    return Summary(
+      totalCustomers: i("total_customers"),
+      totalActiveLoans: i("active_loans"),
+      totalOverdueLoans: i("overdue_loans"),
+      totalReferredCustomers: i("referred_customers"),
+    );
+  }
+
+  Summary copyWith({
+    int? totalCustomers,
+    int? totalActiveLoans,
+    int? totalOverdueLoans,
+    int? totalReferredCustomers,
+  }) {
+    return Summary(
+      totalCustomers: totalCustomers ?? this.totalCustomers,
+      totalActiveLoans: totalActiveLoans ?? this.totalActiveLoans,
+      totalOverdueLoans: totalOverdueLoans ?? this.totalOverdueLoans,
+      totalReferredCustomers:
+          totalReferredCustomers ?? this.totalReferredCustomers,
+    );
+  }
+}
+
+class CollectionsLoanDueModel {
+  final PagedResult result;
+  final Summary summary;
+
+  const CollectionsLoanDueModel({required this.result, required this.summary});
 }
