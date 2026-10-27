@@ -8,16 +8,20 @@ class AppAppBarTheme {
   static final AppBarTheme light = AppBarTheme(
     backgroundColor: AppColors.lightSurface,
     foregroundColor: AppColors.lightOnSurface,
-    elevation: 0,
-    scrolledUnderElevation: 0,
+    surfaceTintColor: Colors.transparent,
+    shadowColor: const Color(0x290F172A),
+    elevation: 2,
+    scrolledUnderElevation: 2,
     titleTextStyle: AppTextTheme.lightTextTheme.headlineSmall,
   );
 
   static final AppBarTheme dark = AppBarTheme(
     backgroundColor: AppColors.darkAppBar,
     foregroundColor: Colors.white,
-    elevation: 0,
-    scrolledUnderElevation: 0,
+    surfaceTintColor: Colors.transparent,
+    shadowColor: Colors.black,
+    elevation: 2,
+    scrolledUnderElevation: 2,
     titleTextStyle: AppTextTheme.darkTextTheme.headlineSmall,
   );
 }

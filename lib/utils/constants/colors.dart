@@ -11,7 +11,7 @@ class AppColors {
   static const darkOnSurface = Color(0xFFDAE2FD);
   static const darkOnSurfaceMuted = Color(0xFF94A3B8);
   static const darkPrimary = Color(0xFF4F46E5);
-  static const darkAppBar = Color(0xFF1E1B4B);
+  static const darkAppBar = Color(0xFF0F172A);
 
   static const lightBackground = Color(0xFFF8FAFC);
   static const lightSurface = Color(0xFFFFFFFF);
@@ -35,4 +35,17 @@ class AppColors {
   static const syncing = Color(0xFF38BDF8);
   static const synced = Color(0xFF10B981);
   static const offline = Color(0xFFF43F5E);
+
+  static const progressSuccess = Color(0xFF4EDEA3);
+  static const progressWarning = Color(0xFFFFB95F);
+  static const progressDanger = Color(0xFFFFB4AB);
+
+  static const stepCurrentLabel = Color(0xFFC3C0FF);
+
+  static const approvalBase = Color(0xFF131B2E);
+  static const approvalGlowWarm = Color(0xFF885500);
+  static const approvalGlowIndigo = Color(0xFF312E81);
+
+  static const darkFieldFill = Color(0xFF171F33);
+  static const darkHint = Color(0xFF918FA1);
 }
