@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/common/styles/spacing_style.dart';
+import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_progress_bar.dart';
 import 'package:micro_lending_app/common/widgets/app_section_cards.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
 import 'package:micro_lending_app/common/widgets/status_chip.dart';
 import 'package:micro_lending_app/data/models/loan_model.dart';
+import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
@@ -129,6 +133,29 @@ class ActiveFacilityCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSizes.sm),
           AppProgressBar(value: progress),
+          AppGap.h24,
+          Row(
+            children: [
+              Expanded(
+                child: AppButton(
+                  label: "View Tracks",
+                  onPressed: () => context.push(AppRoutes.loanTrack(loan.id)),
+                  backgroundColor: AppColors.darkRim,
+                  prefixIcon: Icons.history,
+                  radius: AppSizes.radiusLg,
+                ),
+              ),
+              AppGap.w12,
+              Expanded(
+                child: AppButton(
+                  label: "View payments",
+                  onPressed: () => context.push(AppRoutes.loanPayment(loan.id)),
+                  prefixIcon: Icons.layers,
+                  radius: AppSizes.radiusLg,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

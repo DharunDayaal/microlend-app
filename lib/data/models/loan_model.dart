@@ -136,7 +136,13 @@ class LoanModel {
     );
   }
 
-  LoanModel copyWith({List<LoanTrackModel>? tracks}) {
+  LoanModel copyWith({
+    List<LoanTrackModel>? tracks,
+    double? totalCollected,
+    double? outstandingAmount,
+    String? status,
+    bool? isOverdue,
+  }) {
     return LoanModel(
       id: id,
       customerId: customerId,
@@ -147,19 +153,19 @@ class LoanModel {
       weeklyPayableAmount: weeklyPayableAmount,
       totalMonths: totalMonths,
       totalWeeks: totalWeeks,
-      status: status,
+      status: status ?? this.status,
       issuedAt: issuedAt,
       issuedByAdminId: issuedByAdminId,
       updatedAt: updatedAt,
       owningAdminId: owningAdminId,
       closedAt: closedAt,
-      totalCollected: totalCollected,
+      totalCollected: totalCollected ?? this.totalCollected,
       paidWeeks: paidWeeks,
       partialWeeks: partialWeeks,
       tracks: tracks ?? this.tracks,
-      outstandingAmount: outstandingAmount,
+      outstandingAmount: outstandingAmount ?? this.outstandingAmount,
       preferredPaymentDay: preferredPaymentDay,
-      isOverdue: isOverdue,
+      isOverdue: isOverdue ?? this.isOverdue,
       customerName: customerName,
       phoneNumber: phoneNumber,
     );

@@ -18,6 +18,43 @@ class LoanBreakdown {
   });
 }
 
+class RecoveryProgress {
+  final double total;
+  final double collected;
+  final double overdue;
+
+  const RecoveryProgress({
+    required this.total,
+    required this.collected,
+    required this.overdue,
+  });
+
+  double get collectedFraction =>
+      total <= 0 ? 0 : (collected / total).clamp(0.0, 1.0).toDouble();
+
+  double get overdueFraction => total <= 0
+      ? 0
+      : (overdue / total).clamp(0.0, 1.0 - collectedFraction).toDouble();
+
+  /// Never shows 100% until the loan is really fully paid.
+  int get completedPercent {
+    if (total <= 0) return 0;
+    if (collected >= total) return 100;
+    final p = (collectedFraction * 100).round();
+    return p > 99 ? 99 : p;
+  }
+
+  /// At least 1% when there is any overdue amount, and never more than
+  /// what is left after the completed part, so the two labels add up.
+  int get overduePercent {
+    if (overdue <= 0) return 0;
+    var p = (overdueFraction * 100).round();
+    if (p < 1) p = 1;
+    final room = 100 - completedPercent;
+    return p > room ? room : p;
+  }
+}
+
 class LoanHelper {
   LoanHelper._();
 
@@ -162,5 +199,47 @@ class LoanHelper {
 
     // The next collectable target is ALWAYS the next consecutive linear step
     return maxWeek + 1;
+  }
+
+  static RecoveryProgress recoveryProgress(
+    LoanModel loan,
+    DateTime Function(int week) dueFor, {
+    DateTime? now,
+  }) {
+    final total = loan.totalPayableAmount;
+    if (total <= 0) {
+      return const RecoveryProgress(total: 0, collected: 0, overdue: 0);
+    }
+
+    final collected = loan.totalCollected.clamp(0.0, total).toDouble();
+
+    final overdueLoan =
+        loan.isOverdue || loan.status.toUpperCase() == 'OVERDUE';
+    if (!overdueLoan) {
+      return RecoveryProgress(total: total, collected: collected, overdue: 0);
+    }
+
+    final n = now ?? DateTime.now();
+    final today = DateTime(n.year, n.month, n.day);
+    final byWeek = {for (final t in loan.tracks) t.weekNumber: t};
+
+    // amount that should have been collected before today
+    var expected = 0.0;
+    for (var w = 1; w <= loan.totalWeeks; w++) {
+      if (!dueFor(w).isBefore(today)) break;
+      expected += byWeek[w]?.targetAmount ?? loan.weeklyPayableAmount;
+    }
+    // the last week has passed: everything is due (also absorbs rounding)
+    if (loan.totalWeeks > 0 && dueFor(loan.totalWeeks).isBefore(today)) {
+      expected = total;
+    }
+    if (expected > total) expected = total;
+
+    final behind = expected - collected;
+    return RecoveryProgress(
+      total: total,
+      collected: collected,
+      overdue: behind > 0 ? behind : 0,
+    );
   }
 }

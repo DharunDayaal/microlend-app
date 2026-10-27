@@ -180,6 +180,14 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
     final textTheme = Theme.of(context).textTheme;
     final loan = _activeOrOverdueLoanDetails;
     return Scaffold(
+      appBar: AppBar(
+        leading: AppIconButton(
+          icon: Icons.arrow_back_ios,
+          onPressed: () => context.go(AppRoutes.customersList),
+        ),
+        title: Text("Back to Home", style: textTheme.bodyLarge),
+        titleSpacing: 2,
+      ),
       body: SafeArea(
         child: LayoutBuilder(
           builder: ((context, constraints) {
@@ -192,17 +200,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        AppIconButton(
-                          icon: Icons.arrow_back_ios,
-                          onPressed: () => context.go(AppRoutes.customersList),
-                        ),
-                        Text("Back to Home", style: textTheme.bodyLarge),
-                      ],
-                    ),
-                    AppGap.h24,
                     _WidgetContainer(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
