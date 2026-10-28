@@ -1,5 +1,6 @@
 import 'package:micro_lending_app/data/models/paged_modal.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
+import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
 
 class LoanModel {
   final String id;
@@ -271,4 +272,36 @@ class CollectionsLoanDueModel {
   final Summary summary;
 
   const CollectionsLoanDueModel({required this.result, required this.summary});
+}
+
+class PaymentModel {
+  final String id;
+  final String trackId;
+  final String loanId;
+  final double amountPaid;
+  final DateTime? paidAt;
+  final String collectedByAdminId;
+  final int weekNumber;
+
+  const PaymentModel({
+    required this.id,
+    required this.trackId,
+    required this.loanId,
+    required this.amountPaid,
+    required this.paidAt,
+    required this.collectedByAdminId,
+    required this.weekNumber,
+  });
+
+  factory PaymentModel.fromJson(Map<String, dynamic> json) {
+    return PaymentModel(
+      id: json['id']?.toString() ?? '',
+      trackId: json['track_id']?.toString() ?? '',
+      loanId: json['loan_id']?.toString() ?? '',
+      amountPaid: CurrencyFormatter.toNum(json['amount_paid']).toDouble(),
+      paidAt: DateFormatter.parse(json['paid_at']),
+      collectedByAdminId: json['collected_by_admin_id']?.toString() ?? '',
+      weekNumber: CurrencyFormatter.toNum(json['week_number']).toInt(),
+    );
+  }
 }

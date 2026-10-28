@@ -88,4 +88,24 @@ class LoanService {
     );
     return PaymentResultModel.fromJson(response['data']);
   }
+
+  static Future<PagedResult<PaymentModel>> getPaymentList({
+    required String loanId,
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final response = await _api.get(
+      ApiEndpoints.getPayments(loanId),
+      query: {"page": page, "limit": limit},
+    );
+
+    return PagedResult(
+      items: ResponseParser.list(
+        response,
+        'payments',
+      ).map(PaymentModel.fromJson).toList(),
+      page: page,
+      hasNextPage: ResponseParser.hasNextPage(response),
+    );
+  }
 }

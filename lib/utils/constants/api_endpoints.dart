@@ -27,4 +27,5 @@ class ApiEndpoints {
       '/loans/collect/payment/$loanId';
   static const String getLoans = '/loans/list';
   static const String collectionsDue = '/loans/collections/due';
+  static String getPayments(String loanId) => '/loans/payments/$loanId';
 }
