@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -12,6 +13,7 @@ import 'package:micro_lending_app/data/models/loan_model.dart';
 import 'package:micro_lending_app/data/models/payment_result_model.dart';
 import 'package:micro_lending_app/data/services/loan_service.dart';
 import 'package:micro_lending_app/features/borrowers/widgets/tracks_modal.dart';
+import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/alphas.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -488,7 +490,7 @@ class BorrowerTile extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       color: AppColors.darkSurface.withAlpha(AppAlphas.badgeFill),
       child: InkWell(
-        onTap: () {},
+        onTap: () => context.push(AppRoutes.loanDetail(borrowerLoan.id)),
         child: Padding(
           padding: const EdgeInsets.all(AppSizes.md),
           child: Column(
@@ -560,7 +562,8 @@ class BorrowerTile extends StatelessWidget {
                     backgroundColor: AppColors.darkBorder.withAlpha(
                       AppAlphas.badgeFill,
                     ),
-                    onPressed: () {},
+                    onPressed: () =>
+                        context.push(AppRoutes.loanDetail(borrowerLoan.id)),
                   ),
                 ],
               ),
