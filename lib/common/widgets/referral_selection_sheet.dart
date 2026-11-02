@@ -21,17 +21,20 @@ typedef ReferrerLoader = Future<PagedResult<Customer>> Function(
 class ReferralSelectionSheet extends StatefulWidget {
   final ReferrerLoader loader;
   final String? selectedId;
+  final String? sheetTitle;
 
   const ReferralSelectionSheet({
     super.key,
     required this.loader,
     required this.selectedId,
+    this.sheetTitle,
   });
 
   static Future<Customer?> show(
     BuildContext context, {
     required ReferrerLoader loader,
     String? selectedId,
+    String? sheetTitle,
   }) {
     return showModalBottomSheet<Customer>(
       context: context,
@@ -49,8 +52,12 @@ class ReferralSelectionSheet extends StatefulWidget {
           bottom: MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: FractionallySizedBox(
-          heightFactor: 0.85, // fixed height, so Expanded works inside
-          child: ReferralSelectionSheet(loader: loader, selectedId: selectedId),
+          heightFactor: 0.85,
+          child: ReferralSelectionSheet(
+            loader: loader,
+            selectedId: selectedId,
+            sheetTitle: sheetTitle,
+          ),
         ),
       ),
     );
@@ -170,7 +177,7 @@ class _ReferralSelectionSheetState extends State<ReferralSelectionSheet> {
               children: [
                 Expanded(
                   child: Text(
-                    'Select Referring Borrower',
+                    widget.sheetTitle ?? 'Select Referring Borrower',
                     style: textTheme.headlineSmall,
                   ),
                 ),

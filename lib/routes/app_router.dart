@@ -116,10 +116,10 @@ class AppRouter {
                 builder: (context, state) => LoansScreen(),
                 routes: [
                   GoRoute(
-                    path: "issue/:stepNo",
+                    path: "issue/:customerId",
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) => IssueLoanScreen(
-                      stepNo: state.pathParameters['stepNo']!,
+                      customerId: state.pathParameters['customerId']!,
                     ),
                   ),
                   GoRoute(

@@ -85,10 +85,6 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       );
       if (!mounted) return;
 
-      debugPrint(
-        'loans: success=${res.success} count=${res.loans.length} '
-        'statuses=${res.loans.map((l) => l.status).toList()}',
-      );
       if (!res.success) return;
 
       setState(() {
@@ -171,8 +167,8 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
   }
 
   Future<void> _issueLoan() async {
-    // await context.push(AppRoutes.issueLoan(1, widget.customerId));
-    if (mounted) _loadDatas(); // the loan may exist now
+    final issued = await context.push(AppRoutes.issueLoan(widget.customerId));
+    if (issued == true && mounted) _loadDatas();
   }
 
   @override

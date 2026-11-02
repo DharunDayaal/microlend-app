@@ -2,8 +2,10 @@ import 'package:micro_lending_app/data/models/loan_model.dart';
 import 'package:micro_lending_app/data/models/paged_modal.dart';
 import 'package:micro_lending_app/data/models/payment_result_model.dart';
 import 'package:micro_lending_app/data/services/response_parser.dart';
+import 'package:micro_lending_app/features/customers/screens/loan_terms_model.dart';
 import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
+import 'package:micro_lending_app/utils/network/api_exception.dart';
 
 class LoanService {
   LoanService._();
@@ -107,5 +109,28 @@ class LoanService {
       page: page,
       hasNextPage: ResponseParser.hasNextPage(response),
     );
+  }
+
+  /// Issues a new loan. Throws ApiException on failure.
+  /// Not safe to auto-retry after a timeout: the loan may already exist.
+  static Future<LoanModel> issueLoan({
+    required String customerId,
+    required LoanTerms terms,
+    DateTime? issuedAt,
+  }) async {
+    final res = await _api.post(
+      ApiEndpoints.issueLoan,
+      data: terms.toIssuePayload(customerId: customerId, issuedAt: issuedAt),
+    );
+
+    // Unwraps { data: { loan: {...} } } or { data: {...} }
+    final loan = LoanModel.fromJson(ResponseParser.object(res, 'loan'));
+    if (loan.id.isEmpty) {
+      throw const ApiException(
+        message: 'The server did not return the new loan.',
+        code: 'BAD_RESPONSE',
+      );
+    }
+    return loan;
   }
 }

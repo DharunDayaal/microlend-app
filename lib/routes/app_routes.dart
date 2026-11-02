@@ -14,7 +14,7 @@ class AppRoutes {
 
   static const loansList = "/loans";
   static String loanDetail(String id) => "/loans/$id";
-  static String issueLoan(num stepNo) => "/loans/issue/$stepNo";
+  static String issueLoan(String customerId) => "/loans/issue/$customerId";
   static String loanTrack(String id) => "/loans/$id/tracks";
   static String loanPayment(String id) => "/loans/$id/payments";
 

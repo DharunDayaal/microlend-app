@@ -1,10 +1,12 @@
 import 'package:micro_lending_app/data/models/auth_modal.dart';
+import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
 import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/local_storage/token_storage.dart';
 import 'package:micro_lending_app/utils/loggers/app_logger.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
+import 'package:micro_lending_app/utils/session/current_user.dart';
 
 class AuthService {
   AuthService._();
@@ -47,6 +49,21 @@ class AuthService {
     return e.message.toLowerCase().contains('deactivated');
   }
 
+  /// Expects { data: { admin: {...} } }
+  static Future<void> _saveUser(dynamic res) async {
+    final data = res is Map ? res['data'] : null;
+    final admin = data is Map ? data['admin'] : null;
+    if (admin is! Map) {
+      throw const ApiException(
+        message: 'Unexpected response from server',
+        code: 'BAD_RESPONSE',
+      );
+    }
+    await CurrentUser.instance.setUser(
+      AdminUser.fromJson(Map<String, dynamic>.from(admin)),
+    );
+  }
+
   static Future<void> loginWithEmail({
     required String email,
     required String password,
@@ -57,7 +74,7 @@ class AuthService {
         data: {"email": email, "password": password},
         auth: false,
       );
-      AppLogger.info(response.toString());
+
       if (response is Map) {
         if (response["data"]["is_verified"] == false) {
           AuthNotifier.instance.pendingApproval();
@@ -70,6 +87,7 @@ class AuthService {
       }
 
       await _saveTokens(response);
+      await _saveUser(response);
       AuthNotifier.instance.signedIn();
     } on ApiException catch (e) {
       if (_isNotVerified(e)) {
@@ -98,7 +116,7 @@ class AuthService {
           "purpose": purpose,
         },
       );
-      AppLogger.info(response.toString());
+
       if (response is Map) {
         if (response["data"]["is_verified"] == false) {
           AuthNotifier.instance.pendingApproval();
@@ -110,6 +128,7 @@ class AuthService {
         }
       }
       await _saveTokens(response);
+      await _saveUser(response);
       AuthNotifier.instance.signedIn();
     } on ApiException catch (e) {
       if (_isNotVerified(e)) {

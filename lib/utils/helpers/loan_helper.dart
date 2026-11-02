@@ -80,7 +80,7 @@ class LoanHelper {
       disbursedAmount: principal - fee,
       totalInterest: interest,
       totalPayable: payable,
-      weeklyPayable: totalWeeks > 0 ? payable / totalWeeks : 0,
+      weeklyPayable: totalWeeks > 0 ? (payable / totalWeeks).ceilToDouble() : 0,
     );
   }
 
@@ -241,5 +241,22 @@ class LoanHelper {
       collected: collected,
       overdue: behind > 0 ? behind : 0,
     );
+  }
+
+  /// Preview date for week [week] of a loan issued today: today + 7 days per
+  /// week, moved forward to the borrower's collection weekday.
+  /// The server decides the real dates.
+  static DateTime scheduledDueDate({
+    required int week,
+    String? preferredDay,
+    DateTime? from,
+  }) {
+    final base = _dateOnly(from ?? DateTime.now());
+    var due = DateTime(base.year, base.month, base.day + 7 * week);
+    final wd = preferredDay == null ? null : weekdayFromName(preferredDay);
+    if (wd != null) {
+      due = DateTime(due.year, due.month, due.day + ((wd - due.weekday) % 7));
+    }
+    return due;
   }
 }

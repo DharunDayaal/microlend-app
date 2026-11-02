@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:micro_lending_app/utils/local_storage/token_storage.dart';
+import 'package:micro_lending_app/utils/session/current_user.dart';
 
 enum AuthStatus { signedOut, signedIn, pendingApproval }
 
@@ -28,7 +31,10 @@ class AuthNotifier extends ChangeNotifier {
   void pendingApproval() => _set(AuthStatus.pendingApproval);
 
   /// Logout or the refresh token was rejected.
-  void signedOut() => _set(AuthStatus.signedOut);
+  void signedOut() {
+    unawaited(CurrentUser.instance.clear());
+    _set(AuthStatus.signedOut);
+  }
 
   void _set(AuthStatus next) {
     if (_status == next) return;
