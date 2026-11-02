@@ -2,15 +2,20 @@ class NumberFormatter {
   NumberFormatter._();
 
   /// 5 -> "5%", 2.5 -> "2.5%"
-  static String percent(dynamic value) {
+  static String percentSymbol(dynamic value) {
     final n = value is num ? value : num.tryParse('$value') ?? 0;
     final s = n == n.truncate() ? n.toInt().toString() : n.toString();
     return '$s%';
   }
 
+  static String percent(dynamic value) {
+    final n = value is num ? value : num.tryParse('$value') ?? 0;
+    final s = n == n.truncate() ? n.toInt().toString() : n.toString();
+    return s;
+  }
+
   /// "Week 3 of 10"
-  static String weekOf(int week, int totalWeeks) =>
-      'Week $week of $totalWeeks';
+  static String weekOf(int week, int totalWeeks) => 'Week $week of $totalWeeks';
 
   /// "Week 3"
   static String week(int week) => 'Week $week';

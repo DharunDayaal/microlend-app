@@ -6,7 +6,9 @@ class DateFormatter {
   static final DateFormat _dMMMy = DateFormat('dd MMM yyyy'); // 03 Oct 2026
   static final DateFormat _dMy = DateFormat('dd/MM/yyyy'); // 03/10/2026
   static final DateFormat _dMMM = DateFormat('dd MMM'); // 03 Oct
-  static final DateFormat _weekdayDate = DateFormat('EEE, dd MMM'); // Sat, 03 Oct
+  static final DateFormat _weekdayDate = DateFormat(
+    'EEE, dd MMM',
+  ); // Sat, 03 Oct
   static final DateFormat _monthYear = DateFormat('MMMM yyyy'); // October 2026
   static final DateFormat _time = DateFormat('hh:mm a'); // 11:56 AM
   static final DateFormat _apiDate = DateFormat('yyyy-MM-dd'); // 2026-10-03
@@ -48,6 +50,20 @@ class DateFormatter {
     return d == null ? fallback : _time.format(d);
   }
 
+  static String formatTimeString(String rawTime, {String? fallback}) {
+  try {
+    String cleanedTime = rawTime.split('.').first;
+    DateTime parsedTime = DateFormat("HH:mm:ss").parse(cleanedTime);
+
+    return DateFormat.jm().format(parsedTime);
+  } catch (e) {
+    if (fallback != null) {
+      return fallback; 
+    }
+    return DateFormat.jm().format(DateTime.now());
+  }
+}
+
   /// 03 Oct 2026, 11:56 AM
   static String dateTime(dynamic value, {String fallback = '-'}) {
     final d = parse(value);
@@ -58,6 +74,11 @@ class DateFormatter {
   static String weekdayShort(dynamic value, {String fallback = '-'}) {
     final d = parse(value);
     return d == null ? fallback : DateFormat('EEE').format(d).toUpperCase();
+  }
+
+  static String weekdayFull(dynamic value, {String fallback = '-'}) {
+    final d = parse(value);
+    return d == null ? fallback : DateFormat('EEEE').format(d).toUpperCase();
   }
 
   /// "Today", "Yesterday", "Tomorrow", "in 3 days", "3 days ago",
