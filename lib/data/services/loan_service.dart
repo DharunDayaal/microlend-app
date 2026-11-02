@@ -1,4 +1,5 @@
 import 'package:micro_lending_app/data/models/loan_model.dart';
+import 'package:micro_lending_app/data/models/loan_status_change.dart';
 import 'package:micro_lending_app/data/models/paged_modal.dart';
 import 'package:micro_lending_app/data/models/payment_result_model.dart';
 import 'package:micro_lending_app/data/services/response_parser.dart';
@@ -111,8 +112,6 @@ class LoanService {
     );
   }
 
-  /// Issues a new loan. Throws ApiException on failure.
-  /// Not safe to auto-retry after a timeout: the loan may already exist.
   static Future<LoanModel> issueLoan({
     required String customerId,
     required LoanTerms terms,
@@ -132,5 +131,15 @@ class LoanService {
       );
     }
     return loan;
+  }
+
+  static Future<void> changeStatus({
+    required String loanId,
+    required ManualLoanStatus status,
+  }) async {
+    await _api.patch(
+      ApiEndpoints.loanStatus(loanId),
+      data: {'status': status.apiValue},
+    );
   }
 }
