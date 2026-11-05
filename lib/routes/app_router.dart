@@ -17,6 +17,7 @@ import 'package:micro_lending_app/features/loans/screens/loan_details.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_payments.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_tracker.dart';
 import 'package:micro_lending_app/features/loans/screens/loans.dart';
+import 'package:micro_lending_app/features/profile/screens/profile_screen.dart';
 import 'package:micro_lending_app/features/reports/reports.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
@@ -80,6 +81,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.forgetPassword,
         builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) => const ProfileScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

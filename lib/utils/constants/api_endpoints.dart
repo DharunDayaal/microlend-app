@@ -29,4 +29,17 @@ class ApiEndpoints {
   static const String collectionsDue = '/loans/collections/due';
   static String getPayments(String loanId) => '/loans/payments/$loanId';
   static String loanStatus(String loanId) => '/loans/update/status/$loanId';
+
+  static const String me = '/me';
+  static const String mePhone = '/me/phone';
+  static const String mePassword = '/me/password';
+  static const String meSessions = '/me/sessions';
+  static String meSession(String id) => '/me/sessions/$id';
+  static const String meStats = '/me/stats';
+  static const String meDefaults = '/me/defaults';
+  static const String meTeam = '/me/team';
+  static const String admins = '/admins';
+  static String adminVerification(String id) => '/admins/$id/verification';
+  static String adminActive(String id) => '/admins/$id/active';
+  static const String settingsLimits = '/settings/limits';
 }

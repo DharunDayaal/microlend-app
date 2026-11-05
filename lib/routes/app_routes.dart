@@ -21,4 +21,6 @@ class AppRoutes {
   static String borrowersList = "/borrowers";
 
   static const reports = "/reports";
+
+  static const profile = "/profile";
 }

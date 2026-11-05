@@ -1,3 +1,4 @@
+import 'package:micro_lending_app/data/models/profile_limits.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
 import 'package:micro_lending_app/utils/helpers/loan_helper.dart';
@@ -9,37 +10,36 @@ class LoanTerms {
   static const double fallbackInterestPercent = 10;
   static const double fallbackMonths = 2.5;
 
-  // Form limits. Align them with what your backend accepts.
-  static const double minPrincipal = 100;
-  static const double maxPrincipal = 1000000;
-  static const double minMonths = 0.5;
-  static const double maxMonths = 12;
-  static const double maxFeePercent = 20;
-  static const double maxInterestPercent = 100;
-
   final double principal;
   final double months;
   final double feePercent;
   final double interestPercent;
+
+  /// The server's limits (from GET /api/me). The form is checked against
+  /// these, and the server checks them again.
+  final ProfileLimits limits;
 
   const LoanTerms({
     required this.principal,
     required this.months,
     required this.feePercent,
     required this.interestPercent,
+    this.limits = ProfileLimits.fallback,
   });
 
-  /// The logged-in user's saved defaults.
+  /// The logged-in user's saved defaults and limits.
   factory LoanTerms.fromDefaults(
     AdminUser? user, {
     double principal = defaultPrincipal,
   }) {
+    final limits = user?.limits ?? ProfileLimits.fallback;
     return LoanTerms(
-      principal: principal,
+      // keeps the starting amount inside the allowed range
+      principal: principal.clamp(limits.minPrincipal, limits.maxPrincipal).toDouble(),
       months: user?.defaultTotalMonths ?? fallbackMonths,
       feePercent: user?.defaultUpfrontFeePercentage ?? fallbackFeePercent,
-      interestPercent:
-          user?.defaultInterestPercentage ?? fallbackInterestPercent,
+      interestPercent: user?.defaultInterestPercentage ?? fallbackInterestPercent,
+      limits: limits,
     );
   }
 
@@ -48,11 +48,11 @@ class LoanTerms {
   int get totalWeeks => LoanHelper.totalWeeksFromMonths(months);
 
   LoanBreakdown get breakdown => LoanHelper.breakdown(
-    principal: principal,
-    feePercent: feePercent,
-    interestPercent: interestPercent,
-    totalWeeks: totalWeeks,
-  );
+        principal: principal,
+        feePercent: feePercent,
+        interestPercent: interestPercent,
+        totalWeeks: totalWeeks,
+      );
 
   double get upfrontFee => breakdown.upfrontFee;
   double get netDisbursed => breakdown.disbursedAmount;
@@ -60,22 +60,24 @@ class LoanTerms {
   double get totalPayable => breakdown.totalPayable;
   double get weeklyInstallment => breakdown.weeklyPayable;
 
+  static String _n(double v) =>
+      v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
+
   String? get error {
-    if (principal < minPrincipal) {
-      return 'Minimum amount is ${CurrencyFormatter.format(minPrincipal)}';
+    final l = limits;
+    if (principal < l.minPrincipal) {
+      return 'Minimum amount is ${CurrencyFormatter.format(l.minPrincipal)}';
     }
-    if (principal > maxPrincipal) {
-      return 'Maximum amount is ${CurrencyFormatter.format(maxPrincipal)}';
+    if (principal > l.maxPrincipal) {
+      return 'Maximum amount is ${CurrencyFormatter.format(l.maxPrincipal)}';
     }
-    if (months < minMonths) return 'Term must be at least $minMonths months';
-    if (months > maxMonths) {
-      return 'Term can be at most ${maxMonths.toInt()} months';
+    if (months < l.minMonths) return 'Term must be at least ${_n(l.minMonths)} months';
+    if (months > l.maxMonths) return 'Term can be at most ${_n(l.maxMonths)} months';
+    if (feePercent < 0 || feePercent > l.maxFeePercent) {
+      return 'Processing fee must be between 0% and ${_n(l.maxFeePercent)}%';
     }
-    if (feePercent < 0 || feePercent > maxFeePercent) {
-      return 'Processing fee must be between 0% and ${maxFeePercent.toInt()}%';
-    }
-    if (interestPercent < 0 || interestPercent > maxInterestPercent) {
-      return 'Interest must be between 0% and ${maxInterestPercent.toInt()}%';
+    if (interestPercent < 0 || interestPercent > l.maxInterestPercent) {
+      return 'Interest must be between 0% and ${_n(l.maxInterestPercent)}%';
     }
     return null;
   }
@@ -98,28 +100,21 @@ class LoanTerms {
       months: months ?? this.months,
       feePercent: feePercent ?? this.feePercent,
       interestPercent: interestPercent ?? this.interestPercent,
+      limits: limits,
     );
   }
 
-  /// Keys follow the issue-loan call from earlier. Adjust if your API differs.
-  Map<String, dynamic> toJson() => {
-    'nominal_amount': principal,
-    'upfront_fee_percentage': feePercent,
-    'interest_percentage': interestPercent,
-    'total_months': months,
-  };
-
-  /// Body for the issue-loan call. Optional fields are omitted when null, so
-  /// the backend applies its own defaults for them.
+  /// Body for the issue-loan call. Optional fields are omitted when null.
   Map<String, dynamic> toIssuePayload({
     required String customerId,
     DateTime? issuedAt,
-  }) => {
-    'customer_id': customerId,
-    'nominal_amount': principal,
-    'total_months': months,
-    'upfront_fee_percentage': feePercent,
-    'interest_percentage': interestPercent,
-    if (issuedAt != null) 'issued_at': issuedAt.toUtc().toIso8601String(),
-  };
+  }) =>
+      {
+        'customer_id': customerId,
+        'nominal_amount': principal,
+        'total_months': months,
+        'upfront_fee_percentage': feePercent,
+        'interest_percentage': interestPercent,
+        if (issuedAt != null) 'issued_at': issuedAt.toUtc().toIso8601String(),
+      };
 }

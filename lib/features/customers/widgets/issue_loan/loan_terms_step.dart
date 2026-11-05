@@ -7,7 +7,7 @@ import 'package:micro_lending_app/common/widgets/app_chip_select.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
 import 'package:micro_lending_app/data/models/customer_model.dart';
-import 'package:micro_lending_app/features/customers/screens/loan_terms_model.dart';
+import 'package:micro_lending_app/data/models/loan_terms_model.dart';
 import 'package:micro_lending_app/utils/constants/alphas.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -126,8 +126,8 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
               _NumberStepper(
                 value: t.principal,
                 step: 500,
-                min: LoanTerms.minPrincipal,
-                max: LoanTerms.maxPrincipal,
+                min: t.limits.minPrincipal,
+                max: t.limits.maxPrincipal,
                 prefix: '₹',
                 grouped: true,
                 formatters: AppInputFormatters.amount,
@@ -173,13 +173,13 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
               _NumberStepper(
                 value: t.months,
                 step: 0.5,
-                min: LoanTerms.minMonths,
-                max: LoanTerms.maxMonths,
+                min: t.limits.minMonths,
+                max: t.limits.maxMonths,
                 suffix: 'Months',
                 formatters: [
                   ProgressiveDecimalFormatter(
                     decimalPlaces: 1,
-                    max: LoanTerms.maxMonths,
+                    max: t.limits.maxMonths,
                   ),
                 ],
                 onChanged: (v) => _update(t.copyWith(months: v)),
@@ -244,7 +244,7 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                 amountText: '-${CurrencyFormatter.format(t.upfrontFee)}',
                 amountColor: AppColors.warning,
                 value: t.feePercent,
-                max: LoanTerms.maxFeePercent,
+                max: t.limits.maxFeePercent,
                 caption: 'Processing & risk cover',
                 onChanged: (v) => _update(t.copyWith(feePercent: v)),
               ),
@@ -256,7 +256,7 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                 amountText: '+${CurrencyFormatter.format(t.interest)}',
                 amountColor: AppColors.success,
                 value: t.interestPercent,
-                max: LoanTerms.maxInterestPercent,
+                max: t.limits.maxInterestPercent,
                 caption: 'Flat on principal, once',
                 onChanged: (v) => _update(t.copyWith(interestPercent: v)),
               ),
@@ -825,8 +825,9 @@ class _NumberStepperState extends State<_NumberStepper> {
   }
 
   String _format(double v) {
-    if (widget.grouped)
+    if (widget.grouped) {
       return CurrencyFormatter.groupIndian(v.round().toString());
+    }
     return v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
   }
 

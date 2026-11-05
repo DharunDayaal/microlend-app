@@ -4,7 +4,7 @@ import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
 import 'package:micro_lending_app/data/models/customer_model.dart';
-import 'package:micro_lending_app/features/customers/screens/loan_terms_model.dart';
+import 'package:micro_lending_app/data/models/loan_terms_model.dart';
 import 'package:micro_lending_app/utils/constants/alphas.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';

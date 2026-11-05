@@ -5,6 +5,7 @@ import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/features/home/widgets/profile_menu_sheet.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/auth_service.dart';
+import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/assets.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -75,15 +76,7 @@ class _HomeShellState extends State<HomeShell> {
           title: 'My profile',
           subtitle: 'Name, phone, email and loan defaults',
           onTap: () {
-            // TODO: context.push(AppRoutes.profile)
-          },
-        ),
-        ProfileMenuItem(
-          icon: Icons.person_add_alt_1_outlined,
-          title: 'Add borrower',
-          subtitle: 'Register a new customer',
-          onTap: () {
-            // TODO: context.push(AppRoutes.addCustomer)
+            context.push(AppRoutes.profile);
           },
         ),
         ProfileMenuItem(

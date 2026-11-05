@@ -9,7 +9,7 @@ import 'package:micro_lending_app/common/widgets/state_views.dart';
 import 'package:micro_lending_app/data/models/customer_model.dart';
 import 'package:micro_lending_app/data/services/customer_service.dart';
 import 'package:micro_lending_app/data/services/loan_service.dart';
-import 'package:micro_lending_app/features/customers/screens/loan_terms_model.dart';
+import 'package:micro_lending_app/data/models/loan_terms_model.dart';
 import 'package:micro_lending_app/features/customers/widgets/issue_loan/borrower_profile_step.dart';
 import 'package:micro_lending_app/features/customers/widgets/issue_loan/loan_disburse_step.dart';
 import 'package:micro_lending_app/features/customers/widgets/issue_loan/loan_terms_step.dart';

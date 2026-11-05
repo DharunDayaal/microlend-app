@@ -3,7 +3,7 @@ import 'package:micro_lending_app/data/models/loan_status_change.dart';
 import 'package:micro_lending_app/data/models/paged_modal.dart';
 import 'package:micro_lending_app/data/models/payment_result_model.dart';
 import 'package:micro_lending_app/data/services/response_parser.dart';
-import 'package:micro_lending_app/features/customers/screens/loan_terms_model.dart';
+import 'package:micro_lending_app/data/models/loan_terms_model.dart';
 import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';

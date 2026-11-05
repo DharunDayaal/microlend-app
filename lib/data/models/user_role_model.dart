@@ -1,4 +1,5 @@
 import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
+import 'package:micro_lending_app/data/models/profile_limits.dart';
 
 /// Declared lowest to highest. The order is used for "at least this role".
 enum UserRole {
@@ -19,10 +20,10 @@ enum UserRole {
   }
 
   String get label => switch (this) {
-        UserRole.user => 'User',
-        UserRole.admin => 'Admin',
-        UserRole.superAdmin => 'Super Admin',
-      };
+    UserRole.user => 'User',
+    UserRole.admin => 'Admin',
+    UserRole.superAdmin => 'Super Admin',
+  };
 }
 
 /// The logged-in account (`data.admin` in the login response).
@@ -42,6 +43,7 @@ class AdminUser {
   final String? adminId;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final ProfileLimits limits;
 
   const AdminUser({
     required this.id,
@@ -58,6 +60,7 @@ class AdminUser {
     this.adminId,
     this.createdAt,
     this.updatedAt,
+    this.limits = ProfileLimits.fallback,
   });
 
   /// The admin this account works under (itself when it has none).
@@ -80,6 +83,11 @@ class AdminUser {
       defaultTotalMonths: _num(j['default_total_months']),
       defaultTotalWeeks: _num(j['default_total_weeks'])?.round(),
       adminId: j['admin_id']?.toString(),
+      limits: j['limits'] is Map
+          ? ProfileLimits.fromJson(
+              Map<String, dynamic>.from(j['limits'] as Map),
+            )
+          : ProfileLimits.fallback,
       createdAt: DateFormatter.parse(j['created_at']),
       updatedAt: DateFormatter.parse(j['updated_at']),
     );
@@ -87,19 +95,20 @@ class AdminUser {
 
   /// Same keys as the API, so fromJson reads it back.
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_name': userName,
-        'phone_number': phoneNumber,
-        'email': email,
-        'role': role.apiValue,
-        'is_verified': isVerified,
-        'is_active': isActive,
-        'default_upfront_fee_percentage': defaultUpfrontFeePercentage,
-        'default_interest_percentage': defaultInterestPercentage,
-        'default_total_months': defaultTotalMonths,
-        'default_total_weeks': defaultTotalWeeks,
-        'admin_id': adminId,
-        'created_at': createdAt?.toUtc().toIso8601String(),
-        'updated_at': updatedAt?.toUtc().toIso8601String(),
-      };
+    'id': id,
+    'user_name': userName,
+    'phone_number': phoneNumber,
+    'email': email,
+    'role': role.apiValue,
+    'is_verified': isVerified,
+    'is_active': isActive,
+    'default_upfront_fee_percentage': defaultUpfrontFeePercentage,
+    'default_interest_percentage': defaultInterestPercentage,
+    'default_total_months': defaultTotalMonths,
+    'default_total_weeks': defaultTotalWeeks,
+    'admin_id': adminId,
+    'limits': limits.toJson(),
+    'created_at': createdAt?.toUtc().toIso8601String(),
+    'updated_at': updatedAt?.toUtc().toIso8601String(),
+  };
 }

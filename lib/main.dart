@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/data/services/profile_service.dart';
 import 'package:micro_lending_app/routes/app_router.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
 import 'package:micro_lending_app/utils/device/device_utils.dart';
@@ -48,6 +51,11 @@ Future<void> main() async {
   // clears the saved profile (signedOut does it) and the router's redirect
   // opens the login screen.
   ApiClient.instance.onSessionExpired = AuthNotifier.instance.signedOut;
+
+  // call /api/me on every start.
+  if (AuthNotifier.instance.isLoggedIn) {
+    unawaited(ProfileService.refreshCurrentUser());
+  }
 
   runApp(const App());
 }
