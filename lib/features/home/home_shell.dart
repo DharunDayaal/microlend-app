@@ -38,12 +38,7 @@ class _HomeShellState extends State<HomeShell> {
     _Tab('Field', Icons.fact_check_outlined, Icons.fact_check),
     _Tab('Loans', Icons.account_balance_outlined, Icons.account_balance),
     _Tab('Borrowers', Icons.people_outline, Icons.people),
-    _Tab(
-      'Reports',
-      Icons.bar_chart_outlined,
-      Icons.bar_chart,
-      minimum: UserRole.admin,
-    ),
+    _Tab('Reports', Icons.bar_chart_outlined, Icons.bar_chart),
   ];
 
   bool _barVisible = true;
@@ -77,6 +72,14 @@ class _HomeShellState extends State<HomeShell> {
           subtitle: 'Name, phone, email and loan defaults',
           onTap: () {
             context.push(AppRoutes.profile);
+          },
+        ),
+        ProfileMenuItem(
+          icon: Icons.person_add_alt_1_outlined,
+          title: 'Add borrower',
+          subtitle: 'Register a new customer',
+          onTap: () {
+            context.push(AppRoutes.addCustomer);
           },
         ),
         ProfileMenuItem(
