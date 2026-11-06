@@ -94,7 +94,7 @@ class _HomeShellState extends State<HomeShell> {
           subtitle: 'Recovery, overdue trends and collections',
           minimum: UserRole.admin,
           onTap: () {
-            // TODO: context.push(AppRoutes.analytics)
+            context.push(AppRoutes.analytics);
           },
         ),
         ProfileMenuItem(
@@ -103,7 +103,7 @@ class _HomeShellState extends State<HomeShell> {
           subtitle: 'Approve and manage admin accounts',
           minimum: UserRole.superAdmin,
           onTap: () {
-            // TODO: context.push(AppRoutes.admins)
+            // TODO: context.push(AppRoutes.admins);
           },
         ),
       ],

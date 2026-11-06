@@ -42,4 +42,7 @@ class ApiEndpoints {
   static String adminVerification(String id) => '/admins/$id/verification';
   static String adminActive(String id) => '/admins/$id/active';
   static const String settingsLimits = '/settings/limits';
+
+  static String analytics(String level, String tail) =>
+      '/analytics/$level/$tail';
 }

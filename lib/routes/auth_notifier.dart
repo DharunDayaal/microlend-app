@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:micro_lending_app/data/services/analytics_service.dart';
 import 'package:micro_lending_app/utils/local_storage/token_storage.dart';
 import 'package:micro_lending_app/utils/session/current_user.dart';
 
@@ -33,6 +34,7 @@ class AuthNotifier extends ChangeNotifier {
   /// Logout or the refresh token was rejected.
   void signedOut() {
     unawaited(CurrentUser.instance.clear());
+    AnalyticsService.clearCache();
     _set(AuthStatus.signedOut);
   }
 

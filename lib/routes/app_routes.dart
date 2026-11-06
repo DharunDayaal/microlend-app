@@ -23,4 +23,26 @@ class AppRoutes {
   static const reports = "/reports";
 
   static const profile = "/profile";
+  static const analytics = "/analytics";
+
+  static const String analyticsDue = '/analytics/due';
+
+  static String analyticsDueFor(
+    DateTime date, {
+    double? target,
+    double? collected,
+    String? adminId,
+  }) {
+    final d =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    return Uri(
+      path: analyticsDue,
+      queryParameters: {
+        'date': d,
+        if (target != null) 'target': '$target',
+        if (collected != null) 'collected': '$collected',
+        if (adminId != null) 'admin_id': adminId,
+      },
+    ).toString();
+  }
 }

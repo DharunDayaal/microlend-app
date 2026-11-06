@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/features/analytics/screens/advanced_analytics_screen.dart';
+import 'package:micro_lending_app/features/analytics/screens/due_list_screen.dart';
 import 'package:micro_lending_app/features/auth/screens/approval_pending.dart';
 import 'package:micro_lending_app/features/auth/screens/login.dart';
 import 'package:micro_lending_app/features/auth/screens/login_with_email.dart';
@@ -84,7 +86,26 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.profile,
+        parentNavigatorKey: _rootKey,
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.analytics,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const AdvancedAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.analyticsDue,
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) {
+          final q = state.uri.queryParameters;
+          return DueListScreen(
+            date: DateTime.tryParse(q['date'] ?? '') ?? DateTime.now(),
+            target: double.tryParse(q['target'] ?? ''),
+            collected: double.tryParse(q['collected'] ?? ''),
+            adminId: q['admin_id'],
+          );
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
