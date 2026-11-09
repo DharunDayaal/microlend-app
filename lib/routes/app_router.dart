@@ -19,6 +19,9 @@ import 'package:micro_lending_app/features/loans/screens/loan_details.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_payments.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_tracker.dart';
 import 'package:micro_lending_app/features/loans/screens/loans.dart';
+import 'package:micro_lending_app/features/manage/screens/create_employee.dart';
+import 'package:micro_lending_app/features/manage/screens/manage_admin.dart';
+import 'package:micro_lending_app/features/manage/screens/manage_users.dart';
 import 'package:micro_lending_app/features/profile/screens/profile_screen.dart';
 import 'package:micro_lending_app/features/reports/reports.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
@@ -93,6 +96,21 @@ class AppRouter {
         path: AppRoutes.analytics,
         parentNavigatorKey: _rootKey,
         builder: (context, state) => const AdvancedAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.createEmployee,
+        parentNavigatorKey: _rootKey,
+        builder: (_, _) => const CreateEmployeeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.manageAdmins,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const ManageAdminsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.manageUsers,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const ManageUsersScreen(),
       ),
       GoRoute(
         path: AppRoutes.analyticsDue,

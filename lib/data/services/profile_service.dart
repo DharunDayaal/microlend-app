@@ -3,15 +3,13 @@ import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 import 'package:micro_lending_app/utils/session/current_user.dart';
+import 'package:micro_lending_app/utils/network/body_unwrap.dart';
 
 class ProfileService {
   ProfileService._();
   static final ApiClient _api = ApiClient.instance;
 
-  static Map<String, dynamic> _data(dynamic res) {
-    final d = res is Map ? res['data'] : null;
-    return d is Map ? Map<String, dynamic>.from(d) : <String, dynamic>{};
-  }
+      static Map<String, dynamic> _data(dynamic res) => unwrapBody(res);
 
   static UserProfile _profile(dynamic res) {
     final p = _data(res)['profile'];

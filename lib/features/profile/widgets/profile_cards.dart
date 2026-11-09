@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_progress_bar.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
+import 'package:micro_lending_app/common/widgets/app_step_field.dart';
 import 'package:micro_lending_app/data/models/profile_model.dart';
 import 'package:micro_lending_app/features/profile/controller/profile_controller.dart';
 import 'package:micro_lending_app/features/profile/widgets/profile_widgets.dart';
@@ -629,7 +629,7 @@ class _DefaultsCardState extends State<DefaultsCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_editing) ...[
-            _StepField(
+            AppStepField(
               label: 'Upfront fee',
               controller: _fee,
               suffix: '%',
@@ -640,7 +640,7 @@ class _DefaultsCardState extends State<DefaultsCard> {
               onChanged: _touch,
             ),
             AppGap.h8,
-            _StepField(
+            AppStepField(
               label: 'Interest',
               controller: _interest,
               suffix: '%',
@@ -651,7 +651,7 @@ class _DefaultsCardState extends State<DefaultsCard> {
               onChanged: _touch,
             ),
             AppGap.h8,
-            _StepField(
+            AppStepField(
               label: 'Term',
               controller: _months,
               suffix: 'months',
@@ -759,80 +759,6 @@ class _DefaultsCardState extends State<DefaultsCard> {
           ],
         ],
       ),
-    );
-  }
-}
-
-class _StepField extends StatelessWidget {
-  final String label;
-  final TextEditingController controller;
-  final String suffix;
-  final double min;
-  final double max;
-  final String? error;
-  final bool enabled;
-  final VoidCallback onChanged;
-
-  const _StepField({
-    required this.label,
-    required this.controller,
-    required this.suffix,
-    required this.min,
-    required this.max,
-    required this.error,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  void _bump(double delta) {
-    final now = double.tryParse(controller.text.trim()) ?? min;
-    final v = (now + delta).clamp(min, max).toDouble();
-    controller.text = fmtNum(double.parse(v.toStringAsFixed(1)));
-    onChanged();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: IconButton.filledTonal(
-            tooltip: 'Decrease $label',
-            onPressed: enabled ? () => _bump(-0.5) : null,
-            icon: const Icon(Icons.remove),
-          ),
-        ),
-        const SizedBox(width: AppSizes.sm),
-        Expanded(
-          child: TextField(
-            controller: controller,
-            enabled: enabled,
-            textAlign: TextAlign.center,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d{0,4}\.?\d{0,2}')),
-            ],
-            onChanged: (_) => onChanged(),
-            decoration: InputDecoration(
-              labelText: label,
-              suffixText: suffix,
-              errorText: error,
-              errorMaxLines: 2,
-            ),
-          ),
-        ),
-        const SizedBox(width: AppSizes.sm),
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: IconButton.filledTonal(
-            tooltip: 'Increase $label',
-            onPressed: enabled ? () => _bump(0.5) : null,
-            icon: const Icon(Icons.add),
-          ),
-        ),
-      ],
     );
   }
 }

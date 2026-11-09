@@ -1,18 +1,18 @@
 class AppRoutes {
   AppRoutes._();
 
-  static const login = "/login";
-  static const loginWithEmail = "/login/email";
-  static const loginWithPhone = "/login/phone";
-  static const register = "/register";
-  static const approvalPending = "/approval-pending";
-  static const forgetPassword = "/reset-password";
+  static const String login = "/login";
+  static const String loginWithEmail = "/login/email";
+  static const String loginWithPhone = "/login/phone";
+  static const String register = "/register";
+  static const String approvalPending = "/approval-pending";
+  static const String forgetPassword = "/reset-password";
 
-  static const customersList = "/customers"; // starting screen
-  static const addCustomer = "/customers/add";
+  static const String customersList = "/customers"; // starting screen
+  static const String addCustomer = "/customers/add";
   static String customerDetail(String id) => "/customers/$id";
 
-  static const loansList = "/loans";
+  static const String loansList = "/loans";
   static String loanDetail(String id) => "/loans/$id";
   static String issueLoan(String customerId) => "/loans/issue/$customerId";
   static String loanTrack(String id) => "/loans/$id/tracks";
@@ -20,9 +20,9 @@ class AppRoutes {
 
   static String borrowersList = "/borrowers";
 
-  static const reports = "/reports";
+  static const String reports = "/reports";
 
-  static const profile = "/profile";
+  static const String profile = "/profile";
   static const analytics = "/analytics";
 
   static const String analyticsDue = '/analytics/due';
@@ -45,4 +45,8 @@ class AppRoutes {
       },
     ).toString();
   }
+
+  static const String createEmployee = '/manage/users/new';
+  static const String manageAdmins = '/manage/admins';
+  static const String manageUsers = '/manage/users';
 }

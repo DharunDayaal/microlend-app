@@ -10,6 +10,7 @@ import 'package:micro_lending_app/features/profile/controller/profile_controller
 import 'package:micro_lending_app/features/profile/widgets/profile_cards.dart';
 import 'package:micro_lending_app/features/profile/widgets/profile_sheets.dart';
 import 'package:micro_lending_app/features/profile/widgets/profile_widgets.dart';
+import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
 import 'package:micro_lending_app/utils/helpers/dialog_helper.dart';
@@ -269,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             TeamCard(
               c: _c,
               onManageUsers: () {
-                // TODO: context.push(AppRoutes.manageUsers)
+                context.push(AppRoutes.manageUsers);
               },
             ),
           ],
@@ -280,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               busyAdminId: _busyAdmin,
               onDecide: _decideAdmin,
               onAllAdmins: () {
-                // TODO: context.push(AppRoutes.admins)
+                context.push(AppRoutes.manageAdmins);
               },
               onEditLimits: _editLimits,
             ),

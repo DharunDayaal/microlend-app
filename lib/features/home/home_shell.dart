@@ -89,7 +89,7 @@ class _HomeShellState extends State<HomeShell> {
           subtitle: 'Add team members and set roles',
           minimum: UserRole.admin,
           onTap: () {
-            // TODO: context.push(AppRoutes.manageUsers)
+            context.push(AppRoutes.manageUsers);
           },
         ),
         ProfileMenuItem(
@@ -107,7 +107,7 @@ class _HomeShellState extends State<HomeShell> {
           subtitle: 'Approve and manage admin accounts',
           minimum: UserRole.superAdmin,
           onTap: () {
-            // TODO: context.push(AppRoutes.admins);
+            context.push(AppRoutes.manageAdmins);
           },
         ),
       ],

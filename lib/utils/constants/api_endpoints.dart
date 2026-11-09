@@ -45,4 +45,11 @@ class ApiEndpoints {
 
   static String analytics(String level, String tail) =>
       '/analytics/$level/$tail';
+
+  static const String createEmployee = '/employees';
+  static const String employees = '/employees';
+  static String employee(String id) => '/employees/$id';
+  static String employeeVerification(String id) =>
+      '/employees/$id/verification';
+  static String employeeActive(String id) => '/employees/$id/active';
 }
