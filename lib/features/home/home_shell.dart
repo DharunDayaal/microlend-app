@@ -21,6 +21,7 @@ class _Tab {
     this.label,
     this.icon,
     this.selectedIcon, {
+    // ignore: unused_element_parameter
     this.minimum = UserRole.user,
   });
 }
