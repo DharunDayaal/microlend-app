@@ -100,7 +100,7 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.createEmployee,
         parentNavigatorKey: _rootKey,
-        builder: (_, _) => const CreateEmployeeScreen(),
+        builder: (context, state) => const CreateEmployeeScreen(),
       ),
       GoRoute(
         path: AppRoutes.manageAdmins,
