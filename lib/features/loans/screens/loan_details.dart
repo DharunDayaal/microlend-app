@@ -26,7 +26,7 @@ import 'package:micro_lending_app/utils/loggers/app_logger.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 import 'package:micro_lending_app/utils/session/current_user.dart';
 
-enum _MenuAction { tracks, payments, call, changeStatus }
+enum _MenuAction { tracks, payments, call, changeStatus, history }
 
 class LoanDetailsScreen extends StatefulWidget {
   final String loanId;
@@ -274,6 +274,14 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
         if (!ok && mounted) AppSnackbar.error(context, 'Unable to open dialer');
       case _MenuAction.changeStatus:
         await _changeStatus();
+      case _MenuAction.history:
+        context.push(
+          AppRoutes.auditFor(
+            entityType: 'LOAN',
+            entityId: widget.loanId,
+            label: 'Loan ${TextFormatter.dummyId(widget.loanId, '#LN')}',
+          ),
+        );
     }
   }
 
@@ -369,6 +377,15 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
                   dense: true,
                   leading: Icon(Icons.swap_horiz_rounded),
                   title: Text('Change status'),
+                ),
+              ),
+            if (CurrentUser.instance.hasRole(UserRole.admin))
+              const PopupMenuItem(
+                value: _MenuAction.history,
+                child: ListTile(
+                  dense: true,
+                  leading: Icon(Icons.history_rounded),
+                  title: Text('History'),
                 ),
               ),
           ],

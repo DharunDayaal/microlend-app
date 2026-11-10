@@ -49,4 +49,25 @@ class AppRoutes {
   static const String createEmployee = '/manage/users/new';
   static const String manageAdmins = '/manage/admins';
   static const String manageUsers = '/manage/users';
+
+  static const String audit = '/audit';
+  static String auditDetail(String id) => '/audit/$id';
+
+  /// The audit list pre-filtered from a History button.
+  static String auditFor({
+    String? entityType,
+    String? entityId,
+    String? targetId,
+    String? actorId,
+    String? label,
+  }) => Uri(
+    path: audit,
+    queryParameters: {
+      'entity_type': ?entityType,
+      'entity_id': ?entityId,
+      'target_id': ?targetId,
+      'actor_id': ?actorId,
+      'label': ?label,
+    },
+  ).toString();
 }

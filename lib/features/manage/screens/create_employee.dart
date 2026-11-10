@@ -503,24 +503,27 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Customise for this employee'),
-                        subtitle: Text(
-                          _customize
-                              ? 'These values are only for this employee.'
-                              : 'Uses ${_isSuper ? (_admin?.displayName ?? 'the admin') : 'your'} '
-                                    'defaults: fee ${fmtNum(_baseFee)}%, interest ${fmtNum(_baseInterest)}%, '
-                                    '${fmtNum(_baseMonths)} months. Later changes apply to them too.',
-                          style: muted,
+                      Material(
+                        type: MaterialType.transparency,
+                        child: SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Customise for this employee'),
+                          subtitle: Text(
+                            _customize
+                                ? 'These values are only for this employee.'
+                                : 'Uses ${_isSuper ? (_admin?.displayName ?? 'the admin') : 'your'} '
+                                      'defaults: fee ${fmtNum(_baseFee)}%, interest ${fmtNum(_baseInterest)}%, '
+                                      '${fmtNum(_baseMonths)} months. Later changes apply to them too.',
+                            style: muted,
+                          ),
+                          value: _customize,
+                          onChanged: _saving
+                              ? null
+                              : (v) => setState(() {
+                                  _customize = v;
+                                  if (!v) _resetDefaults();
+                                }),
                         ),
-                        value: _customize,
-                        onChanged: _saving
-                            ? null
-                            : (v) => setState(() {
-                                _customize = v;
-                                if (!v) _resetDefaults();
-                              }),
                       ),
                       if (_customize) ...[
                         AppGap.h8,

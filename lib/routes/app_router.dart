@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/data/models/audit_model.dart';
 import 'package:micro_lending_app/features/analytics/screens/advanced_analytics_screen.dart';
 import 'package:micro_lending_app/features/analytics/screens/due_list_screen.dart';
+import 'package:micro_lending_app/features/audit/audit_filters.dart';
+import 'package:micro_lending_app/features/audit/screens/audit_details.dart';
+import 'package:micro_lending_app/features/audit/screens/audit_logs.dart';
 import 'package:micro_lending_app/features/auth/screens/approval_pending.dart';
 import 'package:micro_lending_app/features/auth/screens/login.dart';
 import 'package:micro_lending_app/features/auth/screens/login_with_email.dart';
@@ -124,6 +128,38 @@ class AppRouter {
             adminId: q['admin_id'],
           );
         },
+      ),
+      GoRoute(
+        path: AppRoutes.audit,
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) {
+          final q = state.uri.queryParameters;
+          final scoped =
+              q.containsKey('entity_id') ||
+              q.containsKey('target_id') ||
+              q.containsKey('actor_id');
+          return AuditListScreen(
+            scope: scoped
+                ? AuditScope(
+                    entityType: q['entity_type'],
+                    entityId: q['entity_id'],
+                    targetId: q['target_id'],
+                    actorId: q['actor_id'],
+                    label: q['label'],
+                  )
+                : null,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: ':id',
+            parentNavigatorKey: _rootKey,
+            builder: (_, state) => AuditDetailScreen(
+              id: state.pathParameters['id']!,
+              initial: state.extra is AuditLog ? state.extra as AuditLog : null,
+            ),
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

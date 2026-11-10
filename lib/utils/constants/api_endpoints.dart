@@ -52,4 +52,8 @@ class ApiEndpoints {
   static String employeeVerification(String id) =>
       '/employees/$id/verification';
   static String employeeActive(String id) => '/employees/$id/active';
+
+  static const String auditLogs = '/audit-logs';
+  static String auditLog(String id) => '/audit-logs/$id';
+  static const String auditActions = '/audit-logs/actions';
 }

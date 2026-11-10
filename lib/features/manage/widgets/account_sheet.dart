@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -11,6 +12,7 @@ import 'package:micro_lending_app/features/analytics/widgets/analytics_cards_mor
 import 'package:micro_lending_app/features/analytics/widgets/analytics_common.dart';
 import 'package:micro_lending_app/features/manage/widgets/manage_widgets.dart';
 import 'package:micro_lending_app/features/profile/widgets/profile_widgets.dart';
+import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
@@ -170,6 +172,19 @@ class _AccountSheet extends StatelessWidget {
           AppGap.h16,
           if (isAdminAccount) _TeamSection(a: a) else _EmployeeSection(a: a),
           AppGap.h16,
+          AppButton(
+            label: 'History',
+            outlined: true,
+            prefixIcon: Icons.history_rounded,
+            radius: AppSizes.md,
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.push(
+                AppRoutes.auditFor(targetId: a.id, label: a.displayName),
+              );
+            },
+          ),
+          AppGap.h12,
           AccountActionBar(
             status: a.status,
             busy: false,

@@ -7,6 +7,7 @@ import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
 import 'package:micro_lending_app/data/models/customer_model.dart';
 import 'package:micro_lending_app/data/models/loan_model.dart';
+import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/customer_service.dart';
 import 'package:micro_lending_app/data/services/loan_service.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
@@ -23,6 +24,7 @@ import 'package:micro_lending_app/features/customers/widgets/address_card.dart';
 import 'package:micro_lending_app/features/customers/widgets/credit_history_card.dart';
 import 'package:micro_lending_app/features/customers/widgets/issue_loan_bar.dart';
 import 'package:micro_lending_app/features/customers/widgets/social_network_card.dart';
+import 'package:micro_lending_app/utils/session/current_user.dart';
 
 class CustomerDetailScreen extends StatefulWidget {
   final String customerId;
@@ -179,10 +181,25 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
       appBar: AppBar(
         leading: AppIconButton(
           icon: Icons.arrow_back_ios,
-          onPressed: () => context.go(AppRoutes.customersList),
+          onPressed: () => context.pop(),
         ),
-        title: Text("Back to Home", style: textTheme.bodyLarge),
+        title: Text("Back", style: textTheme.bodyLarge),
         titleSpacing: 2,
+        actions: [
+          if (CurrentUser.instance.hasRole(UserRole.admin) &&
+              _customerDetails != null)
+            IconButton(
+              tooltip: 'History',
+              icon: const Icon(Icons.history_rounded),
+              onPressed: () => context.push(
+                AppRoutes.auditFor(
+                  entityType: 'CUSTOMER',
+                  entityId: widget.customerId,
+                  label: _customerDetails!.customerName,
+                ),
+              ),
+            ),
+        ],
       ),
       body: SafeArea(
         child: LayoutBuilder(
@@ -537,8 +554,7 @@ class _WidgetContainer extends StatelessWidget {
     this.bgColor,
     this.containerRadius,
     this.padding,
-    this.borderColor,
-  });
+  }) : borderColor = null;
 
   @override
   Widget build(BuildContext context) {

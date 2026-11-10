@@ -110,6 +110,13 @@ class _HomeShellState extends State<HomeShell> {
             context.push(AppRoutes.manageAdmins);
           },
         ),
+        ProfileMenuItem(
+          icon: Icons.history_rounded,
+          title: 'Audit log',
+          subtitle: 'Who changed what, and when',
+          minimum: UserRole.admin,
+          onTap: () => context.push(AppRoutes.audit),
+        ),
       ],
     );
   }
