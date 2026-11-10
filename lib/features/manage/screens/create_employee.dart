@@ -11,7 +11,6 @@ import 'package:micro_lending_app/data/models/managed_account.dart';
 import 'package:micro_lending_app/data/models/profile_limits.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/management_service.dart';
-import 'package:micro_lending_app/features/profile/widgets/profile_cards.dart';
 import 'package:micro_lending_app/features/profile/widgets/profile_widgets.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
