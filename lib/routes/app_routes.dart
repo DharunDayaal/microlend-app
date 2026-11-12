@@ -41,7 +41,7 @@ class AppRoutes {
         'date': d,
         if (target != null) 'target': '$target',
         if (collected != null) 'collected': '$collected',
-        if (adminId != null) 'admin_id': adminId,
+        'admin_id': ?adminId,
       },
     ).toString();
   }

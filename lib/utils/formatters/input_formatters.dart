@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
 

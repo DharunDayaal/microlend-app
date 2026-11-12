@@ -517,8 +517,9 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
                 if (f.$3 && ((n * 10) - (n * 10).round()).abs() > 1e-9) {
                   return 'One decimal place at most';
                 }
-                if (f.$4 != null && n > f.$4!)
+                if (f.$4 != null && n > f.$4!) {
                   return 'Must be ${fmtNum(f.$4!)} or less';
+                }
                 return null;
               },
               decoration: InputDecoration(labelText: f.$2),

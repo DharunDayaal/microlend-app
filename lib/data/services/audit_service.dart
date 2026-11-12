@@ -78,8 +78,8 @@ class AuditService {
       await _api.get(
         ApiEndpoints.auditActions,
         query: {
-          if (module != null) 'module': module,
-          if (adminId != null) 'admin_id': adminId,
+          'module': ?module,
+          'admin_id': ?adminId,
         },
       ),
     )['actions'];

@@ -105,7 +105,7 @@ class ManagementService {
       ApiEndpoints.employees,
       query: {
         ..._list(status, search, page, limit),
-        if (adminId != null) 'admin_id': adminId,
+        'admin_id': ?adminId,
       },
     ),
     'employees',

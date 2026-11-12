@@ -3,7 +3,6 @@ import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
 import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/local_storage/token_storage.dart';
-import 'package:micro_lending_app/utils/loggers/app_logger.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 import 'package:micro_lending_app/utils/session/current_user.dart';
