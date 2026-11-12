@@ -13,7 +13,7 @@ class AppValidators {
     final v = value?.trim() ?? '';
     if (v.isEmpty) return 'Name is required';
     if (v.length < 2) return 'Name is too short';
-    if(!RegExp(r"^[A-Za-z .'-]+$").hasMatch(v)) {
+    if (!RegExp(r"^[A-Za-z .'-]+$").hasMatch(v)) {
       return 'Name can only contain letters, spaces, and certain punctuation';
     }
     return null;
@@ -22,14 +22,18 @@ class AppValidators {
   static String? phone(String? value) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) return 'Phone number is required';
-    if (!PhoneFormatter.isValid(v)) return 'Enter a valid 10-digit mobile number';
+    if (!PhoneFormatter.isValid(v)) {
+      return 'Enter a valid 10-digit mobile number';
+    }
     return null;
   }
 
   static String? otp(String? value, {int length = 6}) {
     final v = value?.trim() ?? '';
     if (v.isEmpty) return 'OTP is required';
-    if (!RegExp('^\\d{$length}\$').hasMatch(v)) return 'Enter the $length-digit OTP';
+    if (!RegExp('^\\d{$length}\$').hasMatch(v)) {
+      return 'Enter the $length-digit OTP';
+    }
     return null;
   }
 
@@ -45,7 +49,20 @@ class AppValidators {
   static String? password(String? value, {int minLength = 8}) {
     final v = value ?? '';
     if (v.isEmpty) return 'Password is required';
-    if (v.length < minLength) return 'Use at least $minLength characters';
+
+    final List<String> missingRequirements = [];
+
+    if (v.length < minLength) missingRequirements.add('$minLength+ chars');
+    if (!RegExp(r'[A-Z]').hasMatch(v)) missingRequirements.add('uppercase');
+    if (!RegExp(r'[0-9]').hasMatch(v)) missingRequirements.add('number');
+    if (!RegExp(r'[!@#\$&*~_+-=]|\p{P}').hasMatch(v)) {
+      missingRequirements.add('special char');
+    }
+
+    if (missingRequirements.isNotEmpty) {
+      return 'Missing: ${missingRequirements.join(", ")}';
+    }
+
     return null;
   }
 

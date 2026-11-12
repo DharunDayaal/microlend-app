@@ -10,8 +10,9 @@ class FakeBuildContext extends Fake implements BuildContext {}
 void setMockAuthStatus(AuthStatus status) {
   AuthNotifier.instance.signedOut();
   if (status == AuthStatus.signedIn) AuthNotifier.instance.signedIn();
-  if (status == AuthStatus.pendingApproval)
+  if (status == AuthStatus.pendingApproval) {
     AuthNotifier.instance.pendingApproval();
+  }
 }
 
 GoRouterState createMockState(String path) {

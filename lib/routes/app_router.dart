@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/data/models/audit_model.dart';
+import 'package:micro_lending_app/features/analytics/screens/advanced_analytics_screen.dart';
+import 'package:micro_lending_app/features/analytics/screens/due_list_screen.dart';
+import 'package:micro_lending_app/features/audit/audit_filters.dart';
+import 'package:micro_lending_app/features/audit/screens/audit_details.dart';
+import 'package:micro_lending_app/features/audit/screens/audit_logs.dart';
 import 'package:micro_lending_app/features/auth/screens/approval_pending.dart';
+import 'package:micro_lending_app/features/auth/screens/login.dart';
 import 'package:micro_lending_app/features/auth/screens/login_with_email.dart';
 import 'package:micro_lending_app/features/auth/screens/login_with_phone.dart';
 import 'package:micro_lending_app/features/auth/screens/register.dart';
+import 'package:micro_lending_app/features/auth/screens/reset_password.dart';
+import 'package:micro_lending_app/features/borrowers/screeens/borrowers_screen.dart';
 import 'package:micro_lending_app/features/customers/screens/add_customer.dart';
 import 'package:micro_lending_app/features/customers/screens/customer_detail.dart';
 import 'package:micro_lending_app/features/customers/screens/customer_screen.dart';
@@ -14,6 +23,10 @@ import 'package:micro_lending_app/features/loans/screens/loan_details.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_payments.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_tracker.dart';
 import 'package:micro_lending_app/features/loans/screens/loans.dart';
+import 'package:micro_lending_app/features/manage/screens/create_employee.dart';
+import 'package:micro_lending_app/features/manage/screens/manage_admin.dart';
+import 'package:micro_lending_app/features/manage/screens/manage_users.dart';
+import 'package:micro_lending_app/features/profile/screens/profile_screen.dart';
 import 'package:micro_lending_app/features/reports/reports.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
@@ -27,26 +40,25 @@ class AppRouter {
     final loc = state.matchedLocation;
 
     final isPublicAuthRoute =
+        loc == AppRoutes.login ||
         loc == AppRoutes.loginWithEmail ||
         loc == AppRoutes.loginWithPhone ||
-        loc == AppRoutes.register;
+        loc == AppRoutes.register ||
+        loc == AppRoutes.forgetPassword;
 
     final onPending = loc == AppRoutes.approvalPending;
 
     return switch (AuthNotifier.instance.status) {
-      // If logged out, allow them to stay on any public auth route, otherwise default to email login
-      AuthStatus.signedOut =>
-        isPublicAuthRoute ? null : AppRoutes.loginWithEmail,
-      // If waiting for approval, lock them to the pending screen
+      AuthStatus.signedOut => isPublicAuthRoute ? null : AppRoutes.login,
       AuthStatus.pendingApproval =>
         onPending ? null : AppRoutes.approvalPending,
-      // If fully signed in, bounce them to the dashboard if they wander onto any landing/waiting screen
       AuthStatus.signedIn =>
         (isPublicAuthRoute || onPending) ? AppRoutes.customersList : null,
     };
   }
 
   static GoRouter router = GoRouter(
+    debugLogDiagnostics: true,
     navigatorKey: _rootKey,
     initialLocation: AppRoutes.customersList,
     refreshListenable: AuthNotifier.instance,
@@ -54,12 +66,18 @@ class AppRouter {
     errorBuilder: (context, state) => ErrorScreen(),
     routes: [
       GoRoute(
-        path: AppRoutes.loginWithEmail,
-        builder: (context, state) => const LoginWithEmailScreeen(),
-      ),
-      GoRoute(
-        path: AppRoutes.loginWithPhone,
-        builder: (context, state) => const LoginWithPhoneScreen(),
+        path: AppRoutes.login,
+        builder: (context, state) => const LoginScreen(),
+        routes: [
+          GoRoute(
+            path: "email",
+            builder: (context, state) => const LoginWithEmailScreen(),
+          ),
+          GoRoute(
+            path: "phone",
+            builder: (context, state) => const LoginWithPhoneScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.register,
@@ -69,13 +87,87 @@ class AppRouter {
         path: AppRoutes.approvalPending,
         builder: (context, state) => const ApprovalPendingScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.forgetPassword,
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.analytics,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const AdvancedAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.createEmployee,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const CreateEmployeeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.manageAdmins,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const ManageAdminsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.manageUsers,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const ManageUsersScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.analyticsDue,
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) {
+          final q = state.uri.queryParameters;
+          return DueListScreen(
+            date: DateTime.tryParse(q['date'] ?? '') ?? DateTime.now(),
+            target: double.tryParse(q['target'] ?? ''),
+            collected: double.tryParse(q['collected'] ?? ''),
+            adminId: q['admin_id'],
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.audit,
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) {
+          final q = state.uri.queryParameters;
+          final scoped =
+              q.containsKey('entity_id') ||
+              q.containsKey('target_id') ||
+              q.containsKey('actor_id');
+          return AuditListScreen(
+            scope: scoped
+                ? AuditScope(
+                    entityType: q['entity_type'],
+                    entityId: q['entity_id'],
+                    targetId: q['target_id'],
+                    actorId: q['actor_id'],
+                    label: q['label'],
+                  )
+                : null,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: ':id',
+            parentNavigatorKey: _rootKey,
+            builder: (_, state) => AuditDetailScreen(
+              id: state.pathParameters['id']!,
+              initial: state.extra is AuditLog ? state.extra as AuditLog : null,
+            ),
+          ),
+        ],
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             HomeShell(shell: navigationShell),
         branches: [
+          // Tab 1.
           StatefulShellBranch(
             routes: [
-              // Tab 1.
               GoRoute(
                 path: AppRoutes.customersList,
                 builder: (context, state) => const CustomerScreen(),
@@ -91,15 +183,6 @@ class AppRouter {
                     builder: (context, state) => CustomerDetailScreen(
                       customerId: state.pathParameters['id']!,
                     ),
-                    routes: [
-                      GoRoute(
-                        path: "issue/:stepNo",
-                        parentNavigatorKey: _rootKey,
-                        builder: (context, state) => IssueLoanScreen(
-                          stepNo: state.pathParameters['stepNo']!,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -113,13 +196,20 @@ class AppRouter {
                 builder: (context, state) => LoansScreen(),
                 routes: [
                   GoRoute(
+                    path: "issue/:customerId",
+                    parentNavigatorKey: _rootKey,
+                    builder: (context, state) => IssueLoanScreen(
+                      customerId: state.pathParameters['customerId']!,
+                    ),
+                  ),
+                  GoRoute(
                     path: ":id",
                     parentNavigatorKey: _rootKey,
                     builder: (context, state) =>
                         LoanDetailsScreen(loanId: state.pathParameters['id']!),
                     routes: [
                       GoRoute(
-                        path: "track",
+                        path: "tracks",
                         parentNavigatorKey: _rootKey,
                         builder: (context, state) => LoanTrackerScreen(
                           loanId: state.pathParameters['id']!,
@@ -139,6 +229,15 @@ class AppRouter {
             ],
           ),
           // Tab 3.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.borrowersList,
+                builder: (context, state) => BorrowerScreen(),
+              ),
+            ],
+          ),
+          // Tab 4.
           StatefulShellBranch(
             routes: [
               GoRoute(

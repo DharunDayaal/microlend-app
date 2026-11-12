@@ -13,8 +13,11 @@ class TextFormatter {
 
   /// "Ravi Kumar" -> "RK" (avatar fallback)
   static String initials(String name, {int max = 2}) {
-    final parts =
-        name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
     if (parts.isEmpty) return '?';
     return parts.take(max).map((w) => w[0].toUpperCase()).join();
   }
@@ -29,4 +32,15 @@ class TextFormatter {
   /// "Very long name here" -> "Very long na..."
   static String truncate(String input, int maxChars) =>
       input.length <= maxChars ? input : '${input.substring(0, maxChars)}...';
+
+  static String dummyId(String value, String prefixKey) {
+    final clean = value.replaceAll('-', '');
+    final take = clean.length < 4 ? clean.length : 4;
+    return '$prefixKey-${clean.substring(0, take).toUpperCase()}';
+  }
+
+  static String firstName(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    return parts.first;
+  }
 }
