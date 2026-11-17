@@ -70,4 +70,6 @@ class AppRoutes {
       'label': ?label,
     },
   ).toString();
+
+  static const String downloads = '/downloads';
 }

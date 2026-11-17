@@ -6,12 +6,14 @@ import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/state_views.dart';
 import 'package:micro_lending_app/data/models/audit_model.dart';
+import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/features/audit/controller/audit_controller.dart';
 import 'package:micro_lending_app/features/audit/audit_filters.dart';
 import 'package:micro_lending_app/features/audit/domain/audit_time.dart';
 import 'package:micro_lending_app/features/audit/widgets/audit_filters_sheet.dart';
 import 'package:micro_lending_app/features/audit/widgets/audit_widgets.dart';
+import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -119,6 +121,19 @@ class _AuditListScreenState extends State<AuditListScreen> {
         ),
         title: Text(widget.scope != null ? 'History' : 'Audit log'),
         actions: [
+          ExportMenuButton(
+            types: const [ExportType.auditLog],
+            preset: () => ExportPreset(
+              from: _f.from,
+              to: _f.to,
+              adminId: _f.adminId,
+              adminName: _f.adminName,
+              audit: _f.exportAudit,
+              auditNote: _f.hasFilters
+                  ? '${_f.activeCount} filters applied'
+                  : null,
+            ),
+          ),
           ListenableBuilder(
             listenable: _f,
             builder: (_, _) => Padding(

@@ -17,6 +17,7 @@ import 'package:micro_lending_app/features/customers/screens/add_customer.dart';
 import 'package:micro_lending_app/features/customers/screens/customer_detail.dart';
 import 'package:micro_lending_app/features/customers/screens/customer_screen.dart';
 import 'package:micro_lending_app/features/customers/screens/issue_loan.dart';
+import 'package:micro_lending_app/features/exports/screens/downloads_screen.dart';
 import 'package:micro_lending_app/features/error/screens/error_screen.dart';
 import 'package:micro_lending_app/features/home/home_shell.dart';
 import 'package:micro_lending_app/features/loans/screens/loan_details.dart';
@@ -160,6 +161,11 @@ class AppRouter {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.downloads,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const DownloadsScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:micro_lending_app/data/services/analytics_service.dart';
+import 'package:micro_lending_app/features/exports/exports_tracker.dart';
 import 'package:micro_lending_app/utils/local_storage/token_storage.dart';
 import 'package:micro_lending_app/utils/session/current_user.dart';
 
@@ -36,6 +37,7 @@ class AuthNotifier extends ChangeNotifier {
     unawaited(CurrentUser.instance.clear());
     AnalyticsService.clearCache();
     _set(AuthStatus.signedOut);
+    ExportsTracker.instance.clear();
   }
 
   void _set(AuthStatus next) {

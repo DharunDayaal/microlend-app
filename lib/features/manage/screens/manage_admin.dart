@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
+import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/data/models/managed_account.dart';
 import 'package:micro_lending_app/data/models/profile_model.dart';
 import 'package:micro_lending_app/data/services/management_service.dart';
+import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/features/manage/controller/manage_controller.dart';
 import 'package:micro_lending_app/features/manage/widgets/account_sheet.dart';
 import 'package:micro_lending_app/features/manage/widgets/manage_widgets.dart';
@@ -187,6 +189,9 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: const Text('Manage admins'),
+        actions: const [
+          ExportMenuButton(types: [ExportType.teamSummary]),
+        ],
       ),
       body: SafeArea(
         child: Column(

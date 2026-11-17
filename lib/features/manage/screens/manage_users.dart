@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
+import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/data/models/managed_account.dart';
 import 'package:micro_lending_app/data/models/profile_model.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/management_service.dart';
+import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/features/manage/controller/manage_controller.dart';
 import 'package:micro_lending_app/features/manage/widgets/account_sheet.dart';
 import 'package:micro_lending_app/features/manage/widgets/manage_widgets.dart';
@@ -308,6 +310,16 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
         ),
         title: const Text('Manage users'),
         actions: [
+          ExportMenuButton(
+            types: const [
+              ExportType.employeePerformance,
+              ExportType.customerList,
+            ],
+            preset: () => ExportPreset(
+              adminId: _adminFilter,
+              adminName: _adminFilterName,
+            ),
+          ),
           IconButton(
             tooltip: 'Add employee',
             icon: const Icon(Icons.person_add_alt_1_outlined),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
+import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/analytics_service.dart';
 import 'package:micro_lending_app/features/analytics/analytics_filter.dart';
@@ -9,6 +10,7 @@ import 'package:micro_lending_app/features/analytics/widgets/analytics_cards.dar
 import 'package:micro_lending_app/features/analytics/widgets/analytics_cards_more.dart';
 import 'package:micro_lending_app/features/analytics/widgets/analytics_filter_bar.dart';
 import 'package:micro_lending_app/features/analytics/widgets/analytics_platform_cards.dart';
+import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/session/current_user.dart';
@@ -355,6 +357,27 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
           onPressed: () => Navigator.of(context).maybePop(),
         ),
         title: const Text('Advanced analytics'),
+        actions: [
+          ExportMenuButton(
+            types: _platform
+                ? const [ExportType.teamSummary, ExportType.employeePerformance]
+                : const [
+                    ExportType.collections,
+                    ExportType.employeePerformance,
+                    ExportType.newCustomers,
+                    ExportType.closedLoans,
+                    ExportType.loansRegister,
+                  ],
+            preset: () => ExportPreset(
+              from: _cur.from,
+              to: _cur.to,
+              adminId: _f.adminId,
+              adminName: _f.adminName,
+              employeeId: _f.employeeId,
+              employeeName: _f.employeeName,
+            ),
+          ),
+        ],
       ),
       body: SafeArea(
         child: !_ready

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
+import 'package:micro_lending_app/data/models/export_model.dart';
+import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/features/home/widgets/profile_menu_sheet.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/auth_service.dart';
@@ -40,6 +42,31 @@ class _HomeShellState extends State<HomeShell> {
     _Tab('Loans', Icons.account_balance_outlined, Icons.account_balance),
     _Tab('Borrowers', Icons.people_outline, Icons.people),
     _Tab('Reports', Icons.bar_chart_outlined, Icons.bar_chart),
+  ];
+
+  // The reports each tab can export, in the same order as _tabs.
+  static const _exportTypes = <List<ExportType>>[
+    [
+      ExportType.weekdaySheet,
+      ExportType.dueThisWeek,
+      ExportType.customerList,
+      ExportType.newCustomers,
+    ], // Field
+    [
+      ExportType.loansRegister,
+      ExportType.closedLoans,
+      ExportType.overdue,
+    ], // Loans
+    [
+      ExportType.weekdaySheet,
+      ExportType.dueThisWeek,
+      ExportType.overdue,
+    ], // Borrowers
+    [
+      ExportType.collections,
+      ExportType.employeePerformance,
+      ExportType.teamSummary,
+    ], // Reports
   ];
 
   bool _barVisible = true;
@@ -117,6 +144,12 @@ class _HomeShellState extends State<HomeShell> {
           minimum: UserRole.admin,
           onTap: () => context.push(AppRoutes.audit),
         ),
+        ProfileMenuItem(
+          icon: Icons.download_done_rounded,
+          title: 'Downloads',
+          subtitle: 'Sheets and reports you have exported',
+          onTap: () => context.push(AppRoutes.downloads),
+        ),
       ],
     );
   }
@@ -147,7 +180,15 @@ class _HomeShellState extends State<HomeShell> {
         final selected = visible.indexOf(index);
 
         return Scaffold(
-          appBar: _ShellAppBar(title: tab.label, onProfileTap: _openMenu),
+          appBar: _ShellAppBar(
+            title: tab.label,
+            onProfileTap: _openMenu,
+            actions: [
+              ExportMenuButton(
+                types: _exportTypes[index.clamp(0, _exportTypes.length - 1)],
+              ),
+            ],
+          ),
           body: NotificationListener<UserScrollNotification>(
             onNotification: _onScroll,
             child: widget.shell,
@@ -190,8 +231,13 @@ class _HomeShellState extends State<HomeShell> {
 class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onProfileTap;
+  final List<Widget> actions;
 
-  const _ShellAppBar({required this.title, required this.onProfileTap});
+  const _ShellAppBar({
+    required this.title,
+    required this.onProfileTap,
+    this.actions = const [],
+  });
 
   static const double _height = 72;
 
@@ -295,13 +341,14 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
       actions: [
+        ...actions,
         _RingAvatar(
           name: user?.userName ?? '',
           role: CurrentUser.instance.role,
           onTap: onProfileTap,
         ),
         const SizedBox(width: AppSizes.sm),
-      ],
+      ], 
     );
   }
 }

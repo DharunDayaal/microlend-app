@@ -21,6 +21,15 @@ class AuditScope {
 class AuditFilters extends ChangeNotifier {
   static const maxDays = 366;
 
+  /// The filters the audit_log export accepts. target_id is not one of them.
+  Map<String, dynamic> get exportAudit => {
+    if (module != null) 'module': module,
+    if (actions.isNotEmpty) 'action': actions.join(','),
+    if (actorId != null) 'actor_id': actorId,
+    if (entityType != null) 'entity_type': entityType,
+    if (entityId != null) 'entity_id': entityId,
+  };
+
   AuditFilters({AuditScope? scope}) {
     final r = rangeFor('7d');
     from = r.$1;

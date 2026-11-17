@@ -56,4 +56,7 @@ class ApiEndpoints {
   static const String auditLogs = '/audit-logs';
   static String auditLog(String id) => '/audit-logs/$id';
   static const String auditActions = '/audit-logs/actions';
+
+  static const String exports = '/exports';
+  static String exportById(String id) => '/exports/$id';
 }
