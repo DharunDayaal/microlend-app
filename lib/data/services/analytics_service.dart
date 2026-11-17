@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 import 'package:intl/intl.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
 import 'package:micro_lending_app/utils/constants/api_endpoints.dart';
 import 'package:micro_lending_app/utils/network/api_client.dart';
+import 'package:micro_lending_app/utils/session/current_user.dart';
 
 class _Entry {
   final DateTime at;
@@ -146,10 +148,21 @@ class AnalyticsService {
     });
   }
 
+  static const _userTails = {
+    'forecast/cashflow': 'forecast/next-weeks',
+    'referrals/performance': 'referrals',
+  };
+
+  /// A USER has no admin routes (403), so the same card reads the user route.
   static Future<Map<String, dynamic>> _admin(
     String tail, [
     Map<String, dynamic> query = const {},
-  ]) => _get(ApiEndpoints.analytics('admin', tail), query);
+  ]) {
+    final isAdmin = CurrentUser.instance.hasRole(UserRole.admin);
+    return isAdmin
+        ? _get(ApiEndpoints.analytics('admin', tail), query)
+        : _get(ApiEndpoints.analytics('user', _userTails[tail] ?? tail), query);
+  }
 
   static Future<Map<String, dynamic>> _super(
     String tail, [

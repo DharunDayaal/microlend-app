@@ -28,7 +28,7 @@ import 'package:micro_lending_app/features/manage/screens/create_employee.dart';
 import 'package:micro_lending_app/features/manage/screens/manage_admin.dart';
 import 'package:micro_lending_app/features/manage/screens/manage_users.dart';
 import 'package:micro_lending_app/features/profile/screens/profile_screen.dart';
-import 'package:micro_lending_app/features/reports/reports.dart';
+import 'package:micro_lending_app/features/reports/screens/reports.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
 

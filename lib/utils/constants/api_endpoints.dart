@@ -30,6 +30,10 @@ class ApiEndpoints {
   static String getPayments(String loanId) => '/loans/payments/$loanId';
   static String loanStatus(String loanId) => '/loans/update/status/$loanId';
 
+  static const String reportCashOutstanding = '/reports/cash-outstanding';
+  static const String reportEarnings = '/reports/earnings';
+  static const String reportOverdue = '/reports/overdue';
+
   static const String me = '/me';
   static const String mePhone = '/me/phone';
   static const String mePassword = '/me/password';
