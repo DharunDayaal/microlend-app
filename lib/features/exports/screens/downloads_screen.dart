@@ -26,7 +26,11 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
   @override
   void initState() {
     super.initState();
-    _t.refreshList(); // also restarts polling for anything still building
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _t.refreshList(); // also restarts polling for anything still building
+      }
+    });
   }
 
   Future<void> _use(ExportJob j, {required bool share}) async {

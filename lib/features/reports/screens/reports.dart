@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
@@ -53,6 +54,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       if (!mounted) return;
       final ctx = _keys[id]?.currentContext;
       if (ctx != null) {
+        if (!ctx.mounted) return;
         await Scrollable.ensureVisible(
           ctx,
           alignment: 0.05,
@@ -148,7 +150,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 child: ListView.builder(
                   controller: _scroll,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  cacheExtent: 800,
+                  scrollCacheExtent: ScrollCacheExtent.pixels(800),
                   padding: const EdgeInsets.fromLTRB(
                     AppSizes.lg,
                     AppSizes.sm,

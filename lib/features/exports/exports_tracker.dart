@@ -108,7 +108,7 @@ class ExportsTracker extends ChangeNotifier {
   Future<void> refreshList() async {
     listLoading = true;
     listError = null;
-    notifyListeners();
+    scheduleMicrotask(notifyListeners);
     final epoch = _epoch;
     try {
       final list = await ExportService.list();
