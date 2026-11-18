@@ -258,7 +258,7 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final firstName = (user?.userName ?? '').trim().split(RegExp(r'\s+')).first;
     final eyebrow =
-        (firstName.isEmpty ? 'MICROLEND FIELD' : '${_greeting()}, $firstName')
+        (firstName.isEmpty ? 'Thavani' : '${_greeting()}, $firstName')
             .toUpperCase();
 
     return AppBar(

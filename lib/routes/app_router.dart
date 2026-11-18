@@ -155,10 +155,15 @@ class AppRouter {
           GoRoute(
             path: ':id',
             parentNavigatorKey: _rootKey,
-            builder: (_, state) => AuditDetailScreen(
-              id: state.pathParameters['id']!,
-              initial: state.extra is AuditLog ? state.extra as AuditLog : null,
-            ),
+            builder: (_, state) {
+              final x = state.extra;
+              return AuditDetailScreen(
+                id: state.pathParameters['id']!,
+                initial: x is Map
+                    ? AuditLog.fromJson(Map<String, dynamic>.from(x))
+                    : null,
+              );
+            },
           ),
         ],
       ),

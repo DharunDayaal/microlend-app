@@ -100,7 +100,8 @@ class _AuditListScreenState extends State<AuditListScreen> {
     AppSnackbar.info(context, 'Log id copied');
   }
 
-  void _open(AuditLog l) => context.push(AppRoutes.auditDetail(l.id), extra: l);
+  void _open(AuditLog l) =>
+      context.push(AppRoutes.auditDetail(l.id), extra: l.raw);
 
   @override
   Widget build(BuildContext context) {

@@ -31,7 +31,7 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Microlend Field",
+                  "Thavanai",
                   textAlign: TextAlign.start,
                   style: textTheme.labelLarge,
                 ),
