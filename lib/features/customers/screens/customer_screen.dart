@@ -8,6 +8,7 @@ import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
 import 'package:micro_lending_app/common/widgets/app_text_field.dart';
 import 'package:micro_lending_app/common/widgets/call_icon_button.dart';
+import 'package:micro_lending_app/common/widgets/progress_ring.dart';
 import 'package:micro_lending_app/common/widgets/state_views.dart';
 import 'package:micro_lending_app/data/models/customer_model.dart';
 import 'package:micro_lending_app/data/services/customer_service.dart';
@@ -357,27 +358,61 @@ class _CustomerScreenState extends State<CustomerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("TODAY's TARGET ROUTE", style: textTheme.labelLarge),
-          AppGap.h4,
-          _summaryLoading
-              ? const AppShimmer(child: SkeletonBox(width: 160, height: 36))
-              : Text.rich(
-                  TextSpan(
-                    text: CurrencyFormatter.format(_summary?.totalTarget),
-                    style: textTheme.displaySmall?.copyWith(
-                      color: AppColors.stepCurrentLabel,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: " due",
-                        style: textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("TODAY'S TARGET ROUTE", style: textTheme.labelLarge),
+                    AppGap.h4,
+                    _summaryLoading
+                        ? const AppShimmer(
+                            child: SkeletonBox(width: 160, height: 36),
+                          )
+                        : FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text.rich(
+                              TextSpan(
+                                text: CurrencyFormatter.format(
+                                  _summary?.totalTarget,
+                                ),
+                                style: textTheme.displaySmall?.copyWith(
+                                  color: AppColors.stepCurrentLabel,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: " due",
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                  ],
                 ),
+              ),
+              AppGap.w12,
+              _summaryLoading
+                  ? const AppShimmer(
+                      child: SkeletonBox(
+                        width: 76,
+                        height: 76,
+                        radius: AppSizes.radiusFull,
+                      ),
+                    )
+                  : ProgressRing(
+                      value: (_summary?.totalTarget ?? 0) > 0
+                          ? (_summary!.totalCollected) / _summary!.totalTarget
+                          : 0,
+                    ),
+            ],
+          ),
           AppGap.h16,
           Row(
             children: [

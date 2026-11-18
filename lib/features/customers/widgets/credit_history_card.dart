@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/common/widgets/app_section_cards.dart';
 import 'package:micro_lending_app/common/widgets/status_chip.dart';
+import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
@@ -190,30 +192,35 @@ class _CycleRow extends StatelessWidget {
       ),
     };
 
-    return AppInfoTile(
-      child: Row(
-        children: [
-          Icon(icon, color: color),
-          const SizedBox(width: AppSizes.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Cycle #${cycle.cycleNo} • ${TextFormatter.dummyId(cycle.loanId, "#LN")}',
-                  style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  'Closed ${DateFormatter.date(cycle.closedAt)} • '
-                  '${CurrencyFormatter.format(cycle.amount)}',
-                  style: text.labelMedium,
-                ),
-              ],
+    return GestureDetector(
+      onDoubleTap: () => context.go(AppRoutes.loanDetail(cycle.loanId)),
+      child: AppInfoTile(
+        child: Row(
+          children: [
+            Icon(icon, color: color),
+            const SizedBox(width: AppSizes.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cycle #${cycle.cycleNo} • ${TextFormatter.dummyId(cycle.loanId, "#LN")}',
+                    style: text.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    'Closed ${DateFormatter.date(cycle.closedAt)} • '
+                    '${CurrencyFormatter.format(cycle.amount)}',
+                    style: text.labelMedium,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: AppSizes.sm),
-          StatusChip(label: chipLabel, type: chipType),
-        ],
+            const SizedBox(width: AppSizes.sm),
+            StatusChip(label: chipLabel, type: chipType),
+          ],
+        ),
       ),
     );
   }
