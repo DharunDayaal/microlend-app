@@ -470,14 +470,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get approvalReviewTimeframe => 'REVIEW TIMEFRAME';
 
   @override
-  String get approvalTypicalTime =>
-      'Typical reiview time: 24-48 business hours';
+  String get approvalTypicalTime => 'Typical review time: 24-48 business hours';
 
   @override
   String get resetTitle => 'Password Reset';
 
   @override
-  String get resetHeading => 'Reset your passsword';
+  String get resetHeading => 'Reset your password';
 
   @override
   String get resetSubtitle =>
@@ -523,7 +522,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetGetCode => 'Get Verification Code';
 
   @override
-  String get regTitle => 'Registeration';
+  String get regTitle => 'Registration';
 
   @override
   String get regBackToStep1 => 'Back to step 1';

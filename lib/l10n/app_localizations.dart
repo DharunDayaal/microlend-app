@@ -863,7 +863,7 @@ abstract class AppLocalizations {
   /// No description provided for @approvalTypicalTime.
   ///
   /// In en, this message translates to:
-  /// **'Typical reiview time: 24-48 business hours'**
+  /// **'Typical review time: 24-48 business hours'**
   String get approvalTypicalTime;
 
   /// No description provided for @resetTitle.
@@ -875,7 +875,7 @@ abstract class AppLocalizations {
   /// No description provided for @resetHeading.
   ///
   /// In en, this message translates to:
-  /// **'Reset your passsword'**
+  /// **'Reset your password'**
   String get resetHeading;
 
   /// No description provided for @resetSubtitle.
@@ -965,7 +965,7 @@ abstract class AppLocalizations {
   /// No description provided for @regTitle.
   ///
   /// In en, this message translates to:
-  /// **'Registeration'**
+  /// **'Registration'**
   String get regTitle;
 
   /// No description provided for @regBackToStep1.
