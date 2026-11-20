@@ -1,0 +1,20 @@
+{
+  "@@locale": "en",
+
+  "languageTitle": "Language",
+  "languageSubtitle": "Choose the app language",
+  "languageEnglish": "English",
+  "languageTamil": "தமிழ்",
+  "deviceLanguageNotice": "Your phone's preferred language is Tamil, so the app opened in Tamil. You can change this under Language in your profile menu.",
+
+  "commonOk": "OK",
+  "commonCancel": "Cancel",
+  "commonSave": "Save",
+  "commonClose": "Close",
+  "commonRetry": "Retry",
+
+  "daysLate": "{count, plural, =1{1 day late} other{{count} days late}}",
+  "@daysLate": {
+    "placeholders": { "count": { "type": "int" } }
+  }
+}

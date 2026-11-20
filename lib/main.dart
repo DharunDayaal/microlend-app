@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_lending_app/data/services/profile_service.dart';
+import 'package:micro_lending_app/l10n/app_localizations.dart';
+import 'package:micro_lending_app/l10n/locale_controller.dart';
 import 'package:micro_lending_app/routes/app_router.dart';
 import 'package:micro_lending_app/routes/auth_notifier.dart';
 import 'package:micro_lending_app/utils/device/device_utils.dart';
@@ -56,8 +58,11 @@ Future<void> main() async {
   if (AuthNotifier.instance.isLoggedIn) {
     unawaited(ProfileService.refreshCurrentUser());
   }
-
+  await LocaleController.instance.init();
   runApp(const App());
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => showDeviceLanguageNotice(),
+  );
 }
 
 class App extends StatelessWidget {
@@ -65,12 +70,19 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      routerConfig: AppRouter.router,
+    return ListenableBuilder(
+      listenable: LocaleController.instance,
+      builder: (context, _) => MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.dark,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        routerConfig: AppRouter.router,
+        scaffoldMessengerKey: rootMessengerKey,
+        locale: LocaleController.instance.locale,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+      ),
     );
   }
 }

@@ -7,6 +7,8 @@ import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/features/home/widgets/profile_menu_sheet.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/auth_service.dart';
+import 'package:micro_lending_app/l10n/app_localizations.dart';
+import 'package:micro_lending_app/l10n/language_sheet.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/assets.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
@@ -101,6 +103,12 @@ class _HomeShellState extends State<HomeShell> {
           onTap: () {
             context.push(AppRoutes.profile);
           },
+        ),
+        ProfileMenuItem(
+          icon: Icons.translate_rounded,
+          title: AppLocalizations.of(context).languageTitle,
+          subtitle: AppLocalizations.of(context).languageSubtitle,
+          onTap: () => showLanguageSheet(context),
         ),
         ProfileMenuItem(
           icon: Icons.person_add_alt_1_outlined,
@@ -348,7 +356,7 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
           onTap: onProfileTap,
         ),
         const SizedBox(width: AppSizes.sm),
-      ], 
+      ],
     );
   }
 }

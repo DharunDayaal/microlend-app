@@ -1,0 +1,17 @@
+{
+  "@@locale": "ta",
+
+  "languageTitle": "மொழி",
+  "languageSubtitle": "செயலியின் மொழியைத் தேர்ந்தெடுக்கவும்",
+  "languageEnglish": "English",
+  "languageTamil": "தமிழ்",
+  "deviceLanguageNotice": "உங்கள் தொலைபேசியில் தமிழ் விருப்ப மொழியாக உள்ளது, அதனால் செயலி தமிழில் திறக்கப்பட்டுள்ளது. சுயவிவர மெனுவில் உள்ள 'மொழி' பகுதியில் இதை மாற்றலாம்.",
+
+  "commonOk": "சரி",
+  "commonCancel": "ரத்து செய்",
+  "commonSave": "சேமி",
+  "commonClose": "மூடு",
+  "commonRetry": "மீண்டும் முயற்சி",
+
+  "daysLate": "{count, plural, =1{1 நாள் தாமதம்} other{{count} நாட்கள் தாமதம்}}"
+}
