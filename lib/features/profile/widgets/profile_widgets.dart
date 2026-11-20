@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
@@ -111,7 +112,7 @@ class CardMessage extends StatelessWidget {
           child: Text(message, style: Theme.of(context).textTheme.bodyMedium),
         ),
         if (onRetry != null)
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          TextButton(onPressed: onRetry, child: Text(context.l10n.commonRetry)),
       ],
     );
   }

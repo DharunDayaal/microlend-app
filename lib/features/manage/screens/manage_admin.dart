@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/data/models/managed_account.dart';
@@ -91,39 +92,36 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
   Future<bool> _approve(ManagedAccount a) => _run(
     a,
     () => ManagementService.setAdminVerified(a.id, true),
-    (u) => '${a.displayName} approved.',
+    (u) => context.l10n.manApproved(a.displayName),
   );
 
   Future<bool> _reject(ManagedAccount a) async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Reject ${a.displayName}?',
-      message:
-          'The account is deactivated and cannot sign in. It is never deleted.',
-      confirmText: 'Reject',
+      title: context.l10n.manRejectTitle(a.displayName),
+      message: context.l10n.manRejectMessage,
+      confirmText: context.l10n.manReject,
     );
     if (!ok || !mounted) return false;
     return _run(
       a,
       () => ManagementService.setAdminActive(a.id, false),
-      (u) => '${a.displayName} rejected.',
+      (u) => context.l10n.manRejected(a.displayName),
     );
   }
 
   Future<bool> _deactivate(ManagedAccount a) async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Deactivate ${a.displayName}?',
-      message:
-          'They are signed out once their access token expires. '
-          'Their employees are not changed.',
-      confirmText: 'Deactivate',
+      title: context.l10n.manDeactivateTitle(a.displayName),
+      message: context.l10n.manDeactivateAdminMsg,
+      confirmText: context.l10n.manDeactivate,
     );
     if (!ok || !mounted) return false;
     return _run(
       a,
       () => ManagementService.setAdminActive(a.id, false),
-      (u) => '${a.displayName} deactivated.',
+      (u) => context.l10n.manDeactivated(a.displayName),
     );
   }
 
@@ -131,8 +129,8 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
     a,
     () => ManagementService.setAdminActive(a.id, true),
     (u) => u.status == AccountStatus.pending
-        ? '${a.displayName} reactivated. They are waiting for approval again.'
-        : '${a.displayName} reactivated.',
+        ? context.l10n.manReactivatedPending(a.displayName)
+        : context.l10n.manReactivated(a.displayName),
   );
 
   late final _actions = AccountActions(
@@ -149,7 +147,7 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
     final t = _team;
     if (t == null) {
       return CardMessage(
-        message: _headerError ?? 'Could not load the counts.',
+        message: _headerError ?? context.l10n.manCountsFailed,
         onRetry: _loadHeader,
       );
     }
@@ -157,16 +155,21 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
     return StatStrip(
       items: [
         (
-          'PENDING',
+          context.l10n.manPending,
           '${t.pendingAdminApprovals}',
-          'awaiting approval',
+          context.l10n.manAwaitingApproval,
           AppColors.warning,
         ),
-        ('TEAMS', '${t.teams.length}', 'approved admins', AppColors.success),
         (
-          'EMPLOYEES',
+          context.l10n.manTeams,
+          '${t.teams.length}',
+          context.l10n.manApprovedAdmins,
+          AppColors.success,
+        ),
+        (
+          context.l10n.manEmployees,
           '$employees',
-          'across all teams',
+          context.l10n.manAcrossAllTeams,
           AppColors.stepCurrentLabel,
         ),
       ],
@@ -177,8 +180,10 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
   Widget build(BuildContext context) {
     if (!CurrentUser.instance.isSuperAdmin) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Manage admins')),
-        body: const Center(child: Text("You don't have access to this view.")),
+        appBar: AppBar(title: Text(context.l10n.manManageAdmins)),
+        body: Center(
+          child: Text(context.l10n.anNoAccess, textAlign: TextAlign.center),
+        ),
       );
     }
 
@@ -188,7 +193,7 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text('Manage admins'),
+        title: Text(context.l10n.manManageAdmins),
         actions: const [
           ExportMenuButton(types: [ExportType.teamSummary]),
         ],
@@ -215,7 +220,7 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
               child: ManageSearch(
-                hint: 'Search by name, phone or email',
+                hint: context.l10n.manSearchHint,
                 onChanged: _c.setSearch,
               ),
             ),
@@ -225,9 +230,9 @@ class _ManageAdminsScreenState extends State<ManageAdminsScreen> {
                 header: _header(),
                 onRefresh: _refresh,
                 emptyMessage: (s) => switch (s) {
-                  'pending' => 'No admins are waiting for approval.',
-                  'active' => 'No active admins yet.',
-                  _ => 'No inactive admins.',
+                  'pending' => context.l10n.manNoAdminsPending,
+                  'active' => context.l10n.manNoActiveAdmins,
+                  _ => context.l10n.manNoInactiveAdmins,
                 },
                 itemBuilder: (context, a) => AccountCard(
                   a: a,

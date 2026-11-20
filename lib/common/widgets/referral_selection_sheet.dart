@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
@@ -177,7 +178,9 @@ class _ReferralSelectionSheetState extends State<ReferralSelectionSheet> {
               children: [
                 Expanded(
                   child: Text(
-                    widget.sheetTitle ?? 'Select Referring Borrower',
+                    widget.sheetTitle ?? context.l10n.referralSelectTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: textTheme.headlineSmall,
                   ),
                 ),
@@ -200,7 +203,7 @@ class _ReferralSelectionSheetState extends State<ReferralSelectionSheet> {
               label: '',
               showHeader: false,
               prefixIcon: Icons.search,
-              hint: 'Search by name or phone',
+              hint: context.l10n.commonSearchNamePhone,
               controller: _search,
               onChanged: (_) => _debouncer.run(_loadFirst),
             ),
@@ -231,9 +234,9 @@ class _ReferralSelectionSheetState extends State<ReferralSelectionSheet> {
     if (_error != null) return ErrorView(message: _error!, onRetry: _loadFirst);
 
     if (_items.isEmpty) {
-      return const EmptyView(
+      return EmptyView(
         icon: Icons.people_outline,
-        message: 'No referrers found',
+        message: context.l10n.referralNoneFound,
       );
     }
 

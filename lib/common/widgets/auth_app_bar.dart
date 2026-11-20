@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/utils/constants/assets.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 
@@ -26,21 +27,25 @@ class AuthAppBar extends StatelessWidget implements PreferredSizeWidget {
               fit: BoxFit.contain,
             ),
             const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Thavanai",
-                  textAlign: TextAlign.start,
-                  style: textTheme.labelLarge,
-                ),
-                Text(
-                  title,
-                  textAlign: TextAlign.start,
-                  style: textTheme.labelMedium,
-                ),
-              ],
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    context.l10n.appName,
+                    textAlign: TextAlign.start,
+                    style: textTheme.labelLarge,
+                  ),
+                  Text(
+                    title,
+                    textAlign: TextAlign.start,
+                    style: textTheme.labelMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

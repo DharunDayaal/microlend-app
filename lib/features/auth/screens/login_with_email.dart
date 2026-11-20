@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_text_field.dart';
@@ -58,7 +59,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
 
     return Scaffold(
       backgroundColor: scaffoldBackgroundColor,
-      appBar: AuthAppBar(title: "Email Login"),
+      appBar: AuthAppBar(title: context.l10n.authEmailLogin),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -102,12 +103,14 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                           spacing: AppSizes.xs,
                           children: [
                             Text(
-                              "Welcome back",
+                              context.l10n.authWelcomeBack,
                               style: textTheme.headlineMedium,
+                              textAlign: TextAlign.center,
                             ),
                             Text(
-                              "Sign in to access your account.",
+                              context.l10n.authSignInToAccess,
                               style: textTheme.bodyMedium,
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
@@ -117,8 +120,8 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                             spacing: AppSizes.xl,
                             children: [
                               AppTextField(
-                                label: "Email Address",
-                                hint: "Enter your email...",
+                                label: context.l10n.authEmailAddress,
+                                hint: context.l10n.authEnterEmailHint,
                                 showValidIcon: true,
                                 prefixIcon: Icons.alternate_email,
                                 keyboardType: TextInputType.emailAddress,
@@ -129,8 +132,8 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                 textInputAction: TextInputAction.next,
                               ),
                               AppTextField(
-                                label: "Password",
-                                hint: "Enter your password...",
+                                label: context.l10n.authPassword,
+                                hint: context.l10n.authEnterPasswordHint,
                                 prefixIcon: Icons.lock,
                                 isPassword: true,
                                 controller: _passwordController,
@@ -144,7 +147,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                   onTap: () =>
                                       context.push(AppRoutes.forgetPassword),
                                   child: Text(
-                                    "Forgot password?",
+                                    context.l10n.authForgotPassword,
                                     style: textTheme.bodyMedium?.copyWith(
                                       color: AppColors.darkOnSurface,
                                       fontWeight: FontWeight.w600,
@@ -154,7 +157,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                               ),
                               AppGap.h4,
                               AppButton(
-                                label: "SIGN IN",
+                                label: context.l10n.authSignIn,
                                 onPressed: _submit,
                                 isLoading: _loading,
                                 suffixIcon: Icons.arrow_forward,
@@ -171,9 +174,12 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                       height: 10,
                                     ),
                                   ),
-                                  Text(
-                                    "OR QUICK SWITCH",
-                                    style: textTheme.bodySmall,
+                                  Flexible(
+                                    child: Text(
+                                      context.l10n.authOrQuickSwitch,
+                                      style: textTheme.bodySmall,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                   const Expanded(
                                     child: Divider(
@@ -185,7 +191,7 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                 ],
                               ),
                               AppButton(
-                                label: "Log in with phone number",
+                                label: context.l10n.authLoginWithPhone,
                                 onPressed: () =>
                                     context.push(AppRoutes.loginWithPhone),
                                 outlined: true,
@@ -198,11 +204,11 @@ class _LoginWithEmailScreenState extends State<LoginWithEmailScreen> {
                                     context.push(AppRoutes.register),
                                 child: Text.rich(
                                   TextSpan(
-                                    text: "Don't have an account? ",
+                                    text: context.l10n.authNoAccountInline,
                                     style: textTheme.bodyMedium,
                                     children: [
                                       TextSpan(
-                                        text: "Create account",
+                                        text: context.l10n.authCreateAccount,
                                         style: textTheme.bodyMedium?.copyWith(
                                           color: AppColors.success,
                                           fontWeight: FontWeight.bold,

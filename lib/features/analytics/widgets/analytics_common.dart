@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
@@ -169,7 +170,7 @@ class _AsyncCardState<T> extends State<AsyncCard<T>> {
         stack: st,
       );
       if (mounted && id == _req) {
-        setState(() => _error = 'Something went wrong. Please try again.');
+        setState(() => _error = context.l10n.commonSomethingWrong);
       }
     } finally {
       if (mounted && id == _req) {
@@ -216,13 +217,16 @@ class _AsyncCardState<T> extends State<AsyncCard<T>> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Taking longer than usual.',
+                      context.l10n.anTakingLonger,
                       style: text.labelMedium?.copyWith(
                         color: AppColors.darkOnSurfaceMuted,
                       ),
                     ),
                   ),
-                  TextButton(onPressed: _fetch, child: const Text('Retry')),
+                  TextButton(
+                    onPressed: _fetch,
+                    child: Text(context.l10n.commonRetry),
+                  ),
                 ],
               ),
             ],
@@ -242,11 +246,11 @@ class _AsyncCardState<T> extends State<AsyncCard<T>> {
           AppGap.w12,
           Expanded(
             child: Text(
-              _error ?? 'Could not load this card.',
+              _error ?? context.l10n.anCardLoadFailed,
               style: text.bodyMedium,
             ),
           ),
-          TextButton(onPressed: _fetch, child: const Text('Retry')),
+          TextButton(onPressed: _fetch, child: Text(context.l10n.commonRetry)),
         ],
       ),
     );
@@ -328,12 +332,14 @@ class DeltaChip extends StatelessWidget {
         : '${m.change > 0 ? '+' : '-'}${amount(m.change)}';
 
     final label = m.unit == '%'
-        ? '$sign${m.change.toStringAsFixed(1)} pts'
+        ? context.l10n.anDeltaPts('$sign${m.change.toStringAsFixed(1)}')
         : m.changePct != null
         ? '$sign${m.changePct!.round()}%'
         : m.change == 0
-        ? 'No change'
-        : '$sign${m.change < 0 ? '-' : ''}${amount(m.change)} (new)';
+        ? context.l10n.anNoChange
+        : context.l10n.anDeltaNew(
+            '$sign${m.change < 0 ? '-' : ''}${amount(m.change)}',
+          );
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -569,7 +575,7 @@ class _PagedCardState<T> extends State<PagedCard<T>> {
         stack: st,
       );
       if (mounted && id == _req) {
-        setState(() => _error = 'Something went wrong. Please try again.');
+        setState(() => _error = context.l10n.commonSomethingWrong);
       }
     } finally {
       if (mounted && id == _req) setState(() => _loading = false);
@@ -619,7 +625,10 @@ class _PagedCardState<T> extends State<PagedCard<T>> {
         child: Row(
           children: [
             Expanded(child: Text(_error!, style: text.bodyMedium)),
-            TextButton(onPressed: _first, child: const Text('Retry')),
+            TextButton(
+              onPressed: _first,
+              child: Text(context.l10n.commonRetry),
+            ),
           ],
         ),
       );
@@ -645,7 +654,11 @@ class _PagedCardState<T> extends State<PagedCard<T>> {
           if (left > 0)
             TextButton(
               onPressed: _more ? null : _next,
-              child: Text(_more ? 'Loading...' : 'Show more ($left left)'),
+              child: Text(
+                _more
+                    ? context.l10n.commonLoading
+                    : context.l10n.anShowMore(left),
+              ),
             ),
         ],
       ),

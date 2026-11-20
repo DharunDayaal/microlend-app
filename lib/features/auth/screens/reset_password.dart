@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_otp_input.dart';
@@ -103,7 +104,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     DeviceUtils.hideKeyboard(context);
     setState(() => _loading = true);
     if (_otp.text.trim().length < 6) {
-      setState(() => _otpError = "Please enter the complete 6-digit code");
+      setState(() => _otpError = context.l10n.authEnterComplete6);
       return;
     }
     try {
@@ -145,7 +146,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
       if (!mounted) return;
 
-      AppSnackbar.success(context, "A new verification code has been sent.");
+      AppSnackbar.success(context, context.l10n.authNewCodeSent);
       _otp.clear();
       setState(() {
         _cooldown += 30;
@@ -195,7 +196,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AuthAppBar(title: "Password Reset"),
+      appBar: AuthAppBar(title: context.l10n.resetTitle),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -265,11 +266,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           spacing: AppSizes.xs,
                           children: [
                             Text(
-                              "Reset your passsword",
+                              context.l10n.resetHeading,
                               style: textTheme.headlineMedium,
+                              textAlign: TextAlign.center,
                             ),
                             Text(
-                              "Verify your registered email or phone number to create a secure new password for your account.",
+                              context.l10n.resetSubtitle,
                               style: textTheme.bodyMedium,
                               textAlign: TextAlign.center,
                             ),
@@ -279,11 +281,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           tabs: [
                             SegmentTab(
                               value: Type.email,
-                              label: "Email Address",
+                              label: context.l10n.authEmailAddress,
                             ),
                             SegmentTab(
                               value: Type.phone,
-                              label: "Phone Number",
+                              label: context.l10n.authPhoneNumber,
                             ),
                           ],
                           selected: _selectedType,
@@ -296,11 +298,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           onPressed: () => context.push(AppRoutes.login),
                           child: Text.rich(
                             TextSpan(
-                              text: "Remember your Password? ",
+                              text: context.l10n.resetRememberPassword,
                               style: textTheme.bodyMedium,
                               children: [
                                 TextSpan(
-                                  text: "Back to login",
+                                  text: context.l10n.resetBackToLogin,
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: AppColors.success,
                                     fontWeight: FontWeight.bold,
@@ -324,15 +326,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Widget _formContainer(TextTheme textTheme) {
     final String label = _selectedType == Type.email
-        ? "Registered email address"
-        : "Registered phone number";
+        ? context.l10n.resetRegisteredEmail
+        : context.l10n.resetRegisteredPhone;
     final IconData prefixIcon = _selectedType == Type.email
         ? Icons.alternate_email_rounded
         : Icons.phone_android_rounded;
     final String? prefixText = _selectedType == Type.phone ? "+91" : null;
     final String placeholder = _selectedType == Type.email
-        ? "Enter your email address"
-        : "Enter your phone number";
+        ? context.l10n.resetEnterEmail
+        : context.l10n.resetEnterPhone;
 
     return Container(
       width: double.infinity,
@@ -379,24 +381,24 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
 
               AppTextField(
-                label: "New Password",
+                label: context.l10n.resetNewPassword,
                 prefixIcon: Icons.lock_outline_rounded,
-                hint: "Enter your strong new password",
+                hint: context.l10n.resetNewPasswordHint,
                 controller: _newPasswordController,
                 isPassword: true,
                 enabled: !_loading,
                 validator: (v) => AppValidators.password(v),
               ),
               AppTextField(
-                label: "Confirm New Password",
+                label: context.l10n.resetConfirmPassword,
                 prefixIcon: Icons.lock_reset_rounded,
-                hint: "Re-type your password to confirm",
+                hint: context.l10n.resetConfirmHint,
                 controller: _confirmPasswordController,
                 isPassword: true,
                 enabled: !_loading,
                 validator: (v) {
                   if (v != _newPasswordController.text) {
-                    return "Passwords must match exactly";
+                    return context.l10n.resetPasswordsMustMatch;
                   }
                   return AppValidators.required(v, "Confirm Password");
                 },
@@ -405,7 +407,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 alignment: Alignment.centerRight,
                 child: _secondsRemaining > 0
                     ? Text(
-                        "Resend code in ${_secondsRemaining}s",
+                        context.l10n.otpResendIn(_secondsRemaining),
                         style: textTheme.bodySmall?.copyWith(
                           color: AppColors.darkOnSurfaceMuted,
                         ),
@@ -418,7 +420,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          "Resend OTP",
+                          context.l10n.otpResend,
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.success,
                             fontWeight: FontWeight.bold,
@@ -429,7 +431,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ],
             AppGap.h16,
             AppButton(
-              label: _isOtpSent ? "Update Password" : "Get Verification Code",
+              label: _isOtpSent
+                  ? context.l10n.resetUpdatePassword
+                  : context.l10n.resetGetCode,
               isLoading: _loading,
               suffixIcon: _isOtpSent
                   ? Icons.check_circle_outline

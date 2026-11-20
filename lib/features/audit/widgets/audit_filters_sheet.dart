@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/data/models/audit_model.dart';
@@ -97,7 +98,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
   Future<void> _pickActor() async {
     final r = await showPersonPicker(
       context,
-      title: 'Who did it',
+      title: context.l10n.auditWhoDidIt,
       admins: false,
       adminId: _isSuper ? _adminId : null,
     );
@@ -113,7 +114,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
   Future<void> _pickTarget() async {
     final r = await showPersonPicker(
       context,
-      title: 'Who it affected',
+      title: context.l10n.auditWhoAffected,
       admins: false,
       adminId: _isSuper ? _adminId : null,
     );
@@ -127,7 +128,11 @@ class _FiltersSheetState extends State<_FiltersSheet> {
   }
 
   Future<void> _pickAdmin() async {
-    final r = await showPersonPicker(context, title: 'Team', admins: true);
+    final r = await showPersonPicker(
+      context,
+      title: context.l10n.auditTeam,
+      admins: true,
+    );
     if (r == null) return;
     final (id, name) = r;
     setState(() {
@@ -175,14 +180,14 @@ class _FiltersSheetState extends State<_FiltersSheet> {
     return InfoRow(
       icon: icon,
       label: label,
-      value: value ?? 'Anyone',
+      value: value ?? context.l10n.auditAnyone,
       trailing: value == null
           ? IconButton(
               onPressed: onTap,
               icon: const Icon(Icons.chevron_right_rounded),
             )
           : IconButton(
-              tooltip: 'Clear',
+              tooltip: context.l10n.commonClear,
               onPressed: onClear,
               icon: const Icon(Icons.close_rounded),
             ),
@@ -210,13 +215,21 @@ class _FiltersSheetState extends State<_FiltersSheet> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text('Filters', style: text.headlineSmall)),
-                    TextButton(onPressed: _reset, child: const Text('Reset')),
+                    Expanded(
+                      child: Text(
+                        context.l10n.auditFilters,
+                        style: text.headlineSmall,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _reset,
+                      child: Text(context.l10n.commonReset),
+                    ),
                   ],
                 ),
                 AppGap.h8,
                 Text(
-                  'MODULE',
+                  context.l10n.auditModule,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                     letterSpacing: 0.6,
@@ -232,7 +245,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                 ),
                 AppGap.h12,
                 Text(
-                  'ACTIONS',
+                  context.l10n.auditActions,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                     letterSpacing: 0.6,
@@ -249,9 +262,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                     ),
                   )
                 else if (options.isEmpty)
-                  const EmptyNote(
-                    'No actions have been recorded in your scope yet.',
-                  )
+                  EmptyNote(context.l10n.auditNoActionsScope)
                 else
                   for (final key in [
                     ...moduleOrder.where(groups.containsKey),
@@ -293,8 +304,9 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                 AppGap.h16,
                 _personTile(
                   Icons.person_outline,
-                  'Who did it',
-                  _actorName ?? (_actorId == null ? null : 'Selected'),
+                  context.l10n.auditWhoDidIt,
+                  _actorName ??
+                      (_actorId == null ? null : context.l10n.auditSelected),
                   _pickActor,
                   () => setState(() {
                     _actorId = null;
@@ -304,8 +316,9 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                 const Divider(height: 1, color: AppColors.darkBorder),
                 _personTile(
                   Icons.person_pin_outlined,
-                  'Who it affected',
-                  _targetName ?? (_targetId == null ? null : 'Selected'),
+                  context.l10n.auditWhoAffected,
+                  _targetName ??
+                      (_targetId == null ? null : context.l10n.auditSelected),
                   _pickTarget,
                   () => setState(() {
                     _targetId = null;
@@ -316,7 +329,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
                   const Divider(height: 1, color: AppColors.darkBorder),
                   _personTile(
                     Icons.admin_panel_settings_outlined,
-                    'Team',
+                    context.l10n.auditTeam,
                     _adminName,
                     _pickAdmin,
                     () {
@@ -340,7 +353,7 @@ class _FiltersSheetState extends State<_FiltersSheet> {
               child: Padding(
                 padding: const EdgeInsets.all(AppSizes.md),
                 child: AppButton(
-                  label: 'Apply filters',
+                  label: context.l10n.auditApplyFilters,
                   radius: AppSizes.md,
                   onPressed: _apply,
                 ),
@@ -380,6 +393,7 @@ class _PersonSheetState extends State<_PersonSheet> {
 
   Future<void> _load() async {
     setState(() => _error = null);
+    final meLabel = context.l10n.auditMe;
     try {
       final isSuper = CurrentUser.instance.isSuperAdmin;
       // a SUPER_ADMIN with no team chosen lists admins; otherwise the team's members
@@ -393,7 +407,7 @@ class _PersonSheetState extends State<_PersonSheet> {
 
       final me = CurrentUser.instance.user;
       if (!widget.admins && me != null) {
-        list.insert(0, (me.id, '${me.userName} (me)'));
+        list.insert(0, (me.id, meLabel(me.userName)));
       }
       if (mounted) setState(() => _all = list);
     } on ApiException catch (e) {
@@ -421,9 +435,9 @@ class _PersonSheetState extends State<_PersonSheet> {
               AppGap.h12,
               TextField(
                 onChanged: (v) => setState(() => _q = v),
-                decoration: const InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: Icon(Icons.search),
+                decoration: InputDecoration(
+                  hintText: context.l10n.commonSearch,
+                  prefixIcon: const Icon(Icons.search),
                 ),
               ),
               AppGap.h8,
@@ -441,7 +455,7 @@ class _PersonSheetState extends State<_PersonSheet> {
                     children: [
                       ListTile(
                         leading: const Icon(Icons.groups_outlined),
-                        title: const Text('Anyone'),
+                        title: Text(context.l10n.auditAnyone),
                         onTap: () => Navigator.of(context).pop((null, null)),
                       ),
                       for (final e in list)
@@ -451,9 +465,9 @@ class _PersonSheetState extends State<_PersonSheet> {
                           onTap: () => Navigator.of(context).pop((e.$1, e.$2)),
                         ),
                       if (list.isEmpty)
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.all(AppSizes.md),
-                          child: Text('Nobody matches.'),
+                          child: Text(context.l10n.anNobodyMatches),
                         ),
                     ],
                   ),

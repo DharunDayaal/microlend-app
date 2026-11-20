@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -89,8 +90,8 @@ class LoanDisburseStep extends StatelessWidget {
                             ),
                             AppChip(
                               label: t.isValid
-                                  ? 'READY FOR DISBURSAL'
-                                  : 'CHECK TERMS',
+                                  ? context.l10n.disburseReady
+                                  : context.l10n.disburseCheckTerms,
                               radius: AppSizes.radiusSm,
                               backgroundColor:
                                   (t.isValid
@@ -121,11 +122,11 @@ class LoanDisburseStep extends StatelessWidget {
               ),
               AppGap.h16,
               _Line(
-                label: 'Sanctioned Principal',
+                label: context.l10n.disburseSanctioned,
                 value: CurrencyFormatter.format(t.principal),
               ),
               _Line(
-                label: 'Upfront Fee (${_pct(t.feePercent)})',
+                label: context.l10n.disburseUpfrontFeePct(_pct(t.feePercent)),
                 value: '-${CurrencyFormatter.format(t.upfrontFee)}',
                 valueColor: AppColors.progressDanger,
               ),
@@ -155,13 +156,13 @@ class LoanDisburseStep extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'NET CASH HANDOVER',
+                            context.l10n.disburseNetCash,
                             style: text.labelSmall?.copyWith(
                               color: AppColors.progressSuccess,
                             ),
                           ),
                           Text(
-                            'Immediate physical disbursal',
+                            context.l10n.disburseImmediate,
                             style: text.labelMedium?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -189,14 +190,14 @@ class LoanDisburseStep extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _StatTile(
-                      label: 'TOTAL REPAYABLE',
+                      label: context.l10n.disburseTotalRepayable,
                       value: CurrencyFormatter.format(t.totalPayable),
-                      caption: '$weeks wks',
+                      caption: context.l10n.disburseWeeksShort(weeks),
                     ),
                   ),
                   Expanded(
                     child: _StatTile(
-                      label: 'WEEKLY CADENCE',
+                      label: context.l10n.disburseWeeklyCadence,
                       value: CurrencyFormatter.format(t.weeklyInstallment),
                       caption: DateFormatter.weekdayDate(firstDue),
                       captionColor: AppColors.success,
@@ -214,14 +215,19 @@ class LoanDisburseStep extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Payout Mode',
+                context.l10n.disbursePayoutMode,
                 style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
-            Text(
-              'Select 1 channel',
-              style: text.labelMedium?.copyWith(
-                color: AppColors.darkOnSurfaceMuted,
+            AppGap.w8,
+            Flexible(
+              child: Text(
+                context.l10n.disburseSelectChannel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: text.labelMedium?.copyWith(
+                  color: AppColors.darkOnSurfaceMuted,
+                ),
               ),
             ),
           ],
@@ -229,11 +235,11 @@ class LoanDisburseStep extends StatelessWidget {
         AppGap.h8,
         _PayoutTile(
           icon: Icons.payments_outlined,
-          title: 'Cash in hand',
-          subtitle:
-              'Agent hands over ${CurrencyFormatter.format(t.netDisbursed)} '
-              'in currency notes from the collection pouch.',
-          badge: 'FIELD STANDARD',
+          title: context.l10n.disburseCashInHand,
+          subtitle: context.l10n.disburseCashSubtitle(
+            CurrencyFormatter.format(t.netDisbursed),
+          ),
+          badge: context.l10n.disburseFieldStandard,
           selected: mode == PayoutMode.cash,
           enabled: true,
           onTap: () => onModeChanged(PayoutMode.cash),
@@ -241,10 +247,10 @@ class LoanDisburseStep extends StatelessWidget {
         AppGap.h8,
         _PayoutTile(
           icon: Icons.account_balance_outlined,
-          title: 'Instant UPI / IMPS Bank Transfer',
+          title: context.l10n.disburseBankTitle,
           subtitle: bankAvailable
-              ? 'Disburse to the verified account on file.'
-              : 'No verified bank account on file for this borrower.',
+              ? context.l10n.disburseBankAvailable
+              : context.l10n.disburseBankUnavailable,
           selected: mode == PayoutMode.bank,
           enabled: bankAvailable,
           onTap: () => onModeChanged(PayoutMode.bank),
@@ -275,7 +281,9 @@ class DisburseBar extends StatelessWidget {
     final theme = Theme.of(context);
     final text = theme.textTheme;
     final amount = CurrencyFormatter.format(netAmount);
-    final modeLabel = mode == PayoutMode.cash ? 'Cash' : 'Bank transfer';
+    final modeLabel = mode == PayoutMode.cash
+        ? context.l10n.disburseModeCash
+        : context.l10n.disburseModeBank;
 
     return Container(
       decoration: BoxDecoration(
@@ -295,7 +303,7 @@ class DisburseBar extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'NET PHYSICAL HANDOVER',
+                      context.l10n.disburseNetPhysical,
                       style: text.labelMedium?.copyWith(
                         color: AppColors.darkOnSurfaceMuted,
                       ),
@@ -322,7 +330,7 @@ class DisburseBar extends StatelessWidget {
               ),
               AppGap.h8,
               AppButton(
-                label: 'ISSUE LOAN & DISBURSE $amount',
+                label: context.l10n.disburseIssueButton(amount),
                 prefixIcon: Icons.check_circle_outline,
                 radius: AppSizes.md,
                 isLoading: isLoading,
@@ -340,7 +348,8 @@ class DisburseBar extends StatelessWidget {
                   const SizedBox(width: AppSizes.xs + 2),
                   Flexible(
                     child: Text(
-                      'Disbursal is recorded to the field ledger',
+                      context.l10n.disburseRecorded,
+                      textAlign: TextAlign.center,
                       style: text.labelSmall?.copyWith(
                         color: AppColors.darkOnSurfaceMuted,
                       ),
@@ -535,7 +544,7 @@ class _PayoutTile extends StatelessWidget {
                                 style: text.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
-                                maxLines: 1,
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),

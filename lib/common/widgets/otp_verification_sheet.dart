@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_otp_input.dart';
@@ -95,7 +96,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
   Future<void> _verify(String code) async {
     if (_loading) return;
     if (code.length != widget.length) {
-      setState(() => _error = 'Enter the complete ${widget.length}-digit code');
+      setState(() => _error = context.l10n.otpEnterComplete(widget.length));
       return;
     }
 
@@ -144,7 +145,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
         _secondsRemaining = _cooldown;
       });
       _startTimer();
-      AppSnackbar.success(context, 'A new code has been sent.');
+      AppSnackbar.success(context, context.l10n.otpNewCodeSent);
     } on ApiException catch (e) {
       DeviceUtils.error();
       if (mounted) setState(() => _error = e.message);
@@ -175,7 +176,9 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Verify phone number',
+                        context.l10n.otpVerifyPhone,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: textTheme.headlineSmall,
                       ),
                     ),
@@ -189,8 +192,10 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                   ],
                 ),
                 Text(
-                  'Enter the ${widget.length}-digit code sent to '
-                  '${PhoneFormatter.masked(widget.phoneNumber)}.',
+                  context.l10n.otpEnterCodeSentTo(
+                    widget.length,
+                    PhoneFormatter.masked(widget.phoneNumber),
+                  ),
                   style: textTheme.bodyMedium,
                 ),
                 AppOtpInput(
@@ -210,7 +215,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                   alignment: Alignment.centerRight,
                   child: _secondsRemaining > 0
                       ? Text(
-                          'Resend code in ${_secondsRemaining}s',
+                          context.l10n.otpResendIn(_secondsRemaining),
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.darkOnSurfaceMuted,
                           ),
@@ -218,7 +223,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                       : TextButton(
                           onPressed: _loading ? null : _resend,
                           child: Text(
-                            'Resend OTP',
+                            context.l10n.otpResend,
                             style: textTheme.bodySmall?.copyWith(
                               color: AppColors.success,
                               fontWeight: FontWeight.bold,
@@ -227,7 +232,7 @@ class _OtpVerificationSheetState extends State<OtpVerificationSheet> {
                         ),
                 ),
                 AppButton(
-                  label: 'Continue',
+                  label: context.l10n.commonContinue,
                   suffixIcon: Icons.arrow_forward,
                   isLoading: _loading,
                   onPressed: () => _verify(_otp.text.trim()),

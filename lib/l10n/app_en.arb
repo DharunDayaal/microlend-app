@@ -1,20 +1,3180 @@
 {
   "@@locale": "en",
-
   "languageTitle": "Language",
   "languageSubtitle": "Choose the app language",
   "languageEnglish": "English",
   "languageTamil": "தமிழ்",
   "deviceLanguageNotice": "Your phone's preferred language is Tamil, so the app opened in Tamil. You can change this under Language in your profile menu.",
-
   "commonOk": "OK",
   "commonCancel": "Cancel",
   "commonSave": "Save",
   "commonClose": "Close",
   "commonRetry": "Retry",
-
   "daysLate": "{count, plural, =1{1 day late} other{{count} days late}}",
   "@daysLate": {
-    "placeholders": { "count": { "type": "int" } }
-  }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonWeekN": "Week {week}",
+  "@commonWeekN": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "payWeekAlreadyPaid": "Week {week} is already paid in full",
+  "@payWeekAlreadyPaid": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "payDueToday": "Due today",
+  "payScheduledAhead": "Scheduled ahead",
+  "payPartialOnFile": "Partial payment on file",
+  "payOverdueNotCollected": "Overdue — not yet collected",
+  "payWeekDate": "Week {week} • {date}",
+  "@payWeekDate": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "payStillOwedForWeek": "{amount} still owed for Week {week}",
+  "@payStillOwedForWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "payWeekWasDue": "Week {week} was due {date}",
+  "@payWeekWasDue": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "payEnterValidAmount": "Enter a valid payment amount",
+  "payCash": "Cash",
+  "payUpi": "UPI",
+  "payCollectPayment": "Collect Payment",
+  "payWeekOfTotal": "Week {week} of {total}",
+  "@payWeekOfTotal": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "payAmountToCollect": "AMOUNT TO COLLECT",
+  "payUpToCollectable": "Up to {amount} collectable on this loan",
+  "@payUpToCollectable": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payClearWeek": "Clear Week {week}",
+  "@payClearWeek": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "payTwoWeeks": "Pay 2 Weeks",
+  "paySettleFullLoan": "Settle full loan — {amount}",
+  "@paySettleFullLoan": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payThisWeek": "This week",
+  "payEntireLoan": "Entire loan",
+  "payCleared": "Cleared ✓",
+  "payConfirmClose": "CONFIRM & CLOSE LOAN — {amount}",
+  "@payConfirmClose": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payConfirmRecord": "CONFIRM & RECORD {amount}",
+  "@payConfirmRecord": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "otpEnterComplete": "Enter the complete {length}-digit code",
+  "@otpEnterComplete": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "otpNewCodeSent": "A new code has been sent.",
+  "otpVerifyPhone": "Verify phone number",
+  "otpEnterCodeSentTo": "Enter the {length}-digit code sent to {phone}.",
+  "@otpEnterCodeSentTo": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      },
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "otpResendIn": "Resend code in {seconds}s",
+  "@otpResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "otpResend": "Resend OTP",
+  "commonContinue": "Continue",
+  "statusPaid": "PAID",
+  "statusPartial": "PARTIAL",
+  "statusUnpaid": "UNPAID",
+  "statusScheduled": "SCHEDULED",
+  "statusUpcoming": "UPCOMING",
+  "statusOverdue": "OVERDUE",
+  "trackDueOn": "Due {date}",
+  "@trackDueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "trackPaidInFull": "Paid in full",
+  "trackDueToClear": "{amount} Due to clear",
+  "@trackDueToClear": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "trackNotCollected": "Not collected",
+  "trackPending": "{amount} pending",
+  "@trackPending": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "trackUpcoming": "Upcoming",
+  "trackPastTerm": "Past {weeks}-week term",
+  "@trackPastTerm": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "trackOverdueAmount": "{amount} overdue",
+  "@trackOverdueAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "trackWeekShort": "Wk {week}",
+  "@trackWeekShort": {
+    "placeholders": {
+      "week": {
+        "type": "String"
+      }
+    }
+  },
+  "trackCollectAmount": "Collect {amount}",
+  "@trackCollectAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "referralSelectTitle": "Select Referring Borrower",
+  "commonSearchNamePhone": "Search by name or phone",
+  "referralNoneFound": "No referrers found",
+  "payPastTerm": "PAST TERM",
+  "payAmountPaid": "AMOUNT PAID",
+  "payWeekCleared": "WEEK CLEARED",
+  "payWeekProgress": "Week {week} progress",
+  "@payWeekProgress": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      }
+    }
+  },
+  "payWeekFullyCollected": "Week {week} fully collected ({amount})",
+  "@payWeekFullyCollected": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payCollectedOfLeft": "{collected} of {target} collected • {left} left",
+  "@payCollectedOfLeft": {
+    "placeholders": {
+      "collected": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "payIdCopied": "Payment ID copied",
+  "commonCall": "Call",
+  "commonUnableOpenDialer": "Unable to open dialer",
+  "stepDecrease": "Decrease {label}",
+  "@stepDecrease": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "stepIncrease": "Increase {label}",
+  "@stepIncrease": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryOverallTarget": "Overall Recovery Target",
+  "recoveryPercentCompleted": "{percent}% Completed",
+  "@recoveryPercentCompleted": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryOverall": "Overall recovery",
+  "recoveryOverdueLine": "{percent}% overdue • {amount}",
+  "@recoveryOverdueLine": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "ringPercentCollected": "{percent} percent collected",
+  "@ringPercentCollected": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "securityRating": "Security rating",
+  "securityWeak": "Weak",
+  "securityFair": "Fair",
+  "securityGood": "Good",
+  "securityStrong": "Strong",
+  "securityLevelOf": "{level} of {total}",
+  "@securityLevelOf": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "placeholderComingSoon": "{title}: coming soon",
+  "@placeholderComingSoon": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "commonRequired": "*Required",
+  "appName": "Thavanai",
+  "authSelectLoginMethod": "Select Login Method",
+  "authWelcomeBack": "Welcome back",
+  "authSelectMethodSubtitle": "Select your preferred sign in method to access you field ledger and daily collections.",
+  "authEmailPassword": "Email & Password",
+  "authEmailPasswordSubtitle": "Sign in using your registered email address...",
+  "authPhoneOtp": "Phone OTP verification",
+  "authPhoneOtpSubtitle": "Instant login via 6-digit OTP verification directly to the registered mobile number",
+  "commonOr": "OR",
+  "authNoAccount": "Don't have an account?",
+  "authRegisterHere": "Register here",
+  "authEmailLogin": "Email Login",
+  "authSignInToAccess": "Sign in to access your account.",
+  "authEmailAddress": "Email Address",
+  "authEnterEmailHint": "Enter your email...",
+  "authPassword": "Password",
+  "authEnterPasswordHint": "Enter your password...",
+  "authForgotPassword": "Forgot password?",
+  "authSignIn": "SIGN IN",
+  "authOrQuickSwitch": "OR QUICK SWITCH",
+  "authLoginWithPhone": "Log in with phone number",
+  "authNoAccountInline": "Don't have an account? ",
+  "authCreateAccount": "Create account",
+  "authNewCodeSent": "A new verification code has been sent.",
+  "authEnterComplete6": "Please enter the complete 6-digit code",
+  "authVerifyContinue": "Verify & continue",
+  "authSendOtp": "Send OTP",
+  "authOtpLogin": "OTP Login",
+  "authLoginWithOtp": "Login with OTP",
+  "authOtpSubtitle": "Enter 6 digit verification code sent via secure SMS to your registered mobile.",
+  "authLoginWithEmail": "Log in with email",
+  "authRegisteredNumber": "Registered number",
+  "authPhoneNumber": "Phone Number",
+  "authEnterPhoneHint": "Enter your phone number...",
+  "approvalVerificationRequired": "Account verification is required to proceed further",
+  "approvalPendingTitle": "Approval Pending",
+  "approvalUnderReviewBadge": "APPLICATION UNDER REVIEW • PENDING ADMIN APPROVAL",
+  "approvalInProgress": "Approval in Progress",
+  "approvalSubmittedBody": "Your profile and lending parameters have been submitted. An administrator will review and approve your account soon.",
+  "approvalWhatNext": "What to expect next",
+  "approvalWhatNextBody": "Your profile is currently under review by the administrator. You will be notified once your account has been approved and activated.",
+  "approvalReviewTimeframe": "REVIEW TIMEFRAME",
+  "approvalTypicalTime": "Typical review time: 24-48 business hours",
+  "resetTitle": "Password Reset",
+  "resetHeading": "Reset your password",
+  "resetSubtitle": "Verify your registered email or phone number to create a secure new password for your account.",
+  "resetRememberPassword": "Remember your Password? ",
+  "resetBackToLogin": "Back to login",
+  "resetRegisteredEmail": "Registered email address",
+  "resetRegisteredPhone": "Registered phone number",
+  "resetEnterEmail": "Enter your email address",
+  "resetEnterPhone": "Enter your phone number",
+  "resetNewPassword": "New Password",
+  "resetNewPasswordHint": "Enter your strong new password",
+  "resetConfirmPassword": "Confirm New Password",
+  "resetConfirmHint": "Re-type your password to confirm",
+  "resetPasswordsMustMatch": "Passwords must match exactly",
+  "resetUpdatePassword": "Update Password",
+  "resetGetCode": "Get Verification Code",
+  "regTitle": "Registration",
+  "regBackToStep1": "Back to step 1",
+  "regStepN": "Step {step}",
+  "@regStepN": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      }
+    }
+  },
+  "regPersonalDetails": "Personal Details",
+  "regLendingTerms": "Lending Terms",
+  "commonDone": "Done",
+  "regStep1Subtitle": "Step 1 of 2: Personal Details. Enter your information to create your account.",
+  "regFullName": "Full name",
+  "regEnterName": "Enter your name",
+  "regEnterMobile": "Enter your mobile number",
+  "regCreatePassword": "Create Password",
+  "regEnterPassword": "Enter your password",
+  "regSecurityRating": "Security Rating",
+  "regStrengthLow": "Low",
+  "regStrengthMedium": "Medium",
+  "regStrengthHigh": "High",
+  "regStrengthExcellent": "Excellent",
+  "regLendingSubtitle": "Final step - set your standard lending parameters. These defaults will pre-populate your loan origination calculator.",
+  "regVerifiedProfile": "VERIFIED PROFILE",
+  "regFieldUser": "Field user",
+  "termsDefaultInterest": "Default Interest Rate",
+  "termsFlatRate": "Flat Rate",
+  "termsEnterInterest": "Enter your interest rate",
+  "termsInterestFooter": "Applied flat across the full loan cycle duration.",
+  "termsInterestRate": "Interest rate",
+  "termsUpfrontFee": "Upfront Processing Fee",
+  "termsAtDisbursement": "At Disbursement",
+  "termsEnterUpfront": "Enter your upfront fee",
+  "termsUpfrontFooter": "Deducted immediately from cash handover upon spot disbursement.",
+  "termsUpfrontFeeShort": "Upfront fee",
+  "termsTotalDurationMonths": "Total Duration (Months)",
+  "termsWeeklySchedule": "Weekly Schedule",
+  "termsMonthsShort": "{value} MO",
+  "@termsMonthsShort": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "termsMonths": "Months",
+  "regBaselinePreview": "Standard Baseline\nPreview",
+  "regLoanModel": "{amount} \nLoan Model",
+  "@regLoanModel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "regNetHandover": "NET HANDOVER CASH",
+  "regDeductedFee": "Deducted fee: -{amount}\n",
+  "@regDeductedFee": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "regTotalRepayable": "TOTAL REPAYABLE",
+  "regIncludesInterest": "Includes {amount} ({percent})",
+  "@regIncludesInterest": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "regWeeklyCollection": "WEEKLY COLLECTION AMOUNT",
+  "regFixedEveryMonday": "Fixed installment every\nMonday",
+  "regPerWeek": "per week\n",
+  "regWeeksParen": "({weeks}) weeks",
+  "@regWeeksParen": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "regInstallmentSchedule": "Installment Schedule",
+  "regPrincipalFlat": "Principal + Flat Int.",
+  "commonStatus": "Status",
+  "regWeekHash": "Week #{week}",
+  "@regWeekHash": {
+    "placeholders": {
+      "week": {
+        "type": "String"
+      }
+    }
+  },
+  "regAdditionalCycles": "+ {count} additonal Weekly cycles to maturity",
+  "@regAdditionalCycles": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "regHaveAccount": "Already have an account? ",
+  "regSignIn": "Sign In",
+  "regDraftCached": "Draft cached locally",
+  "regStepOf": "STEP {step} of {total}",
+  "@regStepOf": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "regVerifyPhone": "Verify Phone Number",
+  "regRegister": "Register",
+  "termsCalculateTerm": "Calculate Term:",
+  "termsWeeksCount": "{weeks} Weeks ",
+  "@termsWeeksCount": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "termsDaysParen": "({days} Days)",
+  "@termsDaysParen": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "termsAutoCalculated": "Auto calculated: ",
+  "termsEnterMonths": "enter the number of months",
+  "termsMonthsCount": "{months} months ",
+  "@termsMonthsCount": {
+    "placeholders": {
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "termsTimesFourWeeks": "x 4 weeks = ",
+  "termsWeeklyCollections": "{weeks} weekly collections",
+  "@termsWeeklyCollections": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "tabField": "Field",
+  "tabLoans": "Loans",
+  "tabBorrowers": "Borrowers",
+  "tabReports": "Reports",
+  "menuMyProfile": "My profile",
+  "menuMyProfileSub": "Name, phone, email and loan defaults",
+  "menuAddBorrower": "Add borrower",
+  "menuAddBorrowerSub": "Register a new customer",
+  "menuManageUsers": "Manage users",
+  "menuManageUsersSub": "Add team members and set roles",
+  "menuAnalytics": "Advanced analytics",
+  "menuAnalyticsSub": "Recovery, overdue trends and collections",
+  "menuAllAdmins": "All admins",
+  "menuAllAdminsSub": "Approve and manage admin accounts",
+  "menuAuditLog": "Audit log",
+  "menuAuditLogSub": "Who changed what, and when",
+  "menuDownloads": "Downloads",
+  "menuDownloadsSub": "Sheets and reports you have exported",
+  "greetMorning": "Good morning",
+  "greetAfternoon": "Good afternoon",
+  "greetEvening": "Good evening",
+  "menuOpenProfile": "Open profile menu",
+  "menuSignedOut": "Signed out",
+  "menuLogOut": "Log out",
+  "menuLogOutSub": "You will need to sign in again.",
+  "menuLogOutConfirm": "Log out?",
+  "errorPageNotFound": "404! Page not found.",
+  "roleUser": "User",
+  "roleAdmin": "Admin",
+  "roleSuperAdmin": "Super Admin",
+  "manualStatusClosed": "Closed",
+  "manualStatusDefaulted": "Defaulted",
+  "manualStatusReopen": "Active (reopen)",
+  "manualStatusClosedDesc": "Ends the loan. Nothing more can be collected on it.",
+  "manualStatusDefaultedDesc": "The borrower will not repay. The loan is written off as a default.",
+  "manualStatusReopenDesc": "Reopens the loan so collections can resume. It shows as overdue again if weeks are already past due.",
+  "exportWeekdaySheet": "Collection sheet",
+  "exportWeekdaySheetBlurb": "One block per customer for a weekday: loan details and what was paid each week (W1 - 300, W2 - 400).",
+  "exportDueThisWeek": "Route sheet",
+  "exportDueThisWeekBlurb": "Weekly instalments falling due, by day, with amount due, paid and balance.",
+  "exportCustomerList": "Customer list",
+  "exportCustomerListBlurb": "Customers with phone, area, payment day, active loans and outstanding.",
+  "exportOverdue": "Overdue loans",
+  "exportOverdueBlurb": "Overdue and defaulted loans with days late and the overdue amount.",
+  "exportCollections": "Collections",
+  "exportCollectionsBlurb": "Every payment taken in a date range.",
+  "exportLoansRegister": "Loans register",
+  "exportLoansRegisterBlurb": "Every loan with its money columns. Filter by status and issue date.",
+  "exportClosedLoans": "Closed loans",
+  "exportClosedLoansBlurb": "Loans closed, paid off or defaulted in a range, with collected and shortfall.",
+  "exportNewCustomers": "New customers",
+  "exportNewCustomersBlurb": "Customers added in a range, with referrer and who added them.",
+  "exportAuditLog": "Audit log",
+  "exportAuditLogBlurb": "Who changed what, with old and new values.",
+  "exportEmployeePerformance": "Employee performance",
+  "exportEmployeePerformanceBlurb": "Per employee: collected, target, rates, overdue, new customers and loans.",
+  "exportTeamSummary": "Team summary",
+  "exportTeamSummaryBlurb": "One row per admin.",
+  "dayMonShort": "MON",
+  "dayTueShort": "TUE",
+  "dayWedShort": "WED",
+  "dayThuShort": "THR",
+  "dayFriShort": "FRI",
+  "daySatShort": "SAT",
+  "daySunShort": "SUN",
+  "dayMonday": "Monday",
+  "dayTuesday": "Tuesday",
+  "dayWednesday": "Wednesday",
+  "dayThursday": "Thursday",
+  "dayFriday": "Friday",
+  "daySaturday": "Saturday",
+  "daySunday": "Sunday",
+  "custFillHighlighted": "Please fill the highlighted fields.",
+  "custOtpSendFailed": "Couldn't send the verification code. Try again.",
+  "custOtpSentTo": "Verification code sent to {phone}.",
+  "@custOtpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "custVerifyToAdd": "Verify the phone number to add this borrower.",
+  "custPhoneVerified": "Phone number verified.",
+  "custAddedSuccess": "{name} was added successfully.",
+  "@custAddedSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "custAddFailed": "Couldn't add the borrower. Please try again.",
+  "commonSomethingWrong": "Something went wrong. Please try again.",
+  "custSaveAdd": "Save & Add Borrower",
+  "custCancelDiscard": "Cancel & Discard",
+  "custIdentityCredentials": "Identity Credentials",
+  "custRequiredBadge": "Required",
+  "custFullName": "Full Name",
+  "custEnterFullName": "Enter full name",
+  "custMobileNumber": "Mobile number",
+  "custEnterMobile": "Enter mobile number",
+  "custPreferredDayBatch": "Preferred Day Batch",
+  "custAssignedRoute": "Assigned to weekly field collection route",
+  "custDayBatch": "{day} Batch",
+  "@custDayBatch": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "custAddressLocation": "Address & Location",
+  "custVerification": "Verification",
+  "custStreet": "Street Name / House No.",
+  "custStreetHint": "Street name or number",
+  "custCity": "City / Town",
+  "custEnterCity": "Enter city",
+  "custDistrict": "District",
+  "custEnterDistrict": "Enter district",
+  "custReferredBy": "Referred By Borrower",
+  "custOptional": "Optional",
+  "custSelectReferrer": "Select Referrer Borrower",
+  "custReferrerIdLine": "ID {id} • 2 Fully Repaid Loans",
+  "@custReferrerIdLine": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "custChange": "Change",
+  "custAddBorrower": "Add Borrower",
+  "custSearchHint": "Search borrower, street, city, district...",
+  "custNoneScheduled": "No customers scheduled",
+  "commonTapToRetry": "Tap to retry",
+  "custNoMore": "No more customers",
+  "custTodaysTarget": "TODAY'S TARGET ROUTE",
+  "custDueSuffix": " due",
+  "custCollected": "Collected",
+  "custPending": "Pending",
+  "custBorrowersCount": "{count} Borrowers",
+  "@custBorrowersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonNA": "N/A",
+  "commonBack": "Back",
+  "commonHistory": "History",
+  "custRegOn": "• Reg: {date}",
+  "@custRegOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "custCycleEligible": "Cycle {count} Eligible",
+  "@custCycleEligible": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "custAssignedRouteLabel": "Assigned Route",
+  "custDayRoute": "{day} Route",
+  "@custDayRoute": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "custCallBorrower": "Call Borrower",
+  "custCloseActiveFirst": "Close the current active loan before issuing a new one.",
+  "issueStepBorrower": "Borrower",
+  "issueStepProfile": "Profile",
+  "issueStepSelected": "Selected",
+  "issueStepTerms": "Terms",
+  "issueStepCalculator": "Calculator",
+  "issueStepConfirmed": "Confirmed",
+  "issueStepDisburse": "Disburse",
+  "issueStepConfirmation": "Confirmation",
+  "issueTitleBorrower": "Borrower Profile & History",
+  "issueTitleTerms": "Loan Terms & Calculator",
+  "issueTitleDisburse": "Review & Disburse",
+  "issueSwitchBorrowers": "Switch Borrowers",
+  "issueAlreadyHasOverdue": "{name} already has an overdue loan ({id}). Close it before issuing a new one.",
+  "@issueAlreadyHasOverdue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "issueAlreadyHasActive": "{name} already has an active loan ({id}). Close it before issuing a new one.",
+  "@issueAlreadyHasActive": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "issueConfirmTitle": "Issue loan & disburse?",
+  "issuePayoutCash": "cash",
+  "issuePayoutBank": "bank transfer",
+  "issueConfirmBody": "Hand over {net} ({payout}) to {name}.\n\nRepayable: {total} over {weeks} weeks, {weekly} a week.\n\nThis cannot be undone.",
+  "@issueConfirmBody": {
+    "placeholders": {
+      "net": {
+        "type": "String"
+      },
+      "payout": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      },
+      "weekly": {
+        "type": "String"
+      }
+    }
+  },
+  "issueLoanAction": "Issue loan",
+  "issueReviewAgain": "Review again",
+  "issueLoanIssued": "Loan {id} issued to {name}.",
+  "@issueLoanIssued": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "issueNoServerAnswer": "No answer from the server. Check the borrower’s loans before trying again, in case the loan was already issued.",
+  "issueNewLoan": "Issue New Loan",
+  "issueStepOfTitle": "Step {step} of {total}: {title}",
+  "@issueStepOfTitle": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "issueLoadBorrowerFailed": "Could not load the borrower.",
+  "issueChooseBorrower": "Choose a borrower first.",
+  "issueContinueTerms": "Continue to terms",
+  "issueNextStep": "Next Step",
+  "facilityPaymentOverdue": "Payment overdue",
+  "facilityAllPaid": "All installments paid",
+  "facilityTitle": "Active Facility",
+  "facilityRemaining": "Remaining Balance",
+  "facilityOfTotal": "of {amount} Total",
+  "@facilityOfTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "facilityNextInstallment": "Next Installment",
+  "facilityRepaidPercent": "Repaid: {percent}%",
+  "@facilityRepaidPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "facilityPaidAmount": "{amount} Paid",
+  "@facilityPaidAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "facilityViewTracks": "View Tracks",
+  "facilityViewPayments": "View payments",
+  "addressNoStreet": "No street on file",
+  "creditNewBorrower": "NEW BORROWER",
+  "creditAtRisk": "AT RISK",
+  "creditGoodStanding": "GOOD STANDING",
+  "creditFair": "FAIR",
+  "creditTitle": "Field Credit History",
+  "creditOnTime": "ON-TIME",
+  "creditRatio": "{ratio}% Ratio",
+  "@creditRatio": {
+    "placeholders": {
+      "ratio": {
+        "type": "int"
+      }
+    }
+  },
+  "creditDelayed": "DELAYED",
+  "creditRepaidLate": "Repaid late",
+  "creditDefault": "DEFAULT",
+  "creditCleanSheet": "Clean Sheet",
+  "creditNeedsReview": "Needs review",
+  "creditCompletedCycles": "COMPLETED CYCLES",
+  "creditNoCycles": "No completed cycles yet",
+  "creditDelayRepaid": "DELAY REPAID",
+  "statusClosed": "CLOSED",
+  "creditCycleLine": "Cycle #{cycle} • {id}",
+  "@creditCycleLine": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "creditClosedLine": "Closed {date} • {amount}",
+  "@creditClosedLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "issueBarOnePerBorrower": "One active loan per borrower",
+  "issueBarCycle": "Cycle {cycle}",
+  "@issueBarCycle": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      }
+    }
+  },
+  "issueBarIssueLoan": "ISSUE LOAN",
+  "issueBarIssueLoanTo": "ISSUE LOAN TO {name}",
+  "@issueBarIssueLoanTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "issueBarHint": "Check credit limits & calculate custom repayment schedule",
+  "socialTitle": "Social Network & Guarantees",
+  "socialReferredBy": "Referred By Guarantor",
+  "socialBorrowersReferred": "Borrowers Referred",
+  "profileCycleN": "Cycle {cycle}",
+  "@profileCycleN": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      }
+    }
+  },
+  "profileSince": "Since {date}",
+  "@profileSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "profileSwitchBorrower": "Switch borrower",
+  "profileNotSet": "Not set",
+  "profileEveryDay": "Every {day}",
+  "@profileEveryDay": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCollectionRoute": "Collection route",
+  "profileCollectionDay": "Collection day",
+  "profileStreet": "Street",
+  "profileTownDistrict": "Town & district",
+  "profileCreditHistory": "Credit history",
+  "profileFirstLoan": "First loan for this borrower. There is no repayment history yet.",
+  "profileOnTimeAcross": "{percent}% repaid on time across {total, plural, =1{1 loan} other{{total} loans}}",
+  "@profileOnTimeAcross": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "profileReferralNetwork": "Referral network",
+  "profileReferredBy": "Referred by",
+  "profileSource": "Source",
+  "profileDirectWalkIn": "Direct walk-in",
+  "profileReferred": "REFERRED",
+  "profileActive": "ACTIVE",
+  "profilePaired": "PAIRED",
+  "disburseReady": "READY FOR DISBURSAL",
+  "disburseCheckTerms": "CHECK TERMS",
+  "disburseSanctioned": "Sanctioned Principal",
+  "disburseUpfrontFeePct": "Upfront Fee ({percent})",
+  "@disburseUpfrontFeePct": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "disburseNetCash": "NET CASH HANDOVER",
+  "disburseImmediate": "Immediate physical disbursal",
+  "disburseTotalRepayable": "TOTAL REPAYABLE",
+  "disburseWeeksShort": "{weeks} wks",
+  "@disburseWeeksShort": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "disburseWeeklyCadence": "WEEKLY CADENCE",
+  "disbursePayoutMode": "Payout Mode",
+  "disburseSelectChannel": "Select 1 channel",
+  "disburseCashInHand": "Cash in hand",
+  "disburseCashSubtitle": "Agent hands over {amount} in currency notes from the collection pouch.",
+  "@disburseCashSubtitle": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "disburseFieldStandard": "FIELD STANDARD",
+  "disburseBankTitle": "Instant UPI / IMPS Bank Transfer",
+  "disburseBankAvailable": "Disburse to the verified account on file.",
+  "disburseBankUnavailable": "No verified bank account on file for this borrower.",
+  "disburseModeCash": "Cash",
+  "disburseModeBank": "Bank transfer",
+  "disburseNetPhysical": "NET PHYSICAL HANDOVER",
+  "disburseIssueButton": "ISSUE LOAN & DISBURSE {amount}",
+  "@disburseIssueButton": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "disburseRecorded": "Disbursal is recorded to the field ledger",
+  "termsUsingDefaults": "Using your saved defaults ({fee} fee, {interest} interest, {months} months)",
+  "@termsUsingDefaults": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      },
+      "interest": {
+        "type": "String"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "termsChangedDefaults": "You changed the saved defaults",
+  "commonReset": "Reset",
+  "termsPrincipal": "Sanctioned principal amount",
+  "termsRepaymentMonths": "Repayment term (months)",
+  "termsWeeklyMeetings": "Weekly center meetings",
+  "termsCalculatedWeeks": "Calculated: {weeks} Weeks (4 wks / month cadence)",
+  "@termsCalculatedWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "termsAutoComputed": "Auto-computed",
+  "termsMonthChip": "{months} Mo ({weeks} Wks)",
+  "@termsMonthChip": {
+    "placeholders": {
+      "months": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "termsUpfrontFeeLower": "Upfront fee",
+  "termsProcessingRisk": "Processing & risk cover",
+  "termsFlatOnPrincipal": "Flat on principal, once",
+  "termsDisbursedToday": "Disbursed: Today, {date}",
+  "@termsDisbursedToday": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "termsFirstDue": "1st Due: {date}",
+  "@termsFirstDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "termsBreakdown": "Disbursement Breakdown",
+  "termsGrossPrincipal": "Gross Sanctioned Principal",
+  "termsProcessingRiskPct": "Processing & Risk Cover ({percent})",
+  "@termsProcessingRiskPct": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "termsPhysicalDisbursement": "PHYSICAL DISBURSEMENT",
+  "termsFlatInterestAdded": "Flat Interest Added ({percent})",
+  "@termsFlatInterestAdded": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "termsTotalRepayablePI": "Total Repayable (Principal + Int)",
+  "termsWeeklyInstallmentWeeks": "Weekly Installment ({weeks} Weeks)",
+  "@termsWeeklyInstallmentWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "termsWeeklyCollection": "Weekly collection",
+  "termsEveryDayCollection": "Every {day} collection",
+  "@termsEveryDayCollection": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "termsPerWeekShort": " / wk",
+  "termsMilestonePreview": "Schedule milestone preview",
+  "termsTotalWeeks": "{weeks} Total Weeks",
+  "@termsTotalWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "termsHideAmortization": "Hide amortization",
+  "termsViewAmortization": "View detailed {weeks}-week amortization",
+  "@termsViewAmortization": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "termsPreviewOnly": "Preview only. The final schedule is calculated when the loan is issued.",
+  "termsWeekDate": "Wk #{week} ({date})",
+  "@termsWeekDate": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "termsFinalSettlement": "Final Settlement",
+  "termsColWeek": "WEEK",
+  "termsColDue": "DUE",
+  "termsColInstallment": "INSTALLMENT",
+  "termsColBalance": "BALANCE",
+  "termsDayRoute": " • {day} Route",
+  "@termsDayRoute": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "commonDecrease": "Decrease",
+  "commonIncrease": "Increase",
+  "loanStageActive": "ACTIVE",
+  "loanStagePaidOff": "PAID OFF",
+  "loanStageDefaulted": "DEFAULTED",
+  "loanStageUnknown": "UNKNOWN",
+  "loanReopenBlockedOther": "This borrower already has another active or overdue loan.",
+  "loanReopenCheckFailed": "Could not check the borrower’s other loans. Refresh and try again.",
+  "loanStatusUpdated": "Loan status updated.",
+  "loanPaymentRecorded": "Payment recorded.",
+  "loanTitleId": "Loan {id}",
+  "@loanTitleId": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "loanMenuTracks": "Repayment tracks",
+  "loanMenuPayments": "Payment history",
+  "loanMenuCall": "Call borrower",
+  "loanMenuChangeStatus": "Change status",
+  "loanLoadFailed": "Could not load this loan.",
+  "loanRepaymentSchedule": "Repayment schedule",
+  "loanViewAllWeeks": "View all {count} weeks",
+  "@loanViewAllWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loanMoreOverdueWeeks": "{count} more overdue weeks",
+  "@loanMoreOverdueWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loanCollectOverdue": "Collect overdue • {amount}",
+  "@loanCollectOverdue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanRecordPayment": "Record payment",
+  "loanIssueNew": "Issue new loan",
+  "loanViewPaymentHistory": "View payment history",
+  "loanPayments": "Payments",
+  "loanLoadDetailsFailed": "Could not load the loan details.",
+  "loanTotalCollected": "TOTAL COLLECTED",
+  "loanOutstanding": "OUTSTANDING",
+  "loanTarget": "Target: {amount}",
+  "@loanTarget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanPercentCleared": "{percent}% Cleared",
+  "@loanPercentCleared": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "loanTotalPaid": "TOTAL PAID",
+  "loanCoverage": "COVERAGE",
+  "loanWeeksCount": "{weeks} Weeks",
+  "@loanWeeksCount": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "loanLastLog": "LAST LOG",
+  "loanNoPayments": "No payments found",
+  "loanLoadingOlder": "Loading older payments...",
+  "loanNoMorePayments": "No more payments",
+  "trackerPaymentSuccess": "Payment Successfull",
+  "trackerOnlyOpenLoans": "Only active or overdue loans take payments.",
+  "trackerAllWeeksHavePayment": "Every week already has a payment. Use Collect on a partial week.",
+  "trackerRecordWeekly": "+ Record Weekly Payment",
+  "trackerCycle": "CYCLE {cycle}",
+  "@trackerCycle": {
+    "placeholders": {
+      "cycle": {
+        "type": "int"
+      }
+    }
+  },
+  "trackerActiveLoan": "Active Loan",
+  "trackerWeeklyTarget": "Weekly Target",
+  "trackerPrincipal": "Principal",
+  "trackerTotalDue": "Total Due",
+  "trackerTenure": "Tenure",
+  "trackerCollected": "COLLECTED",
+  "trackerWeeksLeft": "{weeks} weeks left",
+  "@trackerWeeksLeft": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "trackerNextDue": "NEXT DUE",
+  "trackerAllPaid": "ALL PAID",
+  "trackerLoanCompleted": "Loan completed",
+  "trackerWeekShortDate": "W{week} • {date}",
+  "@trackerWeekShortDate": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "trackerDaysLate": "W{week} • {days}d late",
+  "@trackerDaysLate": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "trackerDueToday": "DUE TODAY",
+  "trackerDueTomorrow": "DUE TOMORROW",
+  "trackerWeeklyTracks": "Weekly Repayment Tracks",
+  "trackerInstallmentsPlanned": "{count} Total Installments Planned",
+  "@trackerInstallmentsPlanned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trackerLedger": "Ledger",
+  "loansFilterAll": "All",
+  "loansFilterActive": "Active",
+  "loansFilterOverdue": "Overdue",
+  "loansFilterPaidOff": "Paid off",
+  "loansFilterDefaulted": "Defaulted",
+  "loansFilterClosed": "Closed",
+  "loansSearchHint": "Search loan by name and phone number...",
+  "loansNoneFound": "No loans found",
+  "loansNoMore": "No more loans",
+  "loansCallPhone": "call {phone}",
+  "@loansCallPhone": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "loansSettled": "Settled",
+  "loansPerWeek": "{amount}/wk",
+  "@loansPerWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loansTotalPayable": "Total Payable",
+  "loansCollected": "Collected",
+  "loansRemaining": "Remaining",
+  "loansDisbursed": "Disbursed: {amount}",
+  "@loansDisbursed": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loansViewLedger": "View Ledger",
+  "statusFooterClosed": "This cannot be undone.",
+  "statusFooterDefaulted": "An admin can reopen it later if needed.",
+  "statusFooterReopen": "You can mark it defaulted or closed again later.",
+  "statusReopenMessage": "{who}\n\n{amount} becomes collectable again. If a week is already past due, the loan shows as overdue automatically.\n\n{footer}",
+  "@statusReopenMessage": {
+    "placeholders": {
+      "who": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "footer": {
+        "type": "String"
+      }
+    }
+  },
+  "statusWriteOffLine": "{amount} is still unpaid and will be written off.\n\n",
+  "@statusWriteOffLine": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "statusReopenTitle": "Reopen this loan?",
+  "statusMarkAsTitle": "Mark loan as {status}?",
+  "@statusMarkAsTitle": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusReopenLoan": "Reopen loan",
+  "statusMarkAs": "Mark {status}",
+  "@statusMarkAs": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "statusGoBack": "Go back",
+  "statusNoServerAnswer": "No answer from the server. Refresh the loan before trying again, in case the status was already changed.",
+  "statusSheetTitle": "Change loan status",
+  "statusAutoNote": "Overdue and Paid off are set automatically from payments, so they cannot be chosen here.",
+  "statusClosedCannotChange": "This loan is closed and cannot be changed.",
+  "statusNoPermission": "You do not have permission to change this loan’s status.",
+  "statusMoveTo": "MOVE TO",
+  "statusReopenWarning": "Collections resume on this loan. If a week is already past due, it will show as overdue automatically.",
+  "statusDefaultWarning": "{amount} is still unpaid. Marking the loan as defaulted writes it off.",
+  "@statusDefaultWarning": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCloseWarning": "{amount} is still unpaid. Closing the loan writes it off.",
+  "@statusCloseWarning": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "statusUpdate": "Update status",
+  "statusCurrentStatus": "CURRENT STATUS",
+  "statusCurrent": "CURRENT",
+  "bannerOverdueTitle": "Overdue • {days, plural, =1{1 day} other{{days} days}} late",
+  "@bannerOverdueTitle": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "bannerOverdueBody": "{amount} across {weeks, plural, =1{1 week} other{{weeks} weeks}} is past due.",
+  "@bannerOverdueBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "bannerTermEnded": " The {weeks}-week term has ended.",
+  "@bannerTermEnded": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "bannerFullyRepaid": "Fully repaid",
+  "bannerPaidOffBody": "All {weeks} weekly installments are collected. {amount} received in total.",
+  "@bannerPaidOffBody": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "bannerLoanClosed": "Loan closed",
+  "bannerClosedOn": "Closed on {date}.",
+  "@bannerClosedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "bannerLeftUnpaid": "{amount} was left unpaid.",
+  "@bannerLeftUnpaid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "bannerThisLoanClosed": "This loan is closed.",
+  "bannerMarkedDefaulted": "Marked as defaulted",
+  "bannerStillOutstanding": "{amount} is still outstanding.",
+  "@bannerStillOutstanding": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionDayRoute": "{day} route",
+  "@sectionDayRoute": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceWeeksPastDue": "{weeks, plural, =1{1 week} other{{weeks} weeks}} past due",
+  "@balanceWeeksPastDue": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "balanceNextInstallment": "NEXT INSTALLMENT",
+  "balanceNothingScheduled": "Nothing scheduled",
+  "balanceSettled": "SETTLED",
+  "balanceNoBalance": "No balance left",
+  "balanceUnpaidAtClose": "UNPAID AT CLOSE",
+  "balanceRepaymentProgress": "Loan repayment progress",
+  "balanceRepaidPercent": "{percent}% repaid",
+  "@balanceRepaidPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceWeeksPaid": "{paid} of {total} weeks paid",
+  "@balanceWeeksPaid": {
+    "placeholders": {
+      "paid": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "recentNoPayments": "No payments recorded yet.",
+  "recentPayments": "Recent payments",
+  "commonViewAll": "View all",
+  "contractPrincipal": "Sanctioned principal",
+  "contractUpfrontFee": "Upfront fee ({percent}%)",
+  "@contractUpfrontFee": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "contractNetDisbursed": "Net disbursed",
+  "contractFlatInterest": "Flat interest",
+  "contractTotalRepayable": "Total repayable",
+  "contractWeeklyInstallment": "Weekly installment",
+  "contractTerm": "Term",
+  "contractTermValue": "{weeks} weeks ({months} months)",
+  "@contractTermValue": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "contractDisbursedOn": "Disbursed on",
+  "contractMaturesOn": "Matures on",
+  "contractClosedOn": "Closed on",
+  "contractDetails": "Contract details",
+  "borrowersTotal": "Total",
+  "borrowersActive": "Active",
+  "borrowersDues": "dues",
+  "borrowersReferrals": "Referrals",
+  "borrowersNet": "net",
+  "borrowersActiveLoan": "Active Loan",
+  "borrowersOverdueLoan": "Overdue Loan",
+  "borrowersNoActiveLoans": "No Active Loans",
+  "borrowersCollectPayment": "Collect payment",
+  "tracksNoneFound": "No tracks found",
+  "tracksTitle": "Repayment Tracks",
+  "tracksWeeksShort": "{weeks} Wks",
+  "@tracksWeeksShort": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "tracksSubtitle": "{name} • Active Facility {id}",
+  "@tracksSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "tracksCompleted": "COMPLETED",
+  "tracksPaidCount": "{count} Paid",
+  "@tracksPaidCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tracksTrackCount": "{count} Track",
+  "@tracksTrackCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tracksFacilityBal": "FACILITY BAL",
+  "rangeToday": "Today",
+  "rangeLast7": "Last 7 days",
+  "rangeLast30": "Last 30 days",
+  "rangeLast90": "Last 90 days",
+  "rangeThisMonth": "This month",
+  "rangeLastMonth": "Last month",
+  "rangeCustom": "Custom",
+  "agoJustNow": "just now",
+  "agoMinutes": "{m} min ago",
+  "@agoMinutes": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "agoHours": "{h} h ago",
+  "@agoHours": {
+    "placeholders": {
+      "h": {
+        "type": "int"
+      }
+    }
+  },
+  "agoDays": "{d} d ago",
+  "@agoDays": {
+    "placeholders": {
+      "d": {
+        "type": "int"
+      }
+    }
+  },
+  "offlineNoData": "You are offline.",
+  "offlineShowingFrom": "You are offline. Showing numbers from {ago}.",
+  "@offlineShowingFrom": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "updatedPullRefresh": "Updated {ago}. Pull down to refresh.",
+  "@updatedPullRefresh": {
+    "placeholders": {
+      "ago": {
+        "type": "String"
+      }
+    }
+  },
+  "pullToRefresh": "Pull down to refresh.",
+  "anTabPulse": "Pulse",
+  "anTabCollections": "Collections",
+  "anTabPortfolio": "Portfolio",
+  "anTabCustomers": "Customers",
+  "anTabTeam": "Team",
+  "anTabForecast": "Forecast",
+  "anTabAdmins": "Admins",
+  "anTabMoney": "Money",
+  "anTabRisk": "Risk",
+  "anTabGeography": "Geography",
+  "anTabPeople": "People",
+  "anNoAccess": "You don't have access to this view.",
+  "anSegAnalytics": "Analytics",
+  "anSegPlatform": "Platform",
+  "dueListTitle": "Due list",
+  "dueNoneScheduled": "No loans are scheduled for {day}.",
+  "@dueNoneScheduled": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "dueNoMatch": "No loans match \"{query}\".",
+  "@dueNoMatch": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "dueCollectedVsTarget": "Collected against target for the day",
+  "dueCollectedOfTarget": "{collected} collected of {target} target",
+  "@dueCollectedOfTarget": {
+    "placeholders": {
+      "collected": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "dueScheduledFor": "Loans scheduled for {day}",
+  "@dueScheduledFor": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "dueSummaryLine": "{customers} customers • {active} active • {overdue} overdue",
+  "@dueSummaryLine": {
+    "placeholders": {
+      "customers": {
+        "type": "int"
+      },
+      "active": {
+        "type": "int"
+      },
+      "overdue": {
+        "type": "int"
+      }
+    }
+  },
+  "dueListNote": "The list shows loans scheduled for {day} as they stand now, not who paid on this date.",
+  "@dueListNote": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "commonUnknown": "Unknown",
+  "dueOutstanding": "Outstanding {amount}",
+  "@dueOutstanding": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dueLabel": "due",
+  "dueOnSchedule": "ON SCHEDULE",
+  "anViewing": "Viewing: {name}",
+  "@anViewing": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commonClear": "Clear",
+  "anAllAdmins": "All admins",
+  "anAllEmployees": "All employees",
+  "anMaxRange": "Pick a range of at most {days} days.",
+  "@anMaxRange": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "anDateRange": "Date range",
+  "commonApply": "Apply",
+  "anChooseAdmin": "Choose an admin",
+  "anChooseEmployee": "Choose an employee",
+  "commonSearch": "Search",
+  "anNobodyMatches": "Nobody matches.",
+  "anTakingLonger": "Taking longer than usual.",
+  "anCardLoadFailed": "Could not load this card.",
+  "anDeltaPts": "{value} pts",
+  "@anDeltaPts": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "anNoChange": "No change",
+  "anDeltaNew": "{value} (new)",
+  "@anDeltaNew": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "commonLoading": "Loading...",
+  "anShowMore": "Show more ({left} left)",
+  "@anShowMore": {
+    "placeholders": {
+      "left": {
+        "type": "int"
+      }
+    }
+  },
+  "dayMonAbbr": "Mon",
+  "dayTueAbbr": "Tue",
+  "dayWedAbbr": "Wed",
+  "dayThuAbbr": "Thu",
+  "dayFriAbbr": "Fri",
+  "daySatAbbr": "Sat",
+  "daySunAbbr": "Sun",
+  "anInsights": "Insights",
+  "anInsightsEmpty": "Insights appear once your customers have loans.",
+  "anShowLess": "Show less",
+  "anSeeAll": "See all {count}",
+  "@anSeeAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "anCollectionsVsTarget": "Collections vs target",
+  "anGroupDayShort": "D",
+  "anGroupWeekShort": "W",
+  "anGroupMonthShort": "M",
+  "anNoCollectionsPeriod": "No collections in this period. Try a longer range.",
+  "anTrendSemantics": "Collections trend, total {amount}",
+  "@anTrendSemantics": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anBestDay": "Best day: {label} {amount}",
+  "@anBestDay": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anBestWeek": "Best week: {label} {amount}",
+  "@anBestWeek": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anBestMonth": "Best month: {label} {amount}",
+  "@anBestMonth": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anOfTarget": " of {amount}",
+  "@anOfTarget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anOutstandingByAge": "Outstanding by age",
+  "anNothingOutstanding": "Nothing outstanding right now.",
+  "anAgingSemantics": "Aging, total outstanding {amount}",
+  "@anAgingSemantics": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anLoansAmount": "{count} loans • {amount}",
+  "@anLoansAmount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anPortfolioHealth": "Portfolio health",
+  "anNoLoansYet": "No loans yet.",
+  "anStatusSemantics": "Loan status, {total} loans",
+  "@anStatusSemantics": {
+    "placeholders": {
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "anLoansWord": "loans",
+  "anCollectionCalendar": "Collection calendar",
+  "anPrevMonth": "Previous month",
+  "anNextMonth": "Next month",
+  "anCollectedOf": "{collected} of {target}",
+  "@anCollectedOf": {
+    "placeholders": {
+      "collected": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "anTargetAmount": "Target {amount}",
+  "@anTargetAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anPaidAmount": "Paid {amount}",
+  "@anPaidAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anOpenDueList": "Open due list",
+  "anTapDay": "Tap a day for its target and collection.",
+  "anDayUpcoming": "upcoming",
+  "anDayNothingDue": "nothing due",
+  "anByWeekday": "By weekday",
+  "anWeekdaySemantics": "Target against collected for each weekday",
+  "anTarget": "Target",
+  "anCollected": "Collected",
+  "anCustomersUnderDay": "Customers under each day",
+  "anRepaymentByMonth": "Repayment by issue month",
+  "anRepaid": "Repaid",
+  "anOnTrack": "On track",
+  "anCohortsEmpty": "Cohorts appear once loans have been issued for a few weeks.",
+  "anCohortSemantics": "Repayment curves for each issue month",
+  "anWeeksSinceIssue": "Weeks since issue",
+  "anWeekPercent": "Week {week}: {percent}%",
+  "@anWeekPercent": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anCohortSummary": "{month}: {loans} loans • {amount}",
+  "@anCohortSummary": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "loans": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anPercentDefaulted": " • {percent}% defaulted",
+  "@anPercentDefaulted": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anCohortTooEarly": "Too early to read this cohort.",
+  "anCohortRepaid": "Loans issued in {month} have repaid {percent}% of what they owe after {weeks} weeks",
+  "@anCohortRepaid": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "anCohortOnTrack": "; the schedule says {percent}%, so they are on track.",
+  "@anCohortOnTrack": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anCohortBehind": "; the schedule says {percent}%, so they are behind.",
+  "@anCohortBehind": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anNoDataPeriod": "No data in this period. Try a longer range.",
+  "anAdminN": "Admin {n}",
+  "@anAdminN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "anOthers": "Others",
+  "anComparedPrevious": "Compared with the previous {days} days",
+  "@anComparedPrevious": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "anLoansRightNow": "loans right now",
+  "anPar": "PAR {percent}%",
+  "@anPar": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anToday": "TODAY",
+  "anThisWeek": "THIS WEEK",
+  "anThisMonth": "THIS MONTH",
+  "anPaymentBehaviour": "Payment behaviour",
+  "anNoPaymentsPeriod": "No payments in this period. Try a longer range.",
+  "anOnTimeUpper": "ON TIME",
+  "anLate": "LATE",
+  "anAvgDaysLate": "AVG DAYS LATE",
+  "anWorst": "WORST",
+  "anDaysShort": "{days}d",
+  "@anDaysShort": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "anWeeklyInstalmentsDue": "Weekly instalments ({count} due)",
+  "@anWeeklyInstalmentsDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "anPaidPct": "Paid {percent}%",
+  "@anPaidPct": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anPartialPct": "Partial {percent}%",
+  "@anPartialPct": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anUnpaidPct": "Unpaid {percent}%",
+  "@anUnpaidPct": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anOverpaidPct": "Overpaid {percent}%",
+  "@anOverpaidPct": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anDisbursements": "Disbursements",
+  "anLoansCount": "{count} loans",
+  "@anLoansCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "anDisbursed": "Disbursed",
+  "anEarnings": "Earnings",
+  "anTotal": "TOTAL",
+  "anFeesUpper": "FEES",
+  "anInterestUpper": "INTEREST",
+  "anExpected": "EXPECTED",
+  "anFees": "Fees",
+  "anInterest": "Interest",
+  "anInterestEarned": "Interest earned",
+  "anPlatformEarnings": "Platform earnings",
+  "anMaturingIn": "Maturing in {days} days",
+  "@anMaturingIn": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "anNoneMaturing": "No loans mature in the next {days} days.",
+  "@anNoneMaturing": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "anWeeklyAmount": "Weekly {amount}",
+  "@anWeeklyAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anDaysLeft": "{days}d left",
+  "@anDaysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "anCustomersAtRisk": "Customers at risk",
+  "anNoneAtRisk": "No customers at risk right now.",
+  "anRiskLine": "{days} days late • {weeks} missed weeks",
+  "@anRiskLine": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "anReferrerAtRisk": " • referrer at risk",
+  "anRiskScore": "Risk {score}",
+  "@anRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "String"
+      }
+    }
+  },
+  "anRepeatBorrowers": "Repeat borrowers",
+  "anRepeatRate": "REPEAT RATE",
+  "anRetention": "RETENTION",
+  "anAvgLoans": "AVG LOANS",
+  "anLoanCountLabel": "{count, plural, =1{1 loan} other{{count} loans}}",
+  "@anLoanCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "anCustomers": "Customers",
+  "anTopReferrers": "Top referrers",
+  "anNoReferrals": "No referrals yet.",
+  "anConverted": "{percent}% converted",
+  "@anConverted": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anReferredConverted": "Referred {referred} • converted {converted}",
+  "@anReferredConverted": {
+    "placeholders": {
+      "referred": {
+        "type": "int"
+      },
+      "converted": {
+        "type": "int"
+      }
+    }
+  },
+  "anAtRiskCount": " • {count} at risk",
+  "@anAtRiskCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "anGeography": "Geography",
+  "anOutstandingByArea": "Outstanding by area",
+  "anDistrict": "District",
+  "anCity": "City",
+  "anNoBorrowersScope": "No borrowers in this scope yet.",
+  "anBorrowersPar": "{count} borrowers • PAR {percent}%",
+  "@anBorrowersPar": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anEmployeeLeaderboard": "Employee leaderboard",
+  "anTeamLeaderboard": "Team leaderboard",
+  "anNoEmployees": "No employees to show yet.",
+  "anParOverdue": "PAR {percent}% • {overdue} overdue",
+  "@anParOverdue": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      },
+      "overdue": {
+        "type": "int"
+      }
+    }
+  },
+  "anEmployee": "Employee",
+  "anPAR": "PAR",
+  "anNoRisky": "No risky customers.",
+  "anCashflowForecast": "Cash-flow forecast",
+  "anExpectedNextWeeks": "Expected next {weeks} weeks",
+  "@anExpectedNextWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "anPlusArrears": "Plus {amount} overdue and due now",
+  "@anPlusArrears": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "anDue": "Due",
+  "anCurrentWeekHighlighted": " The current week is highlighted.",
+  "anPlatformAtGlance": "Platform at a glance",
+  "anCollectedMonth": "COLLECTED (MONTH)",
+  "anAdminsUpper": "ADMINS",
+  "anEmployeesUpper": "EMPLOYEES",
+  "anEarned": "EARNED",
+  "anNoAdmins": "No admins yet.",
+  "anAdminRowLine": "{employees} employees • PAR {percent}% • {overdue} overdue",
+  "@anAdminRowLine": {
+    "placeholders": {
+      "employees": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "String"
+      },
+      "overdue": {
+        "type": "int"
+      }
+    }
+  },
+  "anDisbursedByAdmin": "Disbursed by admin",
+  "anDisbursedByAdminMonthly": "Disbursed by admin (monthly)",
+  "anSplitByAdmin": "Split by admin",
+  "anPlatformCollections": "Platform collections",
+  "anAccounts": "Accounts",
+  "anActiveInactive": "{active} active • {inactive} inactive",
+  "@anActiveInactive": {
+    "placeholders": {
+      "active": {
+        "type": "String"
+      },
+      "inactive": {
+        "type": "String"
+      }
+    }
+  },
+  "anPendingCount": "{count} pending",
+  "@anPendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "anEmployeesPerAdmin": "EMPLOYEES PER ADMIN",
+  "anPlatformOutstandingByAge": "Platform outstanding by age",
+  "anRiskConcentration": "Risk concentration",
+  "anOutstandingByAdmin": "Outstanding by admin",
+  "anShareOfBook": "{percent}% of book",
+  "@anShareOfBook": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "anLargestExposures": "Largest exposures",
+  "anNoExposures": "No exposures to show.",
+  "anExposureLine": "{days} days late • {percent}% of book",
+  "@anExposureLine": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "repAdvancedSemantics": "Advanced analytics. Trends, cohorts and team performance.",
+  "repAdvancedSub": "Trends, cohorts and team performance",
+  "repAsOfToday": "As of today",
+  "repCashOutstanding": "Cash outstanding",
+  "repNoLoansInBook": "No loans in the book yet.",
+  "repOutstandingSemantics": "Outstanding receivable {amount}, {percent} percent of the payable amount collected",
+  "@repOutstandingSemantics": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "repOutstandingReceivable": "Outstanding receivable",
+  "repPayableCollected": "{percent}% of payable collected",
+  "@repPayableCollected": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "repDisbursed": "Disbursed",
+  "repPayable": "Payable",
+  "repCollected": "Collected",
+  "repLoansInBook": "{count} loans in the book",
+  "@repLoansInBook": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "repEarningsEmpty": "Earnings appear once loans are issued.",
+  "repTotalEarnedSemantics": "Total earned {amount}",
+  "@repTotalEarnedSemantics": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "repTotalEarned": "Total earned",
+  "repExpectedInterest": "Expected interest",
+  "repInterestNote": "Interest counts only what was collected above the principal, so it trails the expected figure until loans are repaid.",
+  "repOverdueSemantics": "{name}, {amount} outstanding, {days} days late",
+  "@repOverdueSemantics": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "repAmountOutstanding": "{amount} outstanding",
+  "@repAmountOutstanding": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "repOverdueLoans": "Overdue loans",
+  "repNoOverdue": "No overdue loans. Everything is on schedule.",
+  "repSeeAll": "See all",
+  "repNoOverdueShort": "No overdue loans.",
+  "auditNoAccess": "You don't have access to the audit log.",
+  "auditEntry": "Audit entry",
+  "auditRecordGone": "This record is no longer available.",
+  "auditLoadEntryFailed": "Could not load this entry.",
+  "auditLogIdCopied": "Log id copied",
+  "auditAttention": "Attention",
+  "auditWho": "Who",
+  "auditOn": "On",
+  "auditOpen": "Open",
+  "auditMoreFromActor": "More from this actor",
+  "auditMoreOnRecord": "More on this record",
+  "auditChanges": "Changes",
+  "auditRawJson": "Raw JSON",
+  "commonCopy": "Copy",
+  "auditJsonCopied": "JSON copied",
+  "auditCreatedWith": "Created with",
+  "auditChangesCount": "Changes ({count})",
+  "@auditChangesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "auditDetails": "Details",
+  "auditNoFieldChanges": "No field changes were recorded for this entry.",
+  "auditRequestDetails": "Request details",
+  "auditIp": "IP",
+  "auditDevice": "Device",
+  "auditRequest": "Request",
+  "auditLogId": "Log id",
+  "auditTeam": "Team",
+  "auditFiltersApplied": "{count} filters applied",
+  "@auditFiltersApplied": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "auditFilters": "Filters",
+  "auditAllTeams": "All teams",
+  "auditAbout": "About: {name}",
+  "@auditAbout": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "auditThisUser": "this user",
+  "auditBy": "By: {name}",
+  "@auditBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "auditThisPerson": "this person",
+  "auditClearAll": "Clear all",
+  "auditNothingMatches": "Nothing matches these filters",
+  "auditNoActivity": "No activity yet",
+  "auditTryWider": "Try a wider date range or fewer filters.",
+  "auditChangesAppear": "Changes made in the app will appear here.",
+  "auditClearFilters": "Clear filters",
+  "auditEntriesCount": "{shown} of {total} entries",
+  "@auditEntriesCount": {
+    "placeholders": {
+      "shown": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "auditWhoDidIt": "Who did it",
+  "auditWhoAffected": "Who it affected",
+  "auditAnyone": "Anyone",
+  "auditModule": "MODULE",
+  "auditActions": "ACTIONS",
+  "auditNoActionsScope": "No actions have been recorded in your scope yet.",
+  "auditSelected": "Selected",
+  "auditApplyFilters": "Apply filters",
+  "auditMe": "{name} (me)",
+  "@auditMe": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "auditAll": "All",
+  "auditModuleSemantics": "{label} module",
+  "@auditModuleSemantics": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "auditNeedsAttention": "Needs attention. ",
+  "auditBefore": "Before",
+  "auditAfter": "After",
+  "auditView": "View",
+  "auditBeforeUpper": "BEFORE",
+  "auditAfterUpper": "AFTER",
+  "expCouldNotOpen": "Could not open the file.",
+  "expAlreadyInProgress": "That export is already in progress.",
+  "expStarted": "Export started.",
+  "expNoDownloads": "No downloads yet. Reports you export appear here for 24 hours.",
+  "expExpired": "EXPIRED",
+  "expQueued": "QUEUED",
+  "expBuilding": "BUILDING",
+  "expReady": "READY",
+  "expFailed": "FAILED",
+  "expPreparing": "Preparing...",
+  "expRowsProgress": "{done} of {total} rows",
+  "@expRowsProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "expOpen": "Open",
+  "expShare": "Share",
+  "expUntil": "Until {time}",
+  "@expUntil": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "expCreateAgain": "Create again",
+  "expExport": "Export",
+  "expDownloadsBuilding": "Downloads ({count} building)",
+  "@expDownloadsBuilding": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expThisWeek": "This week",
+  "expNext7": "Next 7 days",
+  "expPickAtMost": "Pick at most {days} days.",
+  "@expPickAtMost": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "expCustomersAddedBy": "Customers added by",
+  "expChooseWeekday": "Choose a weekday.",
+  "expChooseRange": "Choose a date range.",
+  "expStartBeforeEnd": "The start date must be on or before the end date.",
+  "expNoServerAnswer": "No answer from the server. Open Downloads to see whether it was created, then try again.",
+  "expScopeSuper": "Covers every team unless you pick one.",
+  "expScopeAdmin": "Covers your team only.",
+  "expScopeUser": "Covers only the customers you created.",
+  "expHintXlsx": "Best for Excel. Up to 100,000 rows.",
+  "expHintCsv": "Plain text that opens anywhere. Up to 300,000 rows.",
+  "expHintPdfWeekday": "One block per customer, ready to print for the route. Up to 1,000 loans.",
+  "expHintPdfAudit": "For printing. Up to 1,000 rows, and long values are shortened. Use Excel or CSV for full values.",
+  "expHintPdf": "For printing. Up to 1,000 rows.",
+  "expGone": "This export is no longer available.",
+  "expStartAgain": "Start again",
+  "expFormat": "Format",
+  "expWeekday": "Weekday",
+  "expPaymentDay": "Payment day",
+  "expOptional": "Optional",
+  "expAny": "Any",
+  "expUpToDays": "Up to {days} days",
+  "@expUpToDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "expAllTime": "All time",
+  "expIssuedBetween": "Issued between",
+  "expAnyDate": "Any date",
+  "expPickDates": "Pick dates",
+  "expScope": "Scope",
+  "expAuditNote": "Also uses the audit screen filters: {note}.",
+  "@expAuditNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "expSwitchCsv": "Switch to CSV",
+  "expSwitchExcel": "Switch to Excel",
+  "expCreateFormat": "Create {format}",
+  "@expCreateFormat": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "expWaiting": "Waiting in line...",
+  "expBuildingFile": "Building your file...",
+  "expCountingRows": "Counting rows...",
+  "expAlreadyInProgressSuffix": " • already in progress",
+  "expReadyLabel": "Ready",
+  "expDownloading": "Downloading...",
+  "expBuildFailed": "Could not build the file",
+  "expTryAgain": "Try again",
+  "expFileExpired": "This file has expired.",
+  "expKeptExpired": "Files are kept for 24 hours. Create it again to get a new one.",
+  "expCanClose": "You can close this. It keeps building and appears in Downloads.",
+  "expKept24": "Files are kept for 24 hours.",
+  "empWorksUnder": "Works under",
+  "empNoActiveAdmins": "There are no active admins.",
+  "empEmployeesCount": "{count} employees",
+  "@empEmployeesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "empEnterNumber": "Enter a number",
+  "empRangeError": "{label} must be {min} to {max}",
+  "@empRangeError": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "empOneDecimal": "One decimal place at most",
+  "empFee": "Fee",
+  "empInterest": "Interest",
+  "empTerm": "Term",
+  "empNameTooShort": "Name needs at least 2 characters",
+  "empNameChars": "Use letters, spaces and . ' - only",
+  "empInvalidMobile": "Enter a valid mobile number",
+  "empInvalidEmail": "Enter a valid email",
+  "empChooseAdmin": "Choose the admin this employee works under.",
+  "empFixDefaults": "Fix the loan defaults first.",
+  "empAdded": "{name} was added. If they cannot sign in yet, approve them under Pending.",
+  "@empAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "empNoServerAnswer": "No answer from the server. Check Manage users before trying again, in case the account was already created.",
+  "empAddEmployee": "Add employee",
+  "empDiscardTitle": "Discard this employee?",
+  "empDiscardMessage": "You have details that are not saved.",
+  "empDiscard": "Discard",
+  "empKeepEditing": "Keep editing",
+  "empCreate": "Create employee",
+  "empAdmin": "Admin",
+  "empChooseAnAdmin": "Choose an admin",
+  "empAccount": "Account",
+  "empFullName": "Full name",
+  "empPhoneNumber": "Phone number",
+  "empPhoneHelper": "They sign in with this number.",
+  "empEmailOptional": "Email (optional)",
+  "empPassword": "Password",
+  "empGenerate": "Generate",
+  "empMin8": "Use at least 8 characters",
+  "empHide": "Hide",
+  "empShow": "Show",
+  "empPasswordsMismatch": "Passwords do not match",
+  "empConfirmPassword": "Confirm password",
+  "empSharePassword": "Share this password with them. They can change it later from their profile.",
+  "empLoanDefaults": "Loan defaults",
+  "empCustomise": "Customise for this employee",
+  "empOnlyThisEmployee": "These values are only for this employee.",
+  "empUsesAdminDefaults": "Uses {admin} defaults: fee {fee}%, interest {interest}%, {months} months. Later changes apply to them too.",
+  "@empUsesAdminDefaults": {
+    "placeholders": {
+      "admin": {
+        "type": "String"
+      },
+      "fee": {
+        "type": "String"
+      },
+      "interest": {
+        "type": "String"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "empUsesYourDefaults": "Uses your defaults: fee {fee}%, interest {interest}%, {months} months. Later changes apply to them too.",
+  "@empUsesYourDefaults": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      },
+      "interest": {
+        "type": "String"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "empTheAdmin": "the admin",
+  "empUpfrontFee": "Upfront fee",
+  "empMonthsSuffix": "months",
+  "empResetInherited": "Reset to inherited values",
+  "empExample": "On a {loan} loan: fee {fee}, {handed} handed over, {total} repayable, {weekly} a week for {weeks} weeks.",
+  "@empExample": {
+    "placeholders": {
+      "loan": {
+        "type": "String"
+      },
+      "fee": {
+        "type": "String"
+      },
+      "handed": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      },
+      "weekly": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "manApproved": "{name} approved.",
+  "@manApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manApprovedCanSignIn": "{name} approved. They can sign in now.",
+  "@manApprovedCanSignIn": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manRejectTitle": "Reject {name}?",
+  "@manRejectTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manRejectMessage": "The account is deactivated and cannot sign in. It is never deleted.",
+  "manReject": "Reject",
+  "manRejected": "{name} rejected.",
+  "@manRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manDeactivateTitle": "Deactivate {name}?",
+  "@manDeactivateTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manDeactivateAdminMsg": "They are signed out once their access token expires. Their employees are not changed.",
+  "manDeactivateUserMsg": "They are signed out once their access token expires. Their customers and loans stay as they are.",
+  "manDeactivate": "Deactivate",
+  "manDeactivated": "{name} deactivated.",
+  "@manDeactivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manReactivatedPending": "{name} reactivated. They are waiting for approval again.",
+  "@manReactivatedPending": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manReactivated": "{name} reactivated.",
+  "@manReactivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "manCountsFailed": "Could not load the counts.",
+  "manPending": "PENDING",
+  "manAwaitingApproval": "awaiting approval",
+  "manTeams": "TEAMS",
+  "manApprovedAdmins": "approved admins",
+  "manEmployees": "EMPLOYEES",
+  "manAcrossAllTeams": "across all teams",
+  "manAcrossTeams": "across teams",
+  "manActive": "ACTIVE",
+  "manCanSignIn": "can sign in",
+  "manInactive": "INACTIVE",
+  "manDeactivatedLower": "deactivated",
+  "manManageAdmins": "Manage admins",
+  "manSearchHint": "Search by name, phone or email",
+  "manNoAdminsPending": "No admins are waiting for approval.",
+  "manNoActiveAdmins": "No active admins yet.",
+  "manNoInactiveAdmins": "No inactive admins.",
+  "manFilterByAdmin": "Filter by admin",
+  "manNoEmployeesPending": "No employees are waiting for approval.",
+  "manNoActiveEmployees": "No active employees yet.",
+  "manNoInactiveEmployees": "No inactive employees.",
+  "accPhone": "Phone",
+  "accEmail": "Email",
+  "accNotAdded": "Not added",
+  "accJoined": "Joined",
+  "accLoanDefaultsOwn": "Loan defaults (own)",
+  "accDefaultsLine": "Fee {fee}% • Interest {interest}% • {months} months",
+  "@accDefaultsLine": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      },
+      "interest": {
+        "type": "String"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "accTeamCount": "Team ({count})",
+  "@accTeamCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accPendingCount": "{count} pending",
+  "@accPendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accNoEmployees": "No employees under this admin yet.",
+  "accCustomersCount": "{count} customers",
+  "@accCustomersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accOpenManageUsers": "Open Manage users to approve or deactivate employees.",
+  "accActivity": "Activity",
+  "accCustomers": "CUSTOMERS",
+  "accCreated": "created",
+  "accActiveLoans": "ACTIVE LOANS",
+  "accActiveAndOverdue": "active and overdue",
+  "accViewPerformance": "View performance",
+  "manTabPending": "Pending",
+  "manTabActive": "Active",
+  "manTabInactive": "Inactive",
+  "manOwnDefaults": "Own defaults",
+  "manAdminDefaults": "Admin defaults",
+  "manDefaultsShort": "Fee {fee}% • Int {interest}% • {months} mo",
+  "@manDefaultsShort": {
+    "placeholders": {
+      "fee": {
+        "type": "String"
+      },
+      "interest": {
+        "type": "String"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "manJoinedOn": "Joined {date}",
+  "@manJoinedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "manApprove": "Approve",
+  "manDetails": "Details",
+  "manReactivate": "Reactivate",
+  "manNobodyMatches": "Nobody matches \"{query}\".",
+  "@manNobodyMatches": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "manThatIsEveryone": "That is everyone",
+  "profPhoneUpdated": "Phone number updated.",
+  "profPasswordChanged": "Password changed.",
+  "profSignOutDevice": "Sign out this device?",
+  "profSignedInOn": "Signed in on {date}.",
+  "@profSignedInOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "profSignOut": "Sign out",
+  "profSignOutAllTitle": "Sign out of all devices?",
+  "profSignOutAllMsg": "This device is signed out too, and you will need to log in again.",
+  "profSignOutAll": "Sign out all",
+  "profApproveTitle": "Approve {name}?",
+  "@profApproveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profApproveMsg": "They will be able to sign in and manage a team.",
+  "profRejectMsg": "The account will be deactivated. It is never deleted.",
+  "profAdminApproved": "Admin approved.",
+  "profAdminRejected": "Admin rejected.",
+  "profLimitsUpdated": "Limits updated.",
+  "profDiscardChanges": "Discard changes?",
+  "profUnsavedEdits": "You have edits that are not saved.",
+  "profLoadFailed": "Could not load your profile.",
+  "profHidePasswords": "Hide passwords",
+  "profShowPasswords": "Show passwords",
+  "profChangePassword": "Change password",
+  "profOtherDevicesSignedOut": "Your other devices will be signed out.",
+  "profEnterCurrent": "Enter your current password",
+  "profCurrentPassword": "Current password",
+  "profDifferentPassword": "Choose a different password",
+  "profNewPassword": "New password",
+  "profConfirmNewPassword": "Confirm new password",
+  "profUpdatePassword": "Update password",
+  "profSamePhone": "That is already your phone number",
+  "profSendCodeFailed": "Could not send the code. Try again.",
+  "profEnterCode": "Enter the 6-digit code",
+  "profSomethingWrong": "Something went wrong. Try again.",
+  "profChangePhone": "Change phone number",
+  "profWillSendCode": "We will send a code to the new number.",
+  "profCodeSentTo": "Code sent to {phone}",
+  "@profCodeSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "profNewPhone": "New phone number",
+  "profSixDigitCode": "6-digit code",
+  "profSendCode": "Send code",
+  "profVerifyUpdate": "Verify and update",
+  "profUseAnother": "Use another number",
+  "profResendIn": "Resend in {seconds}s",
+  "@profResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "profResendCode": "Resend code",
+  "profMinPrincipal": "Minimum principal (₹)",
+  "profMaxPrincipal": "Maximum principal (₹)",
+  "profMinTerm": "Minimum term (months)",
+  "profMaxTerm": "Maximum term (months)",
+  "profMaxFee": "Maximum upfront fee (%)",
+  "profMaxInterest": "Maximum interest (%)",
+  "profMinPrincipalExceeds": "Minimum principal cannot exceed maximum principal",
+  "profMinTermExceeds": "Minimum term cannot exceed maximum term",
+  "profChangeOneLimit": "Change at least one limit",
+  "profLoanLimits": "Loan limits",
+  "profLimitsNote": "Existing admin defaults are not rewritten. A tighter limit applies the next time defaults are saved.",
+  "profPositiveNumber": "Enter a positive number",
+  "profMustBeOrLess": "Must be {max} or less",
+  "@profMustBeOrLess": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "profSaveLimits": "Save limits",
+  "pcAwaitingApproval": "AWAITING APPROVAL",
+  "pcVerified": "VERIFIED",
+  "pcMemberSince": "Member since {date}",
+  "@pcMemberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pcProfileUpdated": "Profile updated.",
+  "pcContact": "Contact",
+  "pcEditNameEmail": "Edit name and email",
+  "pcName": "Name",
+  "pcMyNumbers": "My numbers",
+  "pcMe": "Me",
+  "pcMyTeam": "My team",
+  "pcEveryone": "Everyone",
+  "pcNumbersFailed": "Could not load the numbers.",
+  "pcCollectedVsTarget": "Collected against target",
+  "pcOfTarget": "of {amount} target",
+  "@pcOfTarget": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "pcCustomersPaid": "CUSTOMERS PAID",
+  "pcInThisPeriod": "in this period",
+  "pcPaymentsByDue": "payments by due date",
+  "pcDefaultsUpdated": "Loan defaults updated.",
+  "pcEditDefaults": "Edit loan defaults",
+  "pcUpfrontFeeUpper": "UPFRONT FEE",
+  "pcOnPrincipal": "on principal",
+  "pcInterestUpper": "INTEREST",
+  "pcFlatOnce": "flat, once",
+  "pcTermUpper": "TERM",
+  "pcMonthsShort": "{months} mo",
+  "@pcMonthsShort": {
+    "placeholders": {
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "pcWeeks": "{weeks} weeks",
+  "@pcWeeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
+  "pcSetByAdmin": "Set by your admin. Only new loans use these values.",
+  "pcAppliesNewOnly": "Applies to new loans only, never existing ones. Employees who inherit these values pick them up at once.",
+  "pcOnlyAdminsChange": "Only admins can change these. Only new loans use them.",
+  "pcSecurity": "Security",
+  "pcChangeYourPassword": "Change your password",
+  "pcSignedInDevices": "SIGNED-IN DEVICES",
+  "pcSessionsFailed": "Could not load your sessions.",
+  "pcNoSessions": "No active sessions.",
+  "pcExpires": "Expires {date}",
+  "@pcExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "pcDeviceNamesNote": "Device names are not recorded, so the current device is not marked.",
+  "pcSignOutAllDevices": "Sign out of all devices",
+  "pcTeamFailed": "Could not load the team.",
+  "pcNoApprovedTeams": "No approved teams yet.",
+  "pcMembersCount": "{count} members",
+  "@pcMembersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pcPendingSuffix": " • {count} pending",
+  "@pcPendingSuffix": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pcNoTeamMembers": "No team members yet.",
+  "pcMoreInManage": "+{count} more in Manage users",
+  "@pcMoreInManage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pcSystem": "System",
+  "pcWaiting": "{count} waiting",
+  "@pcWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pcAdminApprovals": "ADMIN APPROVALS",
+  "pcApprovalQueueFailed": "Could not load the approval queue.",
+  "pcRejectName": "Reject {name}",
+  "@pcRejectName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pcApproveName": "Approve {name}",
+  "@pcApproveName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pcLoanLimitsUpper": "LOAN LIMITS",
+  "pcLimitsSummary": "Principal {minP} to {maxP}\nTerm {minM} to {maxM} months\nFee up to {fee}% • Interest up to {interest}%",
+  "@pcLimitsSummary": {
+    "placeholders": {
+      "minP": {
+        "type": "String"
+      },
+      "maxP": {
+        "type": "String"
+      },
+      "minM": {
+        "type": "String"
+      },
+      "maxM": {
+        "type": "String"
+      },
+      "fee": {
+        "type": "String"
+      },
+      "interest": {
+        "type": "String"
+      }
+    }
+  },
+  "pcEditLimits": "Edit loan limits",
+  "pcApp": "App",
+  "pcVersion": "Version",
+  "commonConfirm": "Confirm"
 }

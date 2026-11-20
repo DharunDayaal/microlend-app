@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -95,27 +97,30 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
         '${widget.borrowerName} • ${TextFormatter.dummyId(loan.id, '#LN')}';
 
     final footer = switch (target) {
-      ManualLoanStatus.closed => 'This cannot be undone.',
-      ManualLoanStatus.defaulted => 'An admin can reopen it later if needed.',
-      ManualLoanStatus.active => 'You can mark it defaulted or closed again later.',
+      ManualLoanStatus.closed => context.l10n.statusFooterClosed,
+      ManualLoanStatus.defaulted => context.l10n.statusFooterDefaulted,
+      ManualLoanStatus.active => context.l10n.statusFooterReopen,
     };
 
     final message = target.isReopen
-        ? '$who\n\n${money(owed)} becomes collectable again. If a week is '
-            'already past due, the loan shows as overdue automatically.\n\n$footer'
+        ? context.l10n.statusReopenMessage(who, money(owed), footer)
         : '$who\n\n'
-            '${owed > 0 ? '${money(owed)} is still unpaid and will be written off.\n\n' : ''}'
+            '${owed > 0 ? context.l10n.statusWriteOffLine(money(owed)) : ''}'
             '$footer';
 
     // confirm before anything is sent
     final ok = await DialogHelper.confirm(
       context,
       title: target.isReopen
-          ? 'Reopen this loan?'
-          : 'Mark loan as ${target.label.toLowerCase()}?',
+          ? context.l10n.statusReopenTitle
+          : context.l10n.statusMarkAsTitle(
+              target.l10nLabel(context).toLowerCase(),
+            ),
       message: message,
-      confirmText: target.isReopen ? 'Reopen loan' : 'Mark ${target.label}',
-      cancelText: 'Go back',
+      confirmText: target.isReopen
+          ? context.l10n.statusReopenLoan
+          : context.l10n.statusMarkAs(target.l10nLabel(context)),
+      cancelText: context.l10n.statusGoBack,
     );
     if (!ok || !mounted) return;
 
@@ -134,8 +139,7 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
       if (!mounted) return;
       setState(() {
         _error = e.isNetworkError
-            ? 'No answer from the server. Refresh the loan before trying '
-                'again, in case the status was already changed.'
+            ? context.l10n.statusNoServerAnswer
             : e.message;
       });
     } finally {
@@ -165,7 +169,12 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
             Row(
               children: [
                 Expanded(
-                  child: Text('Change loan status', style: text.headlineSmall),
+                  child: Text(
+                    context.l10n.statusSheetTitle,
+                    style: text.headlineSmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 AppIconButton(
                   icon: Icons.close,
@@ -178,13 +187,15 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
             ),
             Text(
               '${widget.borrowerName} • ${TextFormatter.dummyId(loan.id, '#LN')}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: text.labelLarge
                   ?.copyWith(color: AppColors.darkOnSurfaceMuted),
             ),
             AppGap.h16,
 
             // ----- current status -----
-            _CurrentStatusTile(view: s.view),
+            _CurrentStatusTile(view: s.view, label: s.stage.l10nLabel(context)),
             AppGap.h8,
             Row(
               children: [
@@ -196,8 +207,7 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
                 const SizedBox(width: AppSizes.sm),
                 Expanded(
                   child: Text(
-                    'Overdue and Paid off are set automatically from payments, '
-                    'so they cannot be chosen here.',
+                    context.l10n.statusAutoNote,
                     style: text.labelMedium
                         ?.copyWith(color: AppColors.darkOnSurfaceMuted),
                   ),
@@ -209,13 +219,13 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
             if (options.isEmpty)
               Text(
                 s.stage == LoanStage.closed
-                    ? 'This loan is closed and cannot be changed.'
-                    : 'You do not have permission to change this loan’s status.',
+                    ? context.l10n.statusClosedCannotChange
+                    : context.l10n.statusNoPermission,
                 style: text.bodyMedium,
               )
             else ...[
               Text(
-                'MOVE TO',
+                context.l10n.statusMoveTo,
                 style: text.labelMedium?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                   fontWeight: FontWeight.w700,
@@ -241,16 +251,19 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
               // ----- warnings -----
               if (target?.isReopen == true) ...[
                 AppGap.h8,
-                const _Warning(
-                  text: 'Collections resume on this loan. If a week is already '
-                      'past due, it will show as overdue automatically.',
+                _Warning(
+                  text: context.l10n.statusReopenWarning,
                 ),
               ] else if (target != null && owed > 0) ...[
                 AppGap.h8,
                 _Warning(
-                  text: '${CurrencyFormatter.format(owed)} is still unpaid. '
-                      '${destructive ? 'Marking the loan as defaulted' : 'Closing the loan'} '
-                      'writes it off.',
+                  text: destructive
+                      ? context.l10n.statusDefaultWarning(
+                          CurrencyFormatter.format(owed),
+                        )
+                      : context.l10n.statusCloseWarning(
+                          CurrencyFormatter.format(owed),
+                        ),
                 ),
               ],
 
@@ -269,7 +282,7 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
                 children: [
                   Expanded(
                     child: AppButton(
-                      label: 'Cancel',
+                      label: context.l10n.commonCancel,
                       outlined: true,
                       radius: AppSizes.md,
                       onPressed:
@@ -279,7 +292,7 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
                   AppGap.w12,
                   Expanded(
                     child: AppButton(
-                      label: 'Update status',
+                      label: context.l10n.statusUpdate,
                       radius: AppSizes.md,
                       isLoading: _saving,
                       backgroundColor:
@@ -303,7 +316,8 @@ class _ChangeStatusSheetState extends State<ChangeStatusSheet> {
 
 class _CurrentStatusTile extends StatelessWidget {
   final LoanStatusView view;
-  const _CurrentStatusTile({required this.view});
+  final String label;
+  const _CurrentStatusTile({required this.view, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -326,12 +340,12 @@ class _CurrentStatusTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'CURRENT STATUS',
+                  context.l10n.statusCurrentStatus,
                   style: text.labelSmall
                       ?.copyWith(color: AppColors.darkOnSurfaceMuted),
                 ),
                 Text(
-                  view.label,
+                  label,
                   style: text.bodyLarge?.copyWith(
                     color: view.color,
                     fontWeight: FontWeight.w700,
@@ -340,7 +354,7 @@ class _CurrentStatusTile extends StatelessWidget {
               ],
             ),
           ),
-          const AppChip(label: 'CURRENT', radius: AppSizes.radiusSm),
+          AppChip(label: context.l10n.statusCurrent, radius: AppSizes.radiusSm),
         ],
       ),
     );
@@ -373,7 +387,7 @@ class _OptionTile extends StatelessWidget {
         button: true,
         selected: selected,
         enabled: enabled,
-        label: option.label,
+        label: option.l10nLabel(context),
         child: Material(
           color: selected
               ? option.color.withAlpha(AppAlphas.watermark)
@@ -409,16 +423,20 @@ class _OptionTile extends StatelessWidget {
                             Icon(option.icon,
                                 size: AppSizes.iconSm, color: option.color),
                             const SizedBox(width: AppSizes.sm),
-                            Text(
-                              option.label,
-                              style: text.bodyLarge
-                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            Flexible(
+                              child: Text(
+                                option.l10nLabel(context),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: text.bodyLarge
+                                    ?.copyWith(fontWeight: FontWeight.w700),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          blockedReason ?? option.description,
+                          blockedReason ?? option.l10nDescription(context),
                           style: text.labelMedium
                               ?.copyWith(color: AppColors.darkOnSurfaceMuted),
                         ),

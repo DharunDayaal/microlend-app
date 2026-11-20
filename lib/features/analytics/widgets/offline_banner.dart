@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/data/services/analytics_service.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 
-String agoLabel(DateTime t) {
-  final m = DateTime.now().difference(t).inMinutes;
-  if (m < 1) return 'just now';
-  if (m < 60) return '$m min ago';
-  final h = m ~/ 60;
-  return h < 24 ? '$h h ago' : '${h ~/ 24} d ago';
-}
+String agoLabel(BuildContext context, DateTime t) => agoText(context, t);
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({super.key});
@@ -51,8 +47,10 @@ class OfflineBanner extends StatelessWidget {
               Expanded(
                 child: Text(
                   s.updatedAt == null
-                      ? 'You are offline.'
-                      : 'You are offline. Showing numbers from ${agoLabel(s.updatedAt!)}.',
+                      ? context.l10n.offlineNoData
+                      : context.l10n.offlineShowingFrom(
+                          agoLabel(context, s.updatedAt!),
+                        ),
                   style: text.labelMedium?.copyWith(color: AppColors.warning),
                 ),
               ),

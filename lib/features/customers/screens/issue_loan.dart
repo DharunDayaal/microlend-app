@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -53,17 +54,29 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
   final String _weekday = DateFormatter.weekdayFull(DateTime.now())
       .toUpperCase();
 
-  static const _steps = [
-    StepItem(title: 'Borrower', subtitle: 'Profile', doneSubtitle: 'Selected'),
-    StepItem(title: 'Terms', subtitle: 'Calculator', doneSubtitle: 'Confirmed'),
-    StepItem(title: 'Disburse', subtitle: 'Confirmation'),
-  ];
+  static const _stepCount = 3;
 
-  static const _stepTitles = [
-    'Borrower Profile & History',
-    'Loan Terms & Calculator',
-    'Review & Disburse',
-  ];
+  List<StepItem> _steps(BuildContext context) {
+    final l = context.l10n;
+    return [
+      StepItem(
+        title: l.issueStepBorrower,
+        subtitle: l.issueStepProfile,
+        doneSubtitle: l.issueStepSelected,
+      ),
+      StepItem(
+        title: l.issueStepTerms,
+        subtitle: l.issueStepCalculator,
+        doneSubtitle: l.issueStepConfirmed,
+      ),
+      StepItem(title: l.issueStepDisburse, subtitle: l.issueStepConfirmation),
+    ];
+  }
+
+  List<String> _stepTitles(BuildContext context) {
+    final l = context.l10n;
+    return [l.issueTitleBorrower, l.issueTitleTerms, l.issueTitleDisburse];
+  }
 
   @override
   void initState() {
@@ -100,7 +113,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
   Future<void> _switchBorrower() async {
     final picked = await ReferralSelectionSheet.show(
       context,
-      sheetTitle: "Switch Borrowers",
+      sheetTitle: context.l10n.issueSwitchBorrowers,
       selectedId: _customerDetails?.id,
       loader: (page, search) => CustomerService.getCustomersByWeekday(
         weekday: _weekday,
@@ -122,10 +135,15 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
         final overdue = open.status.toUpperCase() == 'OVERDUE';
         AppSnackbar.warning(
           context,
-          '${picked.customerName} already has an '
-          '${overdue ? 'overdue' : 'active'} loan '
-          '(${TextFormatter.dummyId(open.id, '#LN')}). '
-          'Close it before issuing a new one.',
+          overdue
+              ? context.l10n.issueAlreadyHasOverdue(
+                  picked.customerName,
+                  TextFormatter.dummyId(open.id, '#LN'),
+                )
+              : context.l10n.issueAlreadyHasActive(
+                  picked.customerName,
+                  TextFormatter.dummyId(open.id, '#LN'),
+                ),
         );
         return;
       }
@@ -139,7 +157,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
   }
 
   void _next() {
-    if (_step < _steps.length - 1) setState(() => _step++);
+    if (_step < _stepCount - 1) setState(() => _step++);
   }
 
   Future<void> _issueLoan() async {
@@ -149,17 +167,19 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
 
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Issue loan & disburse?',
-      message:
-          'Hand over ${CurrencyFormatter.format(_terms.netDisbursed)} '
-          '(${_payout == PayoutMode.cash ? 'cash' : 'bank transfer'}) to '
-          '${customer.customerName}.\n\n'
-          'Repayable: ${CurrencyFormatter.format(_terms.totalPayable)} over '
-          '${_terms.totalWeeks} weeks, '
-          '${CurrencyFormatter.format(_terms.weeklyInstallment)} a week.\n\n'
-          'This cannot be undone.',
-      confirmText: 'Issue loan',
-      cancelText: 'Review again',
+      title: context.l10n.issueConfirmTitle,
+      message: context.l10n.issueConfirmBody(
+        CurrencyFormatter.format(_terms.netDisbursed),
+        _payout == PayoutMode.cash
+            ? context.l10n.issuePayoutCash
+            : context.l10n.issuePayoutBank,
+        customer.customerName,
+        CurrencyFormatter.format(_terms.totalPayable),
+        _terms.totalWeeks,
+        CurrencyFormatter.format(_terms.weeklyInstallment),
+      ),
+      confirmText: context.l10n.issueLoanAction,
+      cancelText: context.l10n.issueReviewAgain,
     );
     if (!ok || !mounted) return;
 
@@ -174,8 +194,10 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
       DeviceUtils.success();
       AppSnackbar.success(
         context,
-        'Loan ${TextFormatter.dummyId(loan.id, '#LN')} issued to '
-        '${customer.customerName}.',
+        context.l10n.issueLoanIssued(
+          TextFormatter.dummyId(loan.id, '#LN'),
+          customer.customerName,
+        ),
       );
       context.pop(true);
     } on ApiException catch (e) {
@@ -183,10 +205,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
       if (!mounted) return;
       AppSnackbar.error(
         context,
-        e.isNetworkError
-            ? 'No answer from the server. Check the borrower’s loans before '
-                  'trying again, in case the loan was already issued.'
-            : e.message,
+        e.isNetworkError ? context.l10n.issueNoServerAnswer : e.message,
       );
     } finally {
       if (mounted) setState(() => _issuing = false);
@@ -208,13 +227,21 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Issue New Loan",
+              context.l10n.issueNewLoan,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
-              "Step ${_step + 1} of ${_steps.length}: ${_stepTitles[_step]}",
+              context.l10n.issueStepOfTitle(
+                _step + 1,
+                _stepCount,
+                _stepTitles(context)[_step],
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.darkOnSurfaceMuted,
@@ -230,7 +257,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppStepProgress(
-                steps: _steps,
+                steps: _steps(context),
                 currentStep: _step,
                 onStepTap: (i) => setState(() => _step = i),
               ),
@@ -254,7 +281,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
     final customer = _customerDetails;
     if (customer == null) {
       return ErrorView(
-        message: _error ?? 'Could not load the borrower.',
+        message: _error ?? context.l10n.issueLoadBorrowerFailed,
         onRetry: _getCustomerDetails,
       );
     }
@@ -266,7 +293,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
     final customer = _customerDetails;
     if (customer == null) {
       return ErrorView(
-        message: 'Choose a borrower first.',
+        message: context.l10n.issueChooseBorrower,
         onRetry: () => _getCustomerDetails(),
       );
     }
@@ -284,7 +311,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
     final customer = _customerDetails;
     if (customer == null) {
       return ErrorView(
-        message: 'Choose a borrower first.',
+        message: context.l10n.issueChooseBorrower,
         onRetry: () => _getCustomerDetails(),
       );
     }
@@ -304,7 +331,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
     final Widget buttons;
     if (_step == 0) {
       buttons = AppButton(
-        label: 'Continue to terms',
+        label: context.l10n.issueContinueTerms,
         suffixIcon: Icons.arrow_forward,
         radius: AppSizes.md,
         onPressed: _customerDetails == null ? null : _next,
@@ -314,7 +341,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
         children: [
           Expanded(
             child: AppButton(
-              label: 'Back',
+              label: context.l10n.commonBack,
               outlined: true,
               prefixIcon: Icons.arrow_back,
               radius: AppSizes.md,
@@ -324,7 +351,7 @@ class _IssueLoanScreenState extends State<IssueLoanScreen> {
           AppGap.w12,
           Expanded(
             child: AppButton(
-              label: 'Next Step',
+              label: context.l10n.issueNextStep,
               suffixIcon: Icons.arrow_forward,
               radius: AppSizes.md,
               onPressed: _terms.isValid ? _next : null,

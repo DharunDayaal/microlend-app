@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -21,7 +22,6 @@ import 'package:micro_lending_app/utils/constants/alphas.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
-import 'package:micro_lending_app/utils/formatters/number_formatter.dart';
 import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
 import 'package:micro_lending_app/utils/helpers/loan_helper.dart';
 import 'package:micro_lending_app/utils/helpers/snackbar_helper.dart';
@@ -106,7 +106,9 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
     final loan = _loanDetail;
     if (loan == null) return;
 
-    if (mounted) AppSnackbar.success(context, "Payment Successfull");
+    if (mounted) {
+      AppSnackbar.success(context, context.l10n.trackerPaymentSuccess);
+    }
     final tracks = [
       ...loan.tracks.where((t) => t.weekNumber != result.track.weekNumber),
       result.track,
@@ -137,7 +139,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
 
     final status = loan.status.toUpperCase();
     if (status != 'ACTIVE' && status != 'OVERDUE') {
-      AppSnackbar.info(context, 'Only active or overdue loans take payments.');
+      AppSnackbar.info(context, context.l10n.trackerOnlyOpenLoans);
       return;
     }
 
@@ -146,10 +148,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
         .firstOrNull;
 
     if (row == null) {
-      AppSnackbar.info(
-        context,
-        'Every week already has a payment. Use Collect on a partial week.',
-      );
+      AppSnackbar.info(context, context.l10n.trackerAllWeeksHavePayment);
       return;
     }
 
@@ -176,7 +175,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => context.pop(),
         ),
-        title: Text("Back", style: textTheme.bodyLarge),
+        title: Text(context.l10n.commonBack, style: textTheme.bodyLarge),
         titleSpacing: 2,
       ),
       body: SafeArea(
@@ -197,7 +196,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
               ] else if (loan == null) ...[
                 Expanded(
                   child: ErrorView(
-                    message: _error ?? 'Could not load this loan.',
+                    message: _error ?? context.l10n.loanLoadFailed,
                     onRetry: getLoanDetails,
                   ),
                 ),
@@ -272,7 +271,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(AppSizes.md),
                 child: AppButton(
-                  label: "+ Record Weekly Payment",
+                  label: context.l10n.trackerRecordWeekly,
                   onPressed: loan == null ? null : _recordNewPayment,
                   prefixIcon: Icons.credit_card_outlined,
                   radius: AppSizes.md,
@@ -316,33 +315,38 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
                       spacing: AppSizes.sm,
                       children: [
                         AppChip(
-                          label:
-                              "CYCLE ${_customerDetail?.creditHistory.totalLoans ?? 0}",
+                          label: context.l10n.trackerCycle(
+                            _customerDetail?.creditHistory.totalLoans ?? 0,
+                          ),
                           radius: AppSizes.sm,
                           backgroundColor: AppColors.darkHint.withAlpha(
                             AppAlphas.badgeFill,
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Active Loan",
-                              style: textTheme.labelSmall?.copyWith(
-                                color: AppColors.darkOnSurfaceMuted,
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                context.l10n.trackerActiveLoan,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: AppColors.darkOnSurfaceMuted,
+                                ),
                               ),
-                            ),
-                            Text(
-                              TextFormatter.dummyId(
-                                _loanDetail?.id ?? '',
-                                "#LN",
+                              Text(
+                                TextFormatter.dummyId(
+                                  _loanDetail?.id ?? '',
+                                  "#LN",
+                                ),
+                                style: textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                              style: textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -356,7 +360,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Weekly Target",
+                    context.l10n.trackerWeeklyTarget,
                     style: textTheme.labelMedium?.copyWith(
                       color: AppColors.darkOnSurfaceMuted,
                     ),
@@ -389,7 +393,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Principal",
+                      context.l10n.trackerPrincipal,
                       style: textTheme.labelLarge?.copyWith(
                         color: AppColors.darkOnSurfaceMuted,
                       ),
@@ -408,7 +412,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Total Due",
+                      context.l10n.trackerTotalDue,
                       style: textTheme.labelLarge?.copyWith(
                         color: AppColors.darkOnSurfaceMuted,
                       ),
@@ -427,13 +431,13 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "Tenure",
+                      context.l10n.trackerTenure,
                       style: textTheme.labelLarge?.copyWith(
                         color: AppColors.darkOnSurfaceMuted,
                       ),
                     ),
                     Text(
-                      "${_loanDetail?.totalWeeks ?? 0} Weeks",
+                      context.l10n.loanWeeksCount(_loanDetail?.totalWeeks ?? 0),
                       style: textTheme.titleLarge?.copyWith(
                         color: AppColors.lightBorderStrong,
                         fontWeight: FontWeight.w600,
@@ -479,10 +483,10 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
       final todayDay = DateTime(today.year, today.month, today.day);
       final weeksElapsed = todayDay.difference(issuedDay).inDays ~/ 7;
 
-      collectedFooter = "Week $weeksElapsed of $totalWeeks";
+      collectedFooter = context.l10n.payWeekOfTotal(weeksElapsed, totalWeeks);
       collectedFooterColor = AppColors.danger;
     } else {
-      collectedFooter = NumberFormatter.weekOf(
+      collectedFooter = context.l10n.payWeekOfTotal(
         weeksCollected,
         highestTrackedWeek,
       );
@@ -494,7 +498,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
       children: [
         Expanded(
           child: _StatCard(
-            title: "COLLECTED",
+            title: context.l10n.trackerCollected,
             content: loan?.totalCollected ?? 0,
             contentColor: AppColors.synced,
             footerText: collectedFooter,
@@ -505,10 +509,10 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
         ),
         Expanded(
           child: _StatCard(
-            title: "OUTSTANDING",
+            title: context.l10n.loanOutstanding,
             content: loan?.outstandingAmount ?? 0,
             contentColor: AppColors.progressWarning,
-            footerText: "$weeksLeft weeks left",
+            footerText: context.l10n.trackerWeeksLeft(weeksLeft),
             icon: Icons.hourglass_top_rounded,
             iconColor: AppColors.progressWarning,
           ),
@@ -530,8 +534,8 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
 
   _DueInfo _nextDue(LoanModel? loan) {
     if (loan == null) {
-      return const _DueInfo(
-        title: "NEXT DUE",
+      return _DueInfo(
+        title: context.l10n.trackerNextDue,
         footer: "--",
         icon: Icons.event_outlined,
       );
@@ -555,9 +559,9 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
 
     if (nextWeek == null) {
       if (loan.outstandingAmount <= 0) {
-        return const _DueInfo(
-          title: "ALL PAID",
-          footer: "Loan completed",
+        return _DueInfo(
+          title: context.l10n.trackerAllPaid,
+          footer: context.l10n.trackerLoanCompleted,
           icon: Icons.verified_outlined,
           color: AppColors.success,
         );
@@ -581,12 +585,17 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final diff = dueDate.difference(today).inDays;
-    final label = "W$nextWeek • ${DateFormat('d MMM').format(dueDate)}";
+    final label = context.l10n.trackerWeekShortDate(
+      nextWeek,
+      DateFormat('d MMM').format(dueDate),
+    );
 
     if (loan.isOverdue || diff < 0) {
       return _DueInfo(
-        title: "OVERDUE",
-        footer: diff < 0 ? "W$nextWeek • ${-diff}d late" : label,
+        title: context.l10n.statusOverdue,
+        footer: diff < 0
+            ? context.l10n.trackerDaysLate(nextWeek, -diff)
+            : label,
         icon: Icons.error_outline_rounded,
         color: AppColors.danger,
         amount: amount,
@@ -594,7 +603,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
     }
     if (diff == 0) {
       return _DueInfo(
-        title: "DUE TODAY",
+        title: context.l10n.trackerDueToday,
         footer: label,
         icon: Icons.ring_volume_rounded,
         color: AppColors.danger,
@@ -603,7 +612,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
     }
     if (diff == 1) {
       return _DueInfo(
-        title: "DUE TOMORROW",
+        title: context.l10n.trackerDueTomorrow,
         footer: label,
         icon: Icons.notifications_active_outlined,
         color: AppColors.progressWarning,
@@ -611,7 +620,7 @@ class _LoanTrackerScreenState extends State<LoanTrackerScreen> {
       );
     }
     return _DueInfo(
-      title: "NEXT DUE",
+      title: context.l10n.trackerNextDue,
       footer: label,
       icon: Icons.event_outlined,
       amount: amount,
@@ -676,7 +685,7 @@ class _StatCard extends StatelessWidget {
                     color: titleColor ?? AppColors.darkOnSurfaceMuted,
                     fontWeight: FontWeight.bold,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -689,6 +698,8 @@ class _StatCard extends StatelessWidget {
           ),
           Text(
             footerText,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: textTheme.bodySmall?.copyWith(
               color: footerColor ?? AppColors.darkOnSurfaceMuted,
               fontWeight: FontWeight.bold,
@@ -730,27 +741,33 @@ class _RepaymentTracks extends StatelessWidget {
       children: [
         Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Weekly Repayment Tracks",
-                  style: textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    context.l10n.trackerWeeklyTracks,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  "${loan.totalWeeks} Total Installments Planned",
-                  style: textTheme.labelMedium?.copyWith(
-                    color: AppColors.stepCurrentLabel,
+                  Text(
+                    context.l10n.trackerInstallmentsPlanned(loan.totalWeeks),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.labelMedium?.copyWith(
+                      color: AppColors.stepCurrentLabel,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const Spacer(),
+            AppGap.w8,
             AppChip(
-              label: "Ledger",
+              label: context.l10n.trackerLedger,
               backgroundColor: AppColors.darkBorder.withAlpha(
                 AppAlphas.badgeFill,
               ),

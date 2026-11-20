@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_progress_bar.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
 import 'package:micro_lending_app/utils/constants/alphas.dart';
@@ -54,7 +55,7 @@ class RecoveryProgressCard extends StatelessWidget {
                 const SizedBox(width: AppSizes.sm),
                 Expanded(
                   child: Text(
-                    'Overall Recovery Target',
+                    context.l10n.recoveryOverallTarget,
                     style: text.labelLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -63,11 +64,17 @@ class RecoveryProgressCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSizes.sm),
-                Text(
-                  '${progress.completedPercent}% Completed',
-                  style: text.labelLarge?.copyWith(
-                    color: AppColors.success,
-                    fontWeight: FontWeight.w700,
+                Flexible(
+                  child: Text(
+                    context.l10n.recoveryPercentCompleted(
+                      '${progress.completedPercent}',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.labelLarge?.copyWith(
+                      color: AppColors.success,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
@@ -76,7 +83,7 @@ class RecoveryProgressCard extends StatelessWidget {
           const SizedBox(height: AppSizes.sm),
           AppProgressBar.segmented(
             height: _barHeight,
-            semanticsLabel: 'Overall recovery',
+            semanticsLabel: context.l10n.recoveryOverall,
             segments: [
               ProgressSegment(value: progress.collectedFraction),
               if (hasOverdue)
@@ -99,11 +106,17 @@ class RecoveryProgressCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSizes.sm),
-                Text(
-                  '${progress.overduePercent}% overdue • '
-                  '${CurrencyFormatter.format(progress.overdue)}',
-                  style: text.labelMedium?.copyWith(
-                    color: AppColors.progressWarning,
+                Expanded(
+                  child: Text(
+                    context.l10n.recoveryOverdueLine(
+                      '${progress.overduePercent}',
+                      CurrencyFormatter.format(progress.overdue),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.labelMedium?.copyWith(
+                      color: AppColors.progressWarning,
+                    ),
                   ),
                 ),
               ],

@@ -1,3 +1,4 @@
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:flutter/material.dart';
 
 class ErrorScreen extends StatelessWidget {
@@ -8,7 +9,12 @@ class ErrorScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(child: Text("404! Page not found.")),
+          child: SingleChildScrollView(
+            child: Text(
+              context.l10n.errorPageNotFound,
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
     );

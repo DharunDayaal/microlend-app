@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_chip_select.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -93,9 +95,12 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
             Expanded(
               child: Text(
                 usingDefaults
-                    ? 'Using your saved defaults '
-                          '(${_pct(d.feePercent)} fee, ${_pct(d.interestPercent)} interest, ${_num(d.months)} months)'
-                    : 'You changed the saved defaults',
+                    ? context.l10n.termsUsingDefaults(
+                        _pct(d.feePercent),
+                        _pct(d.interestPercent),
+                        _num(d.months),
+                      )
+                    : context.l10n.termsChangedDefaults,
                 style: text.labelMedium?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                 ),
@@ -110,7 +115,7 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                     interestPercent: d.interestPercent,
                   ),
                 ),
-                child: const Text('Reset'),
+                child: Text(context.l10n.commonReset),
               ),
           ],
         ),
@@ -121,7 +126,7 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _SectionLabel('Sanctioned principal amount'),
+              _SectionLabel(context.l10n.termsPrincipal),
               AppGap.h12,
               _NumberStepper(
                 value: t.principal,
@@ -160,12 +165,20 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
             children: [
               Row(
                 children: [
-                  const Expanded(
-                    child: _SectionLabel('Repayment term (months)'),
+                  Expanded(
+                    child: _SectionLabel(context.l10n.termsRepaymentMonths),
                   ),
-                  Text(
-                    'Weekly center meetings',
-                    style: text.labelMedium?.copyWith(color: AppColors.success),
+                  AppGap.w8,
+                  Flexible(
+                    child: Text(
+                      context.l10n.termsWeeklyMeetings,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: text.labelMedium?.copyWith(
+                        color: AppColors.success,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -175,7 +188,7 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                 step: 0.5,
                 min: t.limits.minMonths,
                 max: t.limits.maxMonths,
-                suffix: 'Months',
+                suffix: context.l10n.termsMonths,
                 formatters: [
                   ProgressiveDecimalFormatter(
                     decimalPlaces: 1,
@@ -195,13 +208,13 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Calculated: $weeks Weeks (4 wks / month cadence)',
+                        context.l10n.termsCalculatedWeeks(weeks),
                         style: text.labelMedium,
                       ),
                     ),
                     const SizedBox(width: AppSizes.sm),
                     AppChip(
-                      label: 'Auto-computed',
+                      label: context.l10n.termsAutoComputed,
                       radius: AppSizes.radiusSm,
                       backgroundColor: AppColors.successContainer.withAlpha(
                         AppAlphas.badgeFill,
@@ -224,8 +237,10 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                   for (final m in _monthChips)
                     ChipOption(
                       value: m,
-                      label:
-                          '${m.toStringAsFixed(1)} Mo (${(m * 4).round()} Wks)',
+                      label: context.l10n.termsMonthChip(
+                        m.toStringAsFixed(1),
+                        (m * 4).round(),
+                      ),
                     ),
                 ],
               ),
@@ -240,24 +255,24 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
           children: [
             Expanded(
               child: _RatePanel(
-                title: 'Upfront fee',
+                title: context.l10n.termsUpfrontFeeLower,
                 amountText: '-${CurrencyFormatter.format(t.upfrontFee)}',
                 amountColor: AppColors.warning,
                 value: t.feePercent,
                 max: t.limits.maxFeePercent,
-                caption: 'Processing & risk cover',
+                caption: context.l10n.termsProcessingRisk,
                 onChanged: (v) => _update(t.copyWith(feePercent: v)),
               ),
             ),
             AppGap.w12,
             Expanded(
               child: _RatePanel(
-                title: 'Interest rate',
+                title: context.l10n.termsInterestRate,
                 amountText: '+${CurrencyFormatter.format(t.interest)}',
                 amountColor: AppColors.success,
                 value: t.interestPercent,
                 max: t.limits.maxInterestPercent,
-                caption: 'Flat on principal, once',
+                caption: context.l10n.termsFlatOnPrincipal,
                 onChanged: (v) => _update(t.copyWith(interestPercent: v)),
               ),
             ),
@@ -270,13 +285,21 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
           children: [
             Expanded(
               child: Text(
-                'Disbursed: Today, ${DateFormatter.dayMonth(_today)}',
+                context.l10n.termsDisbursedToday(
+                  DateFormatter.dayMonth(_today),
+                ),
                 style: text.labelMedium,
               ),
             ),
-            Text(
-              '1st Due: ${DateFormatter.weekdayDate(_due(1))}',
-              style: text.labelMedium?.copyWith(color: AppColors.success),
+            AppGap.w8,
+            Flexible(
+              child: Text(
+                context.l10n.termsFirstDue(DateFormatter.weekdayDate(_due(1))),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: text.labelMedium?.copyWith(color: AppColors.success),
+              ),
             ),
           ],
         ),
@@ -319,16 +342,16 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Disbursement Breakdown',
+                context.l10n.termsBreakdown,
                 style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               AppGap.h12,
               _Line(
-                label: 'Gross Sanctioned Principal',
+                label: context.l10n.termsGrossPrincipal,
                 value: CurrencyFormatter.format(t.principal),
               ),
               _Line(
-                label: 'Processing & Risk Cover (${_pct(t.feePercent)})',
+                label: context.l10n.termsProcessingRiskPct(_pct(t.feePercent)),
                 value: '-${CurrencyFormatter.format(t.upfrontFee)}',
                 valueColor: AppColors.progressDanger,
               ),
@@ -358,13 +381,13 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'NET CASH HANDOVER',
+                            context.l10n.disburseNetCash,
                             style: text.labelSmall?.copyWith(
                               color: AppColors.progressSuccess,
                             ),
                           ),
                           Text(
-                            'PHYSICAL DISBURSEMENT',
+                            context.l10n.termsPhysicalDisbursement,
                             style: text.labelLarge?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -387,12 +410,14 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
               ),
               AppGap.h8,
               _Line(
-                label: 'Flat Interest Added (${_pct(t.interestPercent)})',
+                label: context.l10n.termsFlatInterestAdded(
+                  _pct(t.interestPercent),
+                ),
                 value: '+${CurrencyFormatter.format(t.interest)}',
                 valueColor: AppColors.progressSuccess,
               ),
               _Line(
-                label: 'Total Repayable (Principal + Int)',
+                label: context.l10n.termsTotalRepayablePI,
                 value: CurrencyFormatter.format(t.totalPayable),
                 bold: true,
               ),
@@ -410,15 +435,17 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Weekly Installment ($weeks Weeks)',
+                            context.l10n.termsWeeklyInstallmentWeeks(weeks),
                             style: text.labelLarge?.copyWith(
                               color: AppColors.stepCurrentLabel,
                             ),
                           ),
                           Text(
                             day.isEmpty
-                                ? 'Weekly collection'
-                                : 'Every ${TextFormatter.enumLabel(day)} collection',
+                                ? context.l10n.termsWeeklyCollection
+                                : context.l10n.termsEveryDayCollection(
+                                    weekdayLabel(context, day),
+                                  ),
                             style: text.labelMedium?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -436,7 +463,7 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                         ),
                         children: [
                           TextSpan(
-                            text: ' / wk',
+                            text: context.l10n.termsPerWeekShort,
                             style: text.labelMedium?.copyWith(
                               color: AppColors.stepCurrentLabel,
                             ),
@@ -459,10 +486,14 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
             children: [
               Row(
                 children: [
-                  const Expanded(
-                    child: _SectionLabel('Schedule milestone preview'),
+                  Expanded(
+                    child: _SectionLabel(context.l10n.termsMilestonePreview),
                   ),
-                  Text('$weeks Total Weeks', style: text.labelMedium),
+                  AppGap.w8,
+                  Text(
+                    context.l10n.termsTotalWeeks(weeks),
+                    style: text.labelMedium,
+                  ),
                 ],
               ),
               AppGap.h12,
@@ -486,15 +517,15 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
                   ),
                   label: Text(
                     _showSchedule
-                        ? 'Hide amortization'
-                        : 'View detailed $weeks-week amortization',
+                        ? context.l10n.termsHideAmortization
+                        : context.l10n.termsViewAmortization(weeks),
                   ),
                 ),
               ),
               if (_showSchedule && weeks > 0) _amortization(weeks),
               AppGap.h8,
               Text(
-                'Preview only. The final schedule is calculated when the loan is issued.',
+                context.l10n.termsPreviewOnly,
                 style: text.labelSmall?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                 ),
@@ -530,14 +561,17 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
       child: Column(
         children: [
           Text(
-            'Wk #$week (${DateFormatter.dayMonth(_due(week))})',
+            context.l10n.termsWeekDate(
+              week,
+              DateFormatter.dayMonth(_due(week)),
+            ),
             style: text.labelSmall,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           Text(
             last
-                ? 'Final Settlement'
+                ? context.l10n.termsFinalSettlement
                 : CurrencyFormatter.format(_terms.weeklyInstallment),
             textAlign: TextAlign.center,
             style: text.labelLarge?.copyWith(
@@ -575,7 +609,12 @@ class _LoanTermsStepState extends State<LoanTermsStep> {
 
     return Column(
       children: [
-        row(['WEEK', 'DUE', 'INSTALLMENT', 'BALANCE'], style: head),
+        row([
+          context.l10n.termsColWeek,
+          context.l10n.termsColDue,
+          context.l10n.termsColInstallment,
+          context.l10n.termsColBalance,
+        ], style: head),
         const Divider(height: 1, color: AppColors.darkBorder),
         for (var w = 1; w <= weeks; w++)
           row([
@@ -619,6 +658,8 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text.toUpperCase(),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.labelMedium?.copyWith(
         color: AppColors.darkOnSurfaceMuted,
         fontWeight: FontWeight.w700,
@@ -648,6 +689,7 @@ class _Line extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(label, style: text.bodyMedium)),
+          const SizedBox(width: AppSizes.sm),
           Text(
             value,
             style: text.bodyLarge?.copyWith(
@@ -670,7 +712,9 @@ class _BorrowerStrip extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final route = customer.preferredPaymentDay.isEmpty
         ? ''
-        : ' • ${TextFormatter.enumLabel(customer.preferredPaymentDay)} Route';
+        : context.l10n.termsDayRoute(
+            weekdayLabel(context, customer.preferredPaymentDay),
+          );
 
     return _Card(
       child: Row(
@@ -872,7 +916,7 @@ class _NumberStepperState extends State<_NumberStepper> {
       children: [
         _StepButton(
           icon: Icons.remove,
-          tooltip: 'Decrease',
+          tooltip: context.l10n.commonDecrease,
           size: btn,
           onTap: widget.value <= widget.min ? null : () => _bump(-widget.step),
         ),
@@ -927,7 +971,7 @@ class _NumberStepperState extends State<_NumberStepper> {
         SizedBox(width: compact ? 6 : AppSizes.sm),
         _StepButton(
           icon: Icons.add,
-          tooltip: 'Increase',
+          tooltip: context.l10n.commonIncrease,
           size: btn,
           onTap: widget.value >= widget.max ? null : () => _bump(widget.step),
         ),

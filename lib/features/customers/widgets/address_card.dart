@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_section_cards.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -15,7 +16,7 @@ class AddressCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     final line1 = (street == null || street!.trim().isEmpty)
-        ? 'No street on file'
+        ? context.l10n.addressNoStreet
         : street!.trim();
     final line2 = [city, district]
         .where((s) => s != null && s.trim().isNotEmpty)
@@ -25,7 +26,7 @@ class AddressCard extends StatelessWidget {
     return AppSectionCard(
       icon: Icons.location_on_outlined,
       iconColor: AppColors.success,
-      title: 'Address & Location',
+      title: context.l10n.custAddressLocation,
       child: AppInfoTile(
         child: Row(
           children: [

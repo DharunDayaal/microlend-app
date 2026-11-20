@@ -4,6 +4,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
 import 'package:micro_lending_app/data/services/analytics_service.dart';
@@ -26,8 +28,11 @@ FlGridData get _grid => FlGridData(
       const FlLine(color: AppColors.darkBorder, strokeWidth: 1),
 );
 
-String _shortDay(String w) =>
-    w.length < 3 ? w : '${w[0]}${w.substring(1, 3).toLowerCase()}';
+String _shortDay(BuildContext context, String w) {
+  final known = weekdayAbbr(context, w);
+  if (known != w) return known;
+  return w.length < 3 ? w : '${w[0]}${w.substring(1, 3).toLowerCase()}';
+}
 
 // ================= insights =================
 
@@ -54,23 +59,27 @@ class _InsightsCardState extends State<InsightsCard> {
     final f = widget.f;
     return AsyncCard<List<Insight>>(
       cacheKey: 'insights|${widget.level}|${f.scopeKey}',
-      title: 'Insights',
+      title: context.l10n.anInsights,
       skeletonHeight: 120,
       load: () => AnalyticsService.insights(scope: f.scope(widget.level)),
       builder: (context, list) {
         if (list.isEmpty) {
-          return const AnalyticsFrame(
-            title: 'Insights',
-            child: EmptyNote('Insights appear once your customers have loans.'),
+          return AnalyticsFrame(
+            title: context.l10n.anInsights,
+            child: EmptyNote(context.l10n.anInsightsEmpty),
           );
         }
         final shown = _all ? list : list.take(3).toList();
         return AnalyticsFrame(
-          title: 'Insights',
+          title: context.l10n.anInsights,
           trailing: list.length > 3
               ? TextButton(
                   onPressed: () => setState(() => _all = !_all),
-                  child: Text(_all ? 'Show less' : 'See all ${list.length}'),
+                  child: Text(
+                    _all
+                        ? context.l10n.anShowLess
+                        : context.l10n.anSeeAll(list.length),
+                  ),
                 )
               : null,
           child: Column(
@@ -195,7 +204,7 @@ class _TrendCardState extends State<TrendCard> {
 
     return AsyncCard<List<TrendPoint>>(
       cacheKey: 'trend|${widget.level}|${f.key}|$_group',
-      title: 'Collections vs target',
+      title: context.l10n.anCollectionsVsTarget,
       skeletonHeight: 200,
       load: () => AnalyticsService.trend(
         from: f.fromStr,
@@ -207,10 +216,19 @@ class _TrendCardState extends State<TrendCard> {
         final toggle = SegmentedButton<String>(
           showSelectedIcon: false,
           style: const ButtonStyle(visualDensity: VisualDensity.compact),
-          segments: const [
-            ButtonSegment(value: 'day', label: Text('D')),
-            ButtonSegment(value: 'week', label: Text('W')),
-            ButtonSegment(value: 'month', label: Text('M')),
+          segments: [
+            ButtonSegment(
+              value: 'day',
+              label: Text(context.l10n.anGroupDayShort),
+            ),
+            ButtonSegment(
+              value: 'week',
+              label: Text(context.l10n.anGroupWeekShort),
+            ),
+            ButtonSegment(
+              value: 'month',
+              label: Text(context.l10n.anGroupMonthShort),
+            ),
           ],
           selected: {_group},
           onSelectionChanged: (v) => setState(() => _group = v.first),
@@ -219,11 +237,9 @@ class _TrendCardState extends State<TrendCard> {
 
         if (pts.isEmpty || total == 0) {
           return AnalyticsFrame(
-            title: 'Collections vs target',
+            title: context.l10n.anCollectionsVsTarget,
             trailing: toggle,
-            child: const EmptyNote(
-              'No collections in this period. Try a longer range.',
-            ),
+            child: EmptyNote(context.l10n.anNoCollectionsPeriod),
           );
         }
 
@@ -236,10 +252,10 @@ class _TrendCardState extends State<TrendCard> {
         final step = math.max(1, (pts.length / 4).ceil());
 
         return AnalyticsFrame(
-          title: 'Collections vs target',
+          title: context.l10n.anCollectionsVsTarget,
           trailing: toggle,
           child: Semantics(
-            label: 'Collections trend, total ${Money.compact(total)}',
+            label: context.l10n.anTrendSemantics(Money.compact(total)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -250,8 +266,11 @@ class _TrendCardState extends State<TrendCard> {
                   ),
                 ),
                 Text(
-                  'Best ${_group == 'day' ? 'day' : _group}: ${_label(best.label)} '
-                  '${Money.compact(best.collected)}',
+                  switch (_group) {
+                    'day' => context.l10n.anBestDay,
+                    'month' => context.l10n.anBestMonth,
+                    _ => context.l10n.anBestWeek,
+                  }(_label(best.label), Money.compact(best.collected)),
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -304,7 +323,7 @@ class _TrendCardState extends State<TrendCard> {
                                     ? LineTooltipItem(
                                         '${_label(pts[s.x.toInt()].label)}\n'
                                         '${Money.compact(pts[s.x.toInt()].collected)}'
-                                        '${pts[s.x.toInt()].target != null ? ' of ${Money.compact(pts[s.x.toInt()].target!)}' : ''}',
+                                        '${pts[s.x.toInt()].target != null ? context.l10n.anOfTarget(Money.compact(pts[s.x.toInt()].target!)) : ''}',
                                         const TextStyle(fontSize: 12),
                                       )
                                     : null,
@@ -383,26 +402,26 @@ class AgingCard extends StatelessWidget {
 
     return AsyncCard<List<AgingBucket>>(
       cacheKey: 'aging|$level|${f.scopeKey}',
-      title: 'Outstanding by age',
+      title: context.l10n.anOutstandingByAge,
       skeletonHeight: 90,
       load: () => AnalyticsService.aging(scope: f.scope(level)),
       builder: (context, buckets) {
         final total = buckets.fold<double>(0, (s, b) => s + b.outstanding);
         if (buckets.isEmpty || total == 0) {
-          return const AnalyticsFrame(
-            title: 'Outstanding by age',
-            child: EmptyNote('Nothing outstanding right now.'),
+          return AnalyticsFrame(
+            title: context.l10n.anOutstandingByAge,
+            child: EmptyNote(context.l10n.anNothingOutstanding),
           );
         }
 
         return AnalyticsFrame(
-          title: 'Outstanding by age',
+          title: context.l10n.anOutstandingByAge,
           trailing: Text(
             Money.compact(total),
             style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           child: Semantics(
-            label: 'Aging, total outstanding ${Money.compact(total)}',
+            label: context.l10n.anAgingSemantics(Money.compact(total)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -451,8 +470,12 @@ class AgingCard extends StatelessWidget {
                         Expanded(
                           child: Text(buckets[i].label, style: text.bodyMedium),
                         ),
+                        AppGap.w8,
                         Text(
-                          '${buckets[i].loans} loans • ${Money.compact(buckets[i].outstanding)}',
+                          context.l10n.anLoansAmount(
+                            buckets[i].loans,
+                            Money.compact(buckets[i].outstanding),
+                          ),
                           style: text.labelMedium?.copyWith(
                             color: AppColors.darkOnSurfaceMuted,
                           ),
@@ -487,22 +510,22 @@ class StatusCard extends StatelessWidget {
 
     return AsyncCard<List<StatusSlice>>(
       cacheKey: 'status|${f.scopeKey}',
-      title: 'Portfolio health',
+      title: context.l10n.anPortfolioHealth,
       skeletonHeight: 160,
       load: () => AnalyticsService.status(scope: f.scope('admin')),
       builder: (context, slices) {
         final total = slices.fold<int>(0, (s, e) => s + e.count);
         if (total == 0) {
-          return const AnalyticsFrame(
-            title: 'Portfolio health',
-            child: EmptyNote('No loans yet.'),
+          return AnalyticsFrame(
+            title: context.l10n.anPortfolioHealth,
+            child: EmptyNote(context.l10n.anNoLoansYet),
           );
         }
 
         return AnalyticsFrame(
-          title: 'Portfolio health',
+          title: context.l10n.anPortfolioHealth,
           child: Semantics(
-            label: 'Loan status, $total loans',
+            label: context.l10n.anStatusSemantics(total),
             child: Row(
               children: [
                 SizedBox(
@@ -538,7 +561,7 @@ class StatusCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'loans',
+                            context.l10n.anLoansWord,
                             style: text.labelSmall?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -623,7 +646,7 @@ class _CalendarCardState extends State<CalendarCard> {
 
     return AsyncCard<CollectionCalendar>(
       cacheKey: 'cal|${widget.level}|${f.scopeKey}|$_ym',
-      title: 'Collection calendar',
+      title: context.l10n.anCollectionCalendar,
       skeletonHeight: 260,
       load: () =>
           AnalyticsService.calendar(month: _ym, scope: f.scope(widget.level)),
@@ -639,12 +662,12 @@ class _CalendarCardState extends State<CalendarCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                tooltip: 'Previous month',
+                tooltip: context.l10n.anPrevMonth,
                 onPressed: () => _shift(-1),
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
               IconButton(
-                tooltip: 'Next month',
+                tooltip: context.l10n.anNextMonth,
                 onPressed: canNext ? () => _shift(1) : null,
                 icon: const Icon(Icons.chevron_right_rounded),
               ),
@@ -657,8 +680,13 @@ class _CalendarCardState extends State<CalendarCard> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${Money.compact(cal.collected)} of ${Money.compact(cal.target)}'
-                      '${cal.ratePct == null ? '' : ' • ${cal.ratePct!.toStringAsFixed(0)}%'}',
+                      context.l10n.anCollectedOf(
+                            Money.compact(cal.collected),
+                            Money.compact(cal.target),
+                          ) +
+                          (cal.ratePct == null
+                              ? ''
+                              : ' • ${cal.ratePct!.toStringAsFixed(0)}%'),
                       style: text.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -692,14 +720,20 @@ class _CalendarCardState extends State<CalendarCard> {
                           ),
                         ),
                       ),
-                      Text(
-                        picked.isFuture
-                            ? 'Target ${Money.compact(picked.target)}'
-                            : 'Target ${Money.compact(picked.target)} • '
-                                  'Paid ${Money.compact(picked.collected)}'
-                                  '${picked.ratePct == null ? '' : ' • ${picked.ratePct!.toStringAsFixed(0)}%'}',
-                        style: text.labelMedium?.copyWith(
-                          color: AppColors.darkOnSurfaceMuted,
+                      AppGap.w8,
+                      Flexible(
+                        child: Text(
+                          picked.isFuture
+                              ? context.l10n.anTargetAmount(
+                                  Money.compact(picked.target),
+                                )
+                              : '${context.l10n.anTargetAmount(Money.compact(picked.target))} • '
+                                    '${context.l10n.anPaidAmount(Money.compact(picked.collected))}'
+                                    '${picked.ratePct == null ? '' : ' • ${picked.ratePct!.toStringAsFixed(0)}%'}',
+                          textAlign: TextAlign.end,
+                          style: text.labelMedium?.copyWith(
+                            color: AppColors.darkOnSurfaceMuted,
+                          ),
                         ),
                       ),
                     ],
@@ -718,12 +752,12 @@ class _CalendarCardState extends State<CalendarCard> {
                       ),
                     ),
                     icon: const Icon(Icons.list_alt_outlined),
-                    label: const Text('Open due list'),
+                    label: Text(context.l10n.anOpenDueList),
                   ),
                 ),
               ] else
                 Text(
-                  'Tap a day for its target and collection.',
+                  context.l10n.anTapDay,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -773,10 +807,10 @@ class CalendarHeatmap extends StatelessWidget {
         label:
             '${DateFormat('d MMMM').format(d.date)}, '
             '${d.isFuture
-                ? 'upcoming'
+                ? context.l10n.anDayUpcoming
                 : rate == null
-                ? 'nothing due'
-                : '${rate.round()} percent collected'}',
+                ? context.l10n.anDayNothingDue
+                : context.l10n.ringPercentCollected(rate.round())}',
         child: GestureDetector(
           onTap: () => onSelect(d),
           child: Container(
@@ -876,7 +910,7 @@ class WeekdayCard extends StatelessWidget {
 
     return AsyncCard<List<WeekdayRow>>(
       cacheKey: 'weekday|$level|${f.key}',
-      title: 'By weekday',
+      title: context.l10n.anByWeekday,
       skeletonHeight: 180,
       load: () => AnalyticsService.byWeekday(
         from: f.fromStr,
@@ -889,18 +923,16 @@ class WeekdayCard extends StatelessWidget {
           (m, r) => math.max(m, math.max(r.target, r.collected)),
         );
         if (rows.isEmpty || maxY == 0) {
-          return const AnalyticsFrame(
-            title: 'By weekday',
-            child: EmptyNote(
-              'No collections in this period. Try a longer range.',
-            ),
+          return AnalyticsFrame(
+            title: context.l10n.anByWeekday,
+            child: EmptyNote(context.l10n.anNoCollectionsPeriod),
           );
         }
 
         return AnalyticsFrame(
-          title: 'By weekday',
+          title: context.l10n.anByWeekday,
           child: Semantics(
-            label: 'Target against collected for each weekday',
+            label: context.l10n.anWeekdaySemantics,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -928,7 +960,7 @@ class WeekdayCard extends StatelessWidget {
                               return Padding(
                                 padding: const EdgeInsets.only(top: 6),
                                 child: Text(
-                                  '${_shortDay(rows[i].weekday)}\n${rows[i].customers}',
+                                  '${_shortDay(context, rows[i].weekday)}\n${rows[i].customers}',
                                   textAlign: TextAlign.center,
                                   style: text.labelSmall?.copyWith(
                                     color: AppColors.darkOnSurfaceMuted,
@@ -944,7 +976,7 @@ class WeekdayCard extends StatelessWidget {
                           getTooltipColor: (_) => AppColors.darkBorder,
                           getTooltipItem: (group, _, rod, rodIndex) =>
                               BarTooltipItem(
-                                '${rodIndex == 0 ? 'Target' : 'Collected'} ${Money.compact(rod.toY)}',
+                                '${rodIndex == 0 ? context.l10n.anTarget : context.l10n.anCollected} ${Money.compact(rod.toY)}',
                                 const TextStyle(fontSize: 12),
                               ),
                         ),
@@ -982,16 +1014,23 @@ class WeekdayCard extends StatelessWidget {
                       color: AppColors.darkBorder,
                     ),
                     AppGap.w8,
-                    Text('Target', style: text.labelMedium),
+                    Text(context.l10n.anTarget, style: text.labelMedium),
                     AppGap.w12,
                     Container(width: 10, height: 10, color: AppColors.success),
                     AppGap.w8,
-                    Text('Collected', style: text.labelMedium),
+                    Text(context.l10n.anCollected, style: text.labelMedium),
+                    AppGap.w12,
                     const Spacer(),
-                    Text(
-                      'Customers under each day',
-                      style: text.labelSmall?.copyWith(
-                        color: AppColors.darkOnSurfaceMuted,
+                    Flexible(
+                      flex: 3,
+                      child: Text(
+                        context.l10n.anCustomersUnderDay,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: text.labelSmall?.copyWith(
+                          color: AppColors.darkOnSurfaceMuted,
+                        ),
                       ),
                     ),
                   ],
@@ -1031,16 +1070,16 @@ class _CohortCardState extends State<CohortCard> {
 
     return AsyncCard<List<Cohort>>(
       cacheKey: 'cohorts|${f.scopeKey}',
-      title: 'Repayment by issue month',
+      title: context.l10n.anRepaymentByMonth,
       skeletonHeight: 220,
       load: () => AnalyticsService.cohorts(scope: f.scope('admin')),
       builder: (context, all) {
         final toggle = SegmentedButton<bool>(
           showSelectedIcon: false,
           style: const ButtonStyle(visualDensity: VisualDensity.compact),
-          segments: const [
-            ButtonSegment(value: false, label: Text('Repaid')),
-            ButtonSegment(value: true, label: Text('On track')),
+          segments: [
+            ButtonSegment(value: false, label: Text(context.l10n.anRepaid)),
+            ButtonSegment(value: true, label: Text(context.l10n.anOnTrack)),
           ],
           selected: {_onTrack},
           onSelectionChanged: (v) => setState(() => _onTrack = v.first),
@@ -1049,11 +1088,9 @@ class _CohortCardState extends State<CohortCard> {
         final cohorts = all.where((c) => c.curve.isNotEmpty).toList();
         if (cohorts.isEmpty) {
           return AnalyticsFrame(
-            title: 'Repayment by issue month',
+            title: context.l10n.anRepaymentByMonth,
             trailing: toggle,
-            child: const EmptyNote(
-              'Cohorts appear once loans have been issued for a few weeks.',
-            ),
+            child: EmptyNote(context.l10n.anCohortsEmpty),
           );
         }
 
@@ -1086,10 +1123,10 @@ class _CohortCardState extends State<CohortCard> {
             : null;
 
         return AnalyticsFrame(
-          title: 'Repayment by issue month',
+          title: context.l10n.anRepaymentByMonth,
           trailing: toggle,
           child: Semantics(
-            label: 'Repayment curves for each issue month',
+            label: context.l10n.anCohortSemantics,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1131,7 +1168,7 @@ class _CohortCardState extends State<CohortCard> {
                         ),
                         bottomTitles: AxisTitles(
                           axisNameWidget: Text(
-                            'Weeks since issue',
+                            context.l10n.anWeeksSinceIssue,
                             style: text.labelSmall?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -1156,7 +1193,7 @@ class _CohortCardState extends State<CohortCard> {
                             for (final s in spots)
                               LineTooltipItem(
                                 '${_month(cohorts[s.barIndex].cohort)}\n'
-                                'Week ${s.x.toInt()}: ${s.y.toStringAsFixed(1)}%',
+                                '${context.l10n.anWeekPercent(s.x.toInt(), s.y.toStringAsFixed(1))}',
                                 const TextStyle(fontSize: 12),
                               ),
                           ],
@@ -1209,9 +1246,16 @@ class _CohortCardState extends State<CohortCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${_month(focus.cohort)}: ${focus.loans} loans • '
-                        '${CurrencyFormatter.format(focus.nominal)}'
-                        '${focus.defaultRatePct == null ? '' : ' • ${focus.defaultRatePct!.toStringAsFixed(1)}% defaulted'}',
+                        context.l10n.anCohortSummary(
+                              _month(focus.cohort),
+                              focus.loans,
+                              CurrencyFormatter.format(focus.nominal),
+                            ) +
+                            (focus.defaultRatePct == null
+                                ? ''
+                                : context.l10n.anPercentDefaulted(
+                                    focus.defaultRatePct!.toStringAsFixed(1),
+                                  )),
                         style: text.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -1219,11 +1263,21 @@ class _CohortCardState extends State<CohortCard> {
                       const SizedBox(height: 4),
                       Text(
                         last.repaidPct == null
-                            ? 'Too early to read this cohort.'
-                            : 'Loans issued in ${_month(focus.cohort)} have repaid '
-                                  '${last.repaidPct!.toStringAsFixed(0)}% of what they owe after '
-                                  '${last.week} weeks'
-                                  '${gap == null ? '.' : '; the schedule says ${last.onTrackPct!.toStringAsFixed(0)}%, so they are ${gap >= -1 ? 'on track' : 'behind'}.'}',
+                            ? context.l10n.anCohortTooEarly
+                            : context.l10n.anCohortRepaid(
+                                    _month(focus.cohort),
+                                    last.repaidPct!.toStringAsFixed(0),
+                                    last.week,
+                                  ) +
+                                  (gap == null
+                                      ? '.'
+                                      : gap >= -1
+                                      ? context.l10n.anCohortOnTrack(
+                                          last.onTrackPct!.toStringAsFixed(0),
+                                        )
+                                      : context.l10n.anCohortBehind(
+                                          last.onTrackPct!.toStringAsFixed(0),
+                                        )),
                         style: text.labelMedium?.copyWith(
                           color: AppColors.darkOnSurfaceMuted,
                         ),

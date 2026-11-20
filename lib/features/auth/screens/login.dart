@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/auth_app_bar.dart';
@@ -17,7 +18,7 @@ class LoginScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: AuthAppBar(title: 'Select Login Method'),
+      appBar: AuthAppBar(title: context.l10n.authSelectLoginMethod),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -44,9 +45,13 @@ class LoginScreen extends StatelessWidget {
                     Column(
                       spacing: AppSizes.lg,
                       children: [
-                        Text('Welcome back', style: textTheme.headlineMedium),
                         Text(
-                          'Select your preferred sign in method to access you field ledger and daily collections.',
+                          context.l10n.authWelcomeBack,
+                          style: textTheme.headlineMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          context.l10n.authSelectMethodSubtitle,
                           style: textTheme.bodyMedium,
                           textAlign: TextAlign.center,
                         ),
@@ -55,9 +60,8 @@ class LoginScreen extends StatelessWidget {
                     AppGap.w8,
                     LoginCard(
                       icon: Icons.email_outlined,
-                      title: "Email & Password",
-                      subTitle:
-                          "Sign in using your registered email address...",
+                      title: context.l10n.authEmailPassword,
+                      subTitle: context.l10n.authEmailPasswordSubtitle,
                       onPressed: () => context.push(AppRoutes.loginWithEmail),
                       bgColor: AppColors.darkPrimary.withAlpha(
                         AppAlphas.badgeFill,
@@ -66,8 +70,8 @@ class LoginScreen extends StatelessWidget {
                     ),
                     LoginCard(
                       icon: Icons.phone_android_rounded,
-                      title: "Phone OTP verification",
-                      subTitle: "Instant login via 6-digit OTP verification directly to the registered mobile number",
+                      title: context.l10n.authPhoneOtp,
+                      subTitle: context.l10n.authPhoneOtpSubtitle,
                       onPressed: () => context.push(AppRoutes.loginWithPhone),
                       bgColor: AppColors.successContainer.withAlpha(
                         AppAlphas.badgeFill,
@@ -87,7 +91,7 @@ class LoginScreen extends StatelessWidget {
                             height: 10,
                           ),
                         ),
-                        Text("OR", style: textTheme.bodySmall),
+                        Text(context.l10n.commonOr, style: textTheme.bodySmall),
                         const Expanded(
                           child: Divider(
                             thickness: 1,
@@ -104,13 +108,14 @@ class LoginScreen extends StatelessWidget {
                       spacing: 4,
                       children: [
                         Text(
-                          "Don't have an account?",
+                          context.l10n.authNoAccount,
+                          textAlign: TextAlign.center,
                           style: textTheme.bodyLarge,
                         ),
                         GestureDetector(
                           onTap: () => context.push(AppRoutes.register),
                           child: Text(
-                            "Register here",
+                            context.l10n.authRegisterHere,
                             style: textTheme.bodyLarge?.copyWith(
                               color: AppColors.progressSuccess,
                               fontWeight: FontWeight.w700,

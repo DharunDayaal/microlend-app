@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -114,7 +115,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
       );
       if (!mounted) return;
 
-      AppSnackbar.success(context, "A new verification code has been sent.");
+      AppSnackbar.success(context, context.l10n.authNewCodeSent);
       _otp.clear();
       setState(() {
         _cooldown += 30;
@@ -135,7 +136,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
   Future<void> _submit() async {
     if (_loading) return;
     if (_otp.text.length < 6) {
-      setState(() => _otpError = "Please enter the complete 6-digit code");
+      setState(() => _otpError = context.l10n.authEnterComplete6);
       return;
     }
     DeviceUtils.hideKeyboard(context);
@@ -163,11 +164,13 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
     final scaffoldBackgroundColor = Theme.of(context).scaffoldBackgroundColor;
     final textTheme = Theme.of(context).textTheme;
 
-    final buttonText = _isOtpSent ? "Verify & continue" : "Send OTP";
+    final buttonText = _isOtpSent
+        ? context.l10n.authVerifyContinue
+        : context.l10n.authSendOtp;
 
     return Scaffold(
       backgroundColor: scaffoldBackgroundColor,
-      appBar: AuthAppBar(title: "OTP Login"),
+      appBar: AuthAppBar(title: context.l10n.authOtpLogin),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -190,11 +193,11 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                           spacing: AppSizes.xs,
                           children: [
                             Text(
-                              "Login with OTP",
+                              context.l10n.authLoginWithOtp,
                               style: textTheme.headlineMedium,
                             ),
                             Text(
-                              "Enter 6 digit verification code sent via secure SMS to your registered mobile.",
+                              context.l10n.authOtpSubtitle,
                               style: textTheme.bodyMedium,
                             ),
                           ],
@@ -226,9 +229,12 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                       height: 10,
                                     ),
                                   ),
-                                  Text(
-                                    "OR QUICK SWITCH",
-                                    style: textTheme.bodySmall,
+                                  Flexible(
+                                    child: Text(
+                                      context.l10n.authOrQuickSwitch,
+                                      style: textTheme.bodySmall,
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                   const Expanded(
                                     child: Divider(
@@ -240,7 +246,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                 ],
                               ),
                               AppButton(
-                                label: "Log in with email",
+                                label: context.l10n.authLoginWithEmail,
                                 onPressed: () =>
                                     context.push(AppRoutes.loginWithEmail),
                                 outlined: true,
@@ -253,11 +259,11 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                     context.push(AppRoutes.register),
                                 child: Text.rich(
                                   TextSpan(
-                                    text: "Don't have an account? ",
+                                    text: context.l10n.authNoAccountInline,
                                     style: textTheme.bodyMedium,
                                     children: [
                                       TextSpan(
-                                        text: "Create account",
+                                        text: context.l10n.authCreateAccount,
                                         style: textTheme.bodyMedium?.copyWith(
                                           color: AppColors.success,
                                           fontWeight: FontWeight.bold,
@@ -323,8 +329,9 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Registered number",
+                            context.l10n.authRegisteredNumber,
                             style: textTheme.headlineSmall,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
@@ -372,7 +379,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                 alignment: Alignment.centerRight,
                 child: _secondsRemaining > 0
                     ? Text(
-                        "Resend code in ${_secondsRemaining}s",
+                        context.l10n.otpResendIn(_secondsRemaining),
                         style: textTheme.bodySmall?.copyWith(
                           color: AppColors.darkOnSurfaceMuted,
                         ),
@@ -380,7 +387,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                     : TextButton(
                         onPressed: _loading ? null : _resendOtpCode,
                         child: Text(
-                          "Resend OTP",
+                          context.l10n.otpResend,
                           style: textTheme.bodySmall?.copyWith(
                             color: AppColors.success,
                             fontWeight: FontWeight.bold,
@@ -391,8 +398,8 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
             ],
           )
         : AppTextField(
-            label: "Phone Number",
-            hint: "Enter your phone number...",
+            label: context.l10n.authPhoneNumber,
+            hint: context.l10n.authEnterPhoneHint,
             prefixIcon: Icons.phone_android_rounded,
             prefixText: "+91",
             showValidIcon: true,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_chip_select.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -18,14 +19,18 @@ import 'package:micro_lending_app/utils/formatters/phone_formatter.dart';
 import 'package:micro_lending_app/utils/helpers/debouncer.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
 
-final List<Map<String, String>> _loanStatuses = [
-  {"value": "", "label": "All"},
-  {"value": "ACTIVE", "label": "Active"},
-  {"value": "OVERDUE", "label": "Overdue"},
-  {"value": "PAID_OFF", "label": "Paid off"},
-  {"value": "DEFAULTED", "label": "Defaulted"},
-  {"value": "CLOSED", "label": "Closed"},
-];
+/// Status filter chips: (API value, translated label).
+List<(String, String)> _loanStatuses(BuildContext context) {
+  final l = context.l10n;
+  return [
+    ('', l.loansFilterAll),
+    ('ACTIVE', l.loansFilterActive),
+    ('OVERDUE', l.loansFilterOverdue),
+    ('PAID_OFF', l.loansFilterPaidOff),
+    ('DEFAULTED', l.loansFilterDefaulted),
+    ('CLOSED', l.loansFilterClosed),
+  ];
+}
 
 class LoansScreen extends StatefulWidget {
   const LoansScreen({super.key});
@@ -176,7 +181,7 @@ class _LoansScreenState extends State<LoansScreen> {
                     label: "",
                     showHeader: false,
                     prefixIcon: Icons.search,
-                    hint: "Search loan by name and phone number...",
+                    hint: context.l10n.loansSearchHint,
                     controller: _searchController,
                     onChanged: _onSearchChanged,
                     textInputAction: TextInputAction.done,
@@ -189,11 +194,8 @@ class _LoansScreenState extends State<LoansScreen> {
                     },
                     padding: EdgeInsets.zero,
                     options: [
-                      for (final option in _loanStatuses)
-                        ChipOption(
-                          value: option["value"]!,
-                          label: option["label"]!,
-                        ),
+                      for (final (value, label) in _loanStatuses(context))
+                        ChipOption(value: value, label: label),
                     ],
                   ),
                   AppGap.h4,
@@ -243,10 +245,10 @@ class _LoansScreenState extends State<LoansScreen> {
       return ListView(
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           EmptyView(
             icon: Icons.receipt_long_outlined,
-            message: 'No loans found',
+            message: context.l10n.loansNoneFound,
           ),
         ],
       );
@@ -272,7 +274,7 @@ class _LoansScreenState extends State<LoansScreen> {
           Text(_loadMoreError!, textAlign: TextAlign.center),
           TextButton(
             onPressed: _retryLoadMore,
-            child: const Text('Tap to retry'),
+            child: Text(context.l10n.commonTapToRetry),
           ),
         ],
       );
@@ -281,7 +283,7 @@ class _LoansScreenState extends State<LoansScreen> {
     if (!_hasNext) {
       return Center(
         child: Text(
-          'No more loans',
+          context.l10n.loansNoMore,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );
@@ -306,35 +308,36 @@ class _LoanStatusStyle {
     required this.remaining,
   });
 
-  static _LoanStatusStyle of(LoanModel loan) {
+  static _LoanStatusStyle of(BuildContext context, LoanModel loan) {
+    final l = context.l10n;
     var status = loan.status.toUpperCase();
     // the API can flag a still-ACTIVE loan as overdue
     if (status == 'ACTIVE' && loan.isOverdue) status = 'OVERDUE';
 
     return switch (status) {
       'ACTIVE' => _LoanStatusStyle(
-        label: 'ACTIVE',
+        label: l.loanStageActive,
         bg: AppColors.darkBorder,
         fg: AppColors.darkOnSurface,
         border: AppColors.darkRim,
         remaining: AppColors.warning,
       ),
       'OVERDUE' => _LoanStatusStyle(
-        label: 'OVERDUE',
+        label: l.statusOverdue,
         bg: AppColors.dangerContainer.withAlpha(AppAlphas.borderTint),
         fg: AppColors.progressDanger,
         border: AppColors.dangerContainer,
         remaining: AppColors.progressDanger,
       ),
       'PAID_OFF' => _LoanStatusStyle(
-        label: 'PAID OFF',
+        label: l.loanStagePaidOff,
         bg: AppColors.successContainer.withAlpha(AppAlphas.borderTint),
         fg: AppColors.progressSuccess,
         border: AppColors.successContainer,
         remaining: AppColors.success,
       ),
       'DEFAULTED' => _LoanStatusStyle(
-        label: 'DEFAULTED',
+        label: l.loanStageDefaulted,
         bg: AppColors.darkBorder,
         fg: AppColors.darkOnSurface,
         border: AppColors.darkRim,
@@ -403,7 +406,7 @@ class _LoanTile extends StatelessWidget {
     final muted = text.labelMedium?.copyWith(
       color: AppColors.darkOnSurfaceMuted,
     );
-    final s = _LoanStatusStyle.of(loan);
+    final s = _LoanStatusStyle.of(context, loan);
 
     final settled = loan.outstandingAmount <= 0;
     final remainingColor = settled ? AppColors.success : s.remaining;
@@ -439,7 +442,9 @@ class _LoanTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      'call ${PhoneFormatter.display(loan.phoneNumber ?? '')}',
+                      context.l10n.loansCallPhone(
+                        PhoneFormatter.display(loan.phoneNumber ?? ''),
+                      ),
                       style: text.bodySmall,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -461,8 +466,10 @@ class _LoanTile extends StatelessWidget {
                   const SizedBox(height: AppSizes.xs),
                   Text(
                     loan.status.toUpperCase() == 'PAID_OFF'
-                        ? 'Settled'
-                        : '${CurrencyFormatter.format(loan.weeklyPayableAmount)}/wk',
+                        ? context.l10n.loansSettled
+                        : context.l10n.loansPerWeek(
+                            CurrencyFormatter.format(loan.weeklyPayableAmount),
+                          ),
                     style: text.bodySmall?.copyWith(
                       color: loan.status.toUpperCase() == 'PAID_OFF'
                           ? AppColors.success
@@ -480,7 +487,7 @@ class _LoanTile extends StatelessWidget {
               children: [
                 Expanded(
                   child: _Stat(
-                    label: 'Total Payable',
+                    label: context.l10n.loansTotalPayable,
                     value: CurrencyFormatter.format(loan.totalPayableAmount),
                     valueStyle: text.headlineSmall,
                     labelStyle: muted,
@@ -488,7 +495,7 @@ class _LoanTile extends StatelessWidget {
                 ),
                 Expanded(
                   child: _Stat(
-                    label: 'Collected',
+                    label: context.l10n.loansCollected,
                     value: CurrencyFormatter.format(loan.totalCollected),
                     valueStyle: text.bodyLarge?.copyWith(
                       color: collectedColor,
@@ -499,7 +506,7 @@ class _LoanTile extends StatelessWidget {
                 ),
                 Expanded(
                   child: _Stat(
-                    label: 'Remaining',
+                    label: context.l10n.loansRemaining,
                     value: CurrencyFormatter.format(loan.outstandingAmount),
                     valueStyle: text.bodyLarge?.copyWith(
                       color: remainingColor,
@@ -516,15 +523,22 @@ class _LoanTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Disbursed: ${CurrencyFormatter.format(loan.disbursedAmount)}',
-                style: muted,
+              Expanded(
+                child: Text(
+                  context.l10n.loansDisbursed(
+                    CurrencyFormatter.format(loan.disbursedAmount),
+                  ),
+                  style: muted,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
+              AppGap.w8,
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'View Ledger',
+                    context.l10n.loansViewLedger,
                     style: text.labelLarge?.copyWith(
                       color: AppColors.stepCurrentLabel,
                     ),

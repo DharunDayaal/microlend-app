@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
@@ -116,7 +117,10 @@ class _TracksModalState extends State<TracksModal> {
         Expanded(
           child: rows.isEmpty
               ? Center(
-                  child: Text('No tracks found', style: textTheme.bodyMedium),
+                  child: Text(
+                    context.l10n.tracksNoneFound,
+                    style: textTheme.bodyMedium,
+                  ),
                 )
               : ListView.separated(
                   padding: EdgeInsets.fromLTRB(
@@ -168,7 +172,7 @@ class _TracksModalState extends State<TracksModal> {
                   children: [
                     Flexible(
                       child: Text(
-                        'Repayment Tracks',
+                        context.l10n.tracksTitle,
                         style: textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -177,7 +181,7 @@ class _TracksModalState extends State<TracksModal> {
                       ),
                     ),
                     AppChip(
-                      label: '${widget.totalWeeks} Wks',
+                      label: context.l10n.tracksWeeksShort(widget.totalWeeks),
                       backgroundColor: AppColors.darkBorder.withAlpha(
                         AppAlphas.badgeFill,
                       ),
@@ -188,8 +192,10 @@ class _TracksModalState extends State<TracksModal> {
                   ],
                 ),
                 Text(
-                  '${widget.customerName} • Active Facility '
-                  '${TextFormatter.dummyId(widget.loanId, "#LN")}',
+                  context.l10n.tracksSubtitle(
+                    widget.customerName,
+                    TextFormatter.dummyId(widget.loanId, "#LN"),
+                  ),
                   style: textTheme.labelLarge,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -230,8 +236,8 @@ class _TracksModalState extends State<TracksModal> {
         children: [
           Expanded(
             child: _StatBadgeCard(
-              title: 'COMPLETED',
-              subtitle: '$totalCompleted Paid',
+              title: context.l10n.tracksCompleted,
+              subtitle: context.l10n.tracksPaidCount(totalCompleted),
               textTheme: textTheme,
               titleColor: AppColors.stepCurrentLabel,
               subtitleColor: AppColors.success,
@@ -239,8 +245,8 @@ class _TracksModalState extends State<TracksModal> {
           ),
           Expanded(
             child: _StatBadgeCard(
-              title: 'PARTIAL',
-              subtitle: '$totalPartials Track',
+              title: context.l10n.statusPartial,
+              subtitle: context.l10n.tracksTrackCount(totalPartials),
               textTheme: textTheme,
               titleColor: AppColors.warning,
               subtitleColor: AppColors.warning,
@@ -248,7 +254,7 @@ class _TracksModalState extends State<TracksModal> {
           ),
           Expanded(
             child: _StatBadgeCard(
-              title: 'FACILITY BAL',
+              title: context.l10n.tracksFacilityBal,
               subtitle: CurrencyFormatter.format(widget.remainingBalance),
               textTheme: textTheme,
               titleColor: AppColors.darkHint,

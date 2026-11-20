@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_chip_select.dart';
@@ -199,7 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final textButtonTheme = Theme.of(context).textButtonTheme;
 
     return Scaffold(
-      appBar: AuthAppBar(title: "Registeration"),
+      appBar: AuthAppBar(title: context.l10n.regTitle),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -223,34 +224,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               icon: Icons.arrow_back_ios,
                               onPressed: () => setState(() => _step = 0),
                             ),
-                            Text("Back to step 1", style: textTheme.bodyLarge),
+                            Expanded(
+                              child: Text(
+                                context.l10n.regBackToStep1,
+                                style: textTheme.bodyLarge,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ],
                       AppStepProgress(
                         steps: [
                           StepItem(
-                            title: "Step 1",
-                            subtitle: "Personal Details",
-                            doneSubtitle: "Done",
+                            title: context.l10n.regStepN(1),
+                            subtitle: context.l10n.regPersonalDetails,
+                            doneSubtitle: context.l10n.commonDone,
                           ),
                           StepItem(
-                            title: "Step 2",
-                            subtitle: "Lending Terms",
-                            doneSubtitle: "Done",
+                            title: context.l10n.regStepN(2),
+                            subtitle: context.l10n.regLendingTerms,
+                            doneSubtitle: context.l10n.commonDone,
                           ),
                         ],
                         currentStep: _step,
                       ),
                       if (_step == 0) ...[
                         Text(
-                          "Registeration",
+                          context.l10n.regTitle,
                           style: textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "Step 1 of 2: Personal Details. Enter your information to create your account.",
+                          context.l10n.regStep1Subtitle,
                           style: textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.normal,
                           ),
@@ -261,8 +269,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             spacing: AppSizes.xl,
                             children: [
                               AppTextField(
-                                label: "Full name",
-                                hint: "Enter your name",
+                                label: context.l10n.regFullName,
+                                hint: context.l10n.regEnterName,
                                 prefixIcon: Icons.badge_outlined,
                                 labelIcon: Icons.person_outline,
                                 textInputAction: TextInputAction.next,
@@ -271,8 +279,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 validator: AppValidators.name,
                               ),
                               AppTextField(
-                                label: "Phone Number",
-                                hint: "Enter your mobile number",
+                                label: context.l10n.authPhoneNumber,
+                                hint: context.l10n.regEnterMobile,
                                 prefixIcon: Icons.badge_outlined,
                                 labelIcon: Icons.phone_android_outlined,
                                 prefixText: "+91",
@@ -283,8 +291,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 validator: AppValidators.phone,
                               ),
                               AppTextField(
-                                label: "Email Address",
-                                hint: "Enter your email address",
+                                label: context.l10n.authEmailAddress,
+                                hint: context.l10n.resetEnterEmail,
                                 prefixIcon: Icons.alternate_email_outlined,
                                 labelIcon: Icons.email_outlined,
                                 textInputAction: TextInputAction.next,
@@ -298,8 +306,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 },
                               ),
                               AppTextField(
-                                label: "Create Password",
-                                hint: "Enter your password",
+                                label: context.l10n.regCreatePassword,
+                                hint: context.l10n.regEnterPassword,
                                 prefixIcon: Icons.password_outlined,
                                 labelIcon: Icons.lock_reset_rounded,
                                 focusNode: _passwordFocusNode,
@@ -317,13 +325,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (_showSecurityRating) ...[
                                 AppSecurityRating(
                                   level: _strength,
-                                  title: 'Security Rating',
+                                  title: context.l10n.regSecurityRating,
                                   showLevelLabel: true,
-                                  levelLabels: const [
-                                    'Low',
-                                    'Medium',
-                                    'High',
-                                    'Excellent',
+                                  levelLabels: [
+                                    context.l10n.regStrengthLow,
+                                    context.l10n.regStrengthMedium,
+                                    context.l10n.regStrengthHigh,
+                                    context.l10n.regStrengthExcellent,
                                   ],
                                   levelColors: const [
                                     Colors.red,
@@ -338,13 +346,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ] else ...[
                         Text(
-                          "Lending Terms",
+                          context.l10n.regLendingTerms,
                           style: textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
-                          "Final step - set your standard lending parameters. These defaults will pre-populate your loan origination calculator.",
+                          context.l10n.regLendingSubtitle,
                           style: textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.normal,
                           ),
@@ -362,46 +370,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         AppNameCard(name: _nameController.text),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              spacing: AppSizes.sm,
-                                              children: [
-                                                Text(
-                                                  "VERIFIED PROFILE",
-                                                  style: textTheme.labelLarge
-                                                      ?.copyWith(
-                                                        color:
-                                                            AppColors.success,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                ),
-                                                Icon(
-                                                  Icons.verified_outlined,
-                                                  size: AppSizes.lg,
-                                                  color: AppColors.success,
-                                                ),
-                                              ],
-                                            ),
-                                            Text(
-                                              TextFormatter.titleCase(
-                                                _nameController.text,
-                                              ),
-                                              style: textTheme.headlineSmall,
-                                            ),
-                                            Text(
-                                              TextFormatter.titleCase(
-                                                "Field user",
-                                              ),
-                                              style: textTheme.labelLarge
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.w500,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                spacing: AppSizes.sm,
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      context
+                                                          .l10n
+                                                          .regVerifiedProfile,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: textTheme
+                                                          .labelLarge
+                                                          ?.copyWith(
+                                                            color: AppColors
+                                                                .success,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                    ),
                                                   ),
-                                            ),
-                                          ],
+                                                  Icon(
+                                                    Icons.verified_outlined,
+                                                    size: AppSizes.lg,
+                                                    color: AppColors.success,
+                                                  ),
+                                                ],
+                                              ),
+                                              Text(
+                                                TextFormatter.titleCase(
+                                                  _nameController.text,
+                                                ),
+                                                style: textTheme.headlineSmall,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                TextFormatter.titleCase(
+                                                  context.l10n.regFieldUser,
+                                                ),
+                                                style: textTheme.labelLarge
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -410,8 +431,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                               _container(
                                 TermsContent(
-                                  title: "Default Interest Rate",
-                                  statusLabel: "Flat Rate",
+                                  title: context.l10n.termsDefaultInterest,
+                                  statusLabel: context.l10n.termsFlatRate,
                                   statusColor: AppColors.warningContainer
                                       .withAlpha(AppAlphas.badgeFill),
                                   statusLabelColor: AppColors.progressWarning,
@@ -423,22 +444,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ],
                                   prefixIcon: Icons.percent_outlined,
                                   controller: _intrestController,
-                                  hint: "Enter your interest rate",
+                                  hint: context.l10n.termsEnterInterest,
                                   selectedValue: _interestSelected,
                                   footerIcon: Icons.info_outline_rounded,
-                                  footerLabel: "Applied flat across the full loan cycle duration.",
+                                  footerLabel: context.l10n.termsInterestFooter,
                                   onSelected: (value) {
                                     setState(() {
                                       _interestSelected = value;
                                     });
                                   },
-                                  validatorText: "Interest rate",
+                                  validatorText: context.l10n.termsInterestRate,
                                 ),
                               ),
                               _container(
                                 TermsContent(
-                                  title: "Upfront Processing Fee",
-                                  statusLabel: "At Disbursement",
+                                  title: context.l10n.termsUpfrontFee,
+                                  statusLabel: context.l10n.termsAtDisbursement,
                                   statusColor: AppColors.darkBorder.withAlpha(
                                     AppAlphas.badgeFill,
                                   ),
@@ -451,45 +472,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ],
                                   prefixIcon: Icons.receipt_long_outlined,
                                   controller: _feeController,
-                                  hint: "Enter your upfront fee",
+                                  hint: context.l10n.termsEnterUpfront,
                                   selectedValue: _feeSelected,
                                   footerIcon: Icons.payments_outlined,
-                                  footerLabel: "Deducted immediately from cash handover upon spot disbursement.",
+                                  footerLabel: context.l10n.termsUpfrontFooter,
                                   onSelected: (value) {
                                     setState(() {
                                       _feeSelected = value;
                                     });
                                   },
-                                  validatorText: "Upfront fee",
+                                  validatorText:
+                                      context.l10n.termsUpfrontFeeShort,
                                 ),
                               ),
                               _container(
                                 TermsContent(
-                                  title: "Total Duration (Months)",
-                                  statusLabel: "Weekly Schedule",
+                                  title: context.l10n.termsTotalDurationMonths,
+                                  statusLabel: context.l10n.termsWeeklySchedule,
                                   statusColor: AppColors.darkPrimary.withAlpha(
                                     AppAlphas.badgeFill,
                                   ),
                                   statusLabelColor: AppColors.darkOnSurface,
                                   chipOptions: [
-                                    ChipOption(value: 2.0, label: "2.0 MO"),
-                                    ChipOption(value: 2.5, label: "2.5 MO"),
-                                    ChipOption(value: 3.0, label: "3.0 MO"),
-                                    ChipOption(value: 4.0, label: "4.0 MO"),
+                                    ChipOption(
+                                      value: 2.0,
+                                      label: context.l10n.termsMonthsShort(
+                                        '2.0',
+                                      ),
+                                    ),
+                                    ChipOption(
+                                      value: 2.5,
+                                      label: context.l10n.termsMonthsShort(
+                                        '2.5',
+                                      ),
+                                    ),
+                                    ChipOption(
+                                      value: 3.0,
+                                      label: context.l10n.termsMonthsShort(
+                                        '3.0',
+                                      ),
+                                    ),
+                                    ChipOption(
+                                      value: 4.0,
+                                      label: context.l10n.termsMonthsShort(
+                                        '4.0',
+                                      ),
+                                    ),
                                   ],
                                   prefixIcon: Icons.calendar_month_outlined,
                                   controller: _monthsController,
-                                  hint: "Enter your interest rate",
+                                  hint: context.l10n.termsEnterInterest,
                                   selectedValue: _monthSelected,
                                   footerIcon: Icons.info_outline_rounded,
-                                  footerLabel: "Applied flat across the full loan cycle duration.",
+                                  footerLabel: context.l10n.termsInterestFooter,
                                   onSelected: (value) {
                                     setState(() {
                                       _monthSelected = value;
                                     });
                                   },
                                   showCalculatedTerm: true,
-                                  validatorText: "Months",
+                                  validatorText: context.l10n.termsMonths,
                                 ),
                               ),
                               Container(
@@ -525,11 +567,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         children: [
                                           Icon(Icons.book_outlined),
                                           AppGap.w8,
-                                          Text(
-                                            "Standard Baseline\nPreview",
-                                            style: textTheme.headlineSmall,
+                                          Expanded(
+                                            child: Text(
+                                              context.l10n.regBaselinePreview,
+                                              style: textTheme.headlineSmall,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
-                                          Spacer(),
+                                          AppGap.w8,
                                           Container(
                                             decoration: BoxDecoration(
                                               color:
@@ -545,7 +591,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               horizontal: AppSizes.sm,
                                             ),
                                             child: Text(
-                                              "${CurrencyFormatter.format(10000)} \nLoan Model",
+                                              context.l10n.regLoanModel(
+                                                CurrencyFormatter.format(10000),
+                                              ),
                                               style: textTheme.labelLarge
                                                   ?.copyWith(
                                                     color: AppColors
@@ -580,7 +628,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  "NET HANDOVER CASH",
+                                                  context.l10n.regNetHandover,
                                                   style: textTheme.labelMedium
                                                       ?.copyWith(
                                                         color: AppColors
@@ -607,8 +655,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 AppGap.h4,
                                                 Text.rich(
                                                   TextSpan(
-                                                    text:
-                                                        "Deducted fee: -${CurrencyFormatter.format(_loanBreakdown.upfrontFee)}\n",
+                                                    text: context.l10n
+                                                        .regDeductedFee(
+                                                          CurrencyFormatter.format(
+                                                            _loanBreakdown
+                                                                .upfrontFee,
+                                                          ),
+                                                        ),
                                                     style: textTheme.bodyMedium
                                                         ?.copyWith(
                                                           color: AppColors
@@ -648,7 +701,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  "TOTAL REPAYABLE",
+                                                  context
+                                                      .l10n
+                                                      .regTotalRepayable,
                                                   style: textTheme.labelMedium
                                                       ?.copyWith(
                                                         color: AppColors
@@ -673,7 +728,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 ),
                                                 AppGap.h4,
                                                 Text(
-                                                  "Includes ${CurrencyFormatter.format(_loanBreakdown.totalInterest)} (${NumberFormatter.percentSymbol(_intrestController.text)})",
+                                                  context.l10n.regIncludesInterest(
+                                                    CurrencyFormatter.format(
+                                                      _loanBreakdown
+                                                          .totalInterest,
+                                                    ),
+                                                    NumberFormatter.percentSymbol(
+                                                      _intrestController.text,
+                                                    ),
+                                                  ),
                                                   style: textTheme.bodyMedium
                                                       ?.copyWith(
                                                         color: AppColors
@@ -702,23 +765,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ),
                                       child: Row(
                                         children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "WEEKLY COLLECTION AMOUNT",
-                                                style: textTheme.labelLarge
-                                                    ?.copyWith(
-                                                      color: AppColors
-                                                          .stepCurrentLabel,
-                                                      fontSize: AppSizes.lg,
-                                                    ),
-                                              ),
-                                              Text(
-                                                "Fixed installment every\nMonday",
-                                              ),
-                                            ],
+                                          Flexible(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  context
+                                                      .l10n
+                                                      .regWeeklyCollection,
+                                                  style: textTheme.labelLarge
+                                                      ?.copyWith(
+                                                        color: AppColors
+                                                            .stepCurrentLabel,
+                                                        fontSize: AppSizes.lg,
+                                                      ),
+                                                ),
+                                                Text(
+                                                  context
+                                                      .l10n
+                                                      .regFixedEveryMonday,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                           AppGap.w8,
                                           Expanded(
@@ -743,12 +812,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                               FontWeight.bold,
                                                         ),
                                                   ),
-                                                  const TextSpan(
-                                                    text: "per week\n",
-                                                  ),
                                                   TextSpan(
                                                     text:
-                                                        "(${LoanHelper.totalWeeksFromMonths(double.tryParse(_monthsController.text) ?? _monthSelected)}) weeks",
+                                                        context.l10n.regPerWeek,
+                                                  ),
+                                                  TextSpan(
+                                                    text: context.l10n.regWeeksParen(
+                                                      LoanHelper.totalWeeksFromMonths(
+                                                        double.tryParse(
+                                                              _monthsController
+                                                                  .text,
+                                                            ) ??
+                                                            _monthSelected,
+                                                      ),
+                                                    ),
                                                     style: textTheme.labelMedium
                                                         ?.copyWith(
                                                           color: AppColors
@@ -784,17 +861,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           Row(
                                             spacing: AppSizes.sm,
                                             children: [
-                                              Text(
-                                                "Installment Schedule",
-                                                style: textTheme.labelLarge,
+                                              Expanded(
+                                                child: Text(
+                                                  context
+                                                      .l10n
+                                                      .regInstallmentSchedule,
+                                                  style: textTheme.labelLarge,
+                                                ),
                                               ),
-                                              Text(
-                                                "Principal + Flat Int.",
-                                                style: textTheme.labelLarge,
+                                              Expanded(
+                                                child: Text(
+                                                  context.l10n.regPrincipalFlat,
+                                                  style: textTheme.labelLarge,
+                                                ),
                                               ),
-                                              Text(
-                                                "Status",
-                                                style: textTheme.labelLarge,
+                                              Flexible(
+                                                child: Text(
+                                                  context.l10n.commonStatus,
+                                                  style: textTheme.labelLarge,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -815,7 +900,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  "Week #01",
+                                                  context.l10n.regWeekHash(
+                                                    '01',
+                                                  ),
                                                   style: textTheme.labelLarge
                                                       ?.copyWith(
                                                         fontSize: AppSizes.lg,
@@ -850,7 +937,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                         ),
                                                   ),
                                                   child: Text(
-                                                    "SCHEDULED",
+                                                    context
+                                                        .l10n
+                                                        .statusScheduled,
                                                     style: textTheme.labelLarge
                                                         ?.copyWith(
                                                           color: AppColors
@@ -880,7 +969,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  "Week #02",
+                                                  context.l10n.regWeekHash(
+                                                    '02',
+                                                  ),
                                                   style: textTheme.labelLarge
                                                       ?.copyWith(
                                                         fontSize: AppSizes.lg,
@@ -915,7 +1006,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                         ),
                                                   ),
                                                   child: Text(
-                                                    "SCHEDULED",
+                                                    context
+                                                        .l10n
+                                                        .statusScheduled,
                                                     style: textTheme.labelLarge
                                                         ?.copyWith(
                                                           color: AppColors
@@ -930,7 +1023,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           ),
                                           AppGap.h16,
                                           Text(
-                                            "+ ${(LoanHelper.totalWeeksFromMonths(double.tryParse(_monthsController.text) ?? _monthSelected)) - 2} additonal Weekly cycles to maturity",
+                                            context.l10n.regAdditionalCycles(
+                                              LoanHelper.totalWeeksFromMonths(
+                                                    double.tryParse(
+                                                          _monthsController
+                                                              .text,
+                                                        ) ??
+                                                        _monthSelected,
+                                                  ) -
+                                                  2,
+                                            ),
+                                            textAlign: TextAlign.center,
                                             style: textTheme.labelLarge,
                                           ),
                                         ],
@@ -949,11 +1052,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: textButtonTheme.style,
                           child: Text.rich(
                             TextSpan(
-                              text: "Already have an account? ",
+                              text: context.l10n.regHaveAccount,
                               style: textTheme.bodyMedium,
                               children: [
                                 TextSpan(
-                                  text: "Sign In",
+                                  text: context.l10n.regSignIn,
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: AppColors.darkOnSurface,
                                     fontWeight: FontWeight.bold,
@@ -1007,23 +1110,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              spacing: AppSizes.sm,
-              children: [
-                const Icon(
-                  Icons.storage_outlined,
-                  size: AppSizes.lg,
-                  color: AppColors.success,
-                ),
-                Text("Draft cached locally", style: textTheme.labelLarge),
-              ],
+            Expanded(
+              child: Row(
+                spacing: AppSizes.sm,
+                children: [
+                  const Icon(
+                    Icons.storage_outlined,
+                    size: AppSizes.lg,
+                    color: AppColors.success,
+                  ),
+                  Flexible(
+                    child: Text(
+                      context.l10n.regDraftCached,
+                      style: textTheme.labelLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Text("STEP ${_step + 1} of 2", style: textTheme.labelLarge),
+            AppGap.w8,
+            Text(
+              context.l10n.regStepOf(_step + 1, 2),
+              style: textTheme.labelLarge,
+            ),
           ],
         ),
         AppGap.h4,
         AppButton(
-          label: "Verify Phone Number",
+          label: context.l10n.regVerifyPhone,
           onPressed: _verifyOtp,
           isLoading: _sendingOtp,
         ),
@@ -1038,23 +1154,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              spacing: AppSizes.sm,
-              children: [
-                const Icon(
-                  Icons.storage_outlined,
-                  size: AppSizes.lg,
-                  color: AppColors.success,
-                ),
-                Text("Draft cached locally", style: textTheme.labelLarge),
-              ],
+            Expanded(
+              child: Row(
+                spacing: AppSizes.sm,
+                children: [
+                  const Icon(
+                    Icons.storage_outlined,
+                    size: AppSizes.lg,
+                    color: AppColors.success,
+                  ),
+                  Flexible(
+                    child: Text(
+                      context.l10n.regDraftCached,
+                      style: textTheme.labelLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Text("STEP ${_step + 1} of 2", style: textTheme.labelLarge),
+            AppGap.w8,
+            Text(
+              context.l10n.regStepOf(_step + 1, 2),
+              style: textTheme.labelLarge,
+            ),
           ],
         ),
         AppGap.h4,
         AppButton(
-          label: "Register",
+          label: context.l10n.regRegister,
           onPressed: _register,
           isLoading: _isRegistering,
         ),
@@ -1268,7 +1397,14 @@ class _TermsContentState extends State<TermsContent> {
                         color: AppColors.progressSuccess,
                       ),
                       AppGap.w8,
-                      Text("Calculate Term:", style: textTheme.labelLarge),
+                      Flexible(
+                        child: Text(
+                          context.l10n.termsCalculateTerm,
+                          style: textTheme.labelLarge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                       AppGap.w8,
                       Expanded(
                         child: Align(
@@ -1278,12 +1414,16 @@ class _TermsContentState extends State<TermsContent> {
                                 .scaleDown, // shrinks only when it doesn't fit
                             child: Text.rich(
                               TextSpan(
-                                text: "${weeks ?? 0} Weeks ",
+                                text: context.l10n.termsWeeksCount(weeks ?? 0),
                                 style: textTheme.headlineSmall?.copyWith(
                                   color: AppColors.progressSuccess,
                                 ),
                                 children: [
-                                  TextSpan(text: "(${days ?? 0} Days)"),
+                                  TextSpan(
+                                    text: context.l10n.termsDaysParen(
+                                      days ?? 0,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -1294,16 +1434,24 @@ class _TermsContentState extends State<TermsContent> {
                   ),
                   Text.rich(
                     TextSpan(
-                      text: "Auto calculated: ",
+                      text: context.l10n.termsAutoCalculated,
                       style: textTheme.labelLarge?.copyWith(
                         color: AppColors.darkOnSurface,
                       ),
                       children: months == null
-                          ? const [TextSpan(text: "enter the number of months")]
+                          ? [TextSpan(text: context.l10n.termsEnterMonths)]
                           : [
-                              TextSpan(text: "${_fmt(months)} months "),
-                              const TextSpan(text: "x 4 weeks = "),
-                              TextSpan(text: "$weeks weekly collections"),
+                              TextSpan(
+                                text: context.l10n.termsMonthsCount(
+                                  _fmt(months),
+                                ),
+                              ),
+                              TextSpan(text: context.l10n.termsTimesFourWeeks),
+                              TextSpan(
+                                text: context.l10n.termsWeeklyCollections(
+                                  weeks ?? 0,
+                                ),
+                              ),
                             ],
                     ),
                   ),

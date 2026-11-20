@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
@@ -164,8 +165,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         valueListenable: AnalyticsService.connection,
                         builder: (_, s, _) => Text(
                           s.updatedAt == null
-                              ? 'Pull down to refresh.'
-                              : 'Updated ${agoLabel(s.updatedAt!)}. Pull down to refresh.',
+                              ? context.l10n.pullToRefresh
+                              : context.l10n.updatedPullRefresh(
+                                  agoLabel(context, s.updatedAt!),
+                                ),
                           textAlign: TextAlign.center,
                           style: text.labelSmall?.copyWith(
                             color: AppColors.darkOnSurfaceMuted,
@@ -199,7 +202,7 @@ class _AdvancedBanner extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     return Semantics(
       button: true,
-      label: 'Advanced analytics. Trends, cohorts and team performance.',
+      label: context.l10n.repAdvancedSemantics,
       child: Material(
         color: AppColors.stepCurrentLabel.withAlpha(24),
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
@@ -220,13 +223,13 @@ class _AdvancedBanner extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Advanced analytics',
+                        context.l10n.menuAnalytics,
                         style: text.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       Text(
-                        'Trends, cohorts and team performance',
+                        context.l10n.repAdvancedSub,
                         style: text.labelMedium?.copyWith(
                           color: AppColors.darkOnSurfaceMuted,
                         ),

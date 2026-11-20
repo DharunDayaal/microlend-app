@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/call_icon_button.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
@@ -59,7 +60,7 @@ class MultiLine extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final maxY = series.expand((s) => s.values).fold<double>(0, math.max);
     if (labels.isEmpty || maxY == 0) {
-      return const EmptyNote('No data in this period. Try a longer range.');
+      return EmptyNote(context.l10n.anNoDataPeriod);
     }
     final step = math.max(1, (labels.length / 4).ceil());
 
@@ -187,7 +188,7 @@ class StackedBars extends StatelessWidget {
     final totals = [for (final s in stacks) s.fold<double>(0, (a, b) => a + b)];
     final maxY = totals.fold<double>(0, math.max);
     if (labels.isEmpty || maxY == 0) {
-      return const EmptyNote('No data in this period. Try a longer range.');
+      return EmptyNote(context.l10n.anNoDataPeriod);
     }
     final step = math.max(1, (labels.length / 5).ceil());
 
@@ -284,7 +285,7 @@ class AgingBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final total = buckets.fold<double>(0, (s, b) => s + b.outstanding);
-    if (total == 0) return const EmptyNote('Nothing outstanding right now.');
+    if (total == 0) return EmptyNote(context.l10n.anNothingOutstanding);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +329,10 @@ class AgingBody extends StatelessWidget {
                 AppGap.w8,
                 Expanded(child: Text(buckets[i].label, style: text.bodyMedium)),
                 Text(
-                  '${buckets[i].loans} loans • ${Money.compact(buckets[i].outstanding)}',
+                  context.l10n.anLoansAmount(
+                    buckets[i].loans,
+                    Money.compact(buckets[i].outstanding),
+                  ),
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -342,10 +346,13 @@ class AgingBody extends StatelessWidget {
 }
 
 /// Top four series by total, everything else as "Others".
+/// [adminLabel] and [othersLabel] let the screen pass translated names.
 (List<String>, List<LineSeries>) splitSeries(
   List<(String period, String? id, double value)> rows,
-  Map<String, String> names,
-) {
+  Map<String, String> names, {
+  String Function(int n)? adminLabel,
+  String othersLabel = 'Others',
+}) {
   final labels = {for (final r in rows) r.$1}.toList()..sort();
   final totals = <String, double>{};
   for (final r in rows) {
@@ -368,13 +375,13 @@ class AgingBody extends StatelessWidget {
     [
       for (var i = 0; i < top.length; i++)
         LineSeries(
-          names[top[i]] ?? 'Admin ${i + 1}',
+          names[top[i]] ?? (adminLabel?.call(i + 1) ?? 'Admin ${i + 1}'),
           kSeries[i],
           values((x) => x == top[i]),
         ),
       if (rest.isNotEmpty)
         LineSeries(
-          'Others',
+          othersLabel,
           AppColors.darkOnSurfaceMuted,
           values(rest.contains),
         ),
@@ -475,7 +482,7 @@ class PulseKpiGrid extends StatelessWidget {
         final (cmp, ov) = d;
         final overdue = KpiMetric(
           key: 'overdue',
-          label: 'Overdue',
+          label: context.l10n.loansFilterOverdue,
           unit: 'count',
           current: ov.overdue.toDouble(),
           previous: 0,
@@ -499,7 +506,7 @@ class PulseKpiGrid extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: AppSizes.sm),
               child: Text(
-                'Compared with the previous ${cmp.days} days',
+                context.l10n.anComparedPrevious(cmp.days),
                 style: Theme.of(context).textTheme.labelMedium
                     ?.copyWith(color: AppColors.darkOnSurfaceMuted),
               ),
@@ -515,7 +522,7 @@ class PulseKpiGrid extends StatelessWidget {
                         child: _KpiTile(
                           m: m,
                           showDelta: m.key != 'overdue',
-                          caption: 'loans right now',
+                          caption: context.l10n.anLoansRightNow,
                           onTap: () => onTap(m.key),
                         ),
                       ),
@@ -539,26 +546,30 @@ class CollectedNowCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<Overview>(
       cacheKey: 'ov|${f.scopeKey}',
-      title: 'Collected',
+      title: context.l10n.anCollected,
       skeletonHeight: 60,
       load: () => AnalyticsService.overview(scope: f.scope('admin')),
       builder: (context, o) => AnalyticsFrame(
-        title: 'Collected',
+        title: context.l10n.anCollected,
         trailing: Pill(
-          'PAR ${o.parPct.toStringAsFixed(1)}%',
+          context.l10n.anPar(o.parPct.toStringAsFixed(1)),
           o.parPct > 25 ? AppColors.progressDanger : AppColors.warning,
         ),
         child: Row(
           children: [
             Expanded(
               child: StatCol(
-                'TODAY',
+                context.l10n.anToday,
                 Money.compact(o.today),
                 color: AppColors.success,
               ),
             ),
-            Expanded(child: StatCol('THIS WEEK', Money.compact(o.week))),
-            Expanded(child: StatCol('THIS MONTH', Money.compact(o.month))),
+            Expanded(
+              child: StatCol(context.l10n.anThisWeek, Money.compact(o.week)),
+            ),
+            Expanded(
+              child: StatCol(context.l10n.anThisMonth, Money.compact(o.month)),
+            ),
           ],
         ),
       ),
@@ -578,7 +589,7 @@ class BehaviourCard extends StatelessWidget {
 
     return AsyncCard<PaymentBehaviour>(
       cacheKey: 'behave|${f.key}',
-      title: 'Payment behaviour',
+      title: context.l10n.anPaymentBehaviour,
       skeletonHeight: 150,
       load: () => AnalyticsService.behaviour(
         from: f.fromStr,
@@ -587,9 +598,9 @@ class BehaviourCard extends StatelessWidget {
       ),
       builder: (context, b) {
         if (b.count == 0 && b.dueWeeks == 0) {
-          return const AnalyticsFrame(
-            title: 'Payment behaviour',
-            child: EmptyNote('No payments in this period. Try a longer range.'),
+          return AnalyticsFrame(
+            title: context.l10n.anPaymentBehaviour,
+            child: EmptyNote(context.l10n.anNoPaymentsPeriod),
           );
         }
         final total = b.paidPct + b.partialPct + b.unpaidPct;
@@ -602,7 +613,7 @@ class BehaviourCard extends StatelessWidget {
               );
 
         return AnalyticsFrame(
-          title: 'Payment behaviour',
+          title: context.l10n.anPaymentBehaviour,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -610,30 +621,35 @@ class BehaviourCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: StatCol(
-                      'ON TIME',
+                      context.l10n.anOnTimeUpper,
                       '${b.onTimePct.toStringAsFixed(0)}%',
                       color: AppColors.success,
                     ),
                   ),
                   Expanded(
                     child: StatCol(
-                      'LATE',
+                      context.l10n.anLate,
                       '${b.latePct.toStringAsFixed(0)}%',
                       color: AppColors.warning,
                     ),
                   ),
                   Expanded(
                     child: StatCol(
-                      'AVG DAYS LATE',
+                      context.l10n.anAvgDaysLate,
                       b.avgDaysLate.toStringAsFixed(1),
                     ),
                   ),
-                  Expanded(child: StatCol('WORST', '${b.maxDaysLate}d')),
+                  Expanded(
+                    child: StatCol(
+                      context.l10n.anWorst,
+                      context.l10n.anDaysShort(b.maxDaysLate),
+                    ),
+                  ),
                 ],
               ),
               AppGap.h16,
               Text(
-                'Weekly instalments (${b.dueWeeks} due)',
+                context.l10n.anWeeklyInstalmentsDue(b.dueWeeks),
                 style: text.labelMedium?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                 ),
@@ -660,19 +676,21 @@ class BehaviourCard extends StatelessWidget {
                 runSpacing: 4,
                 children: [
                   Pill(
-                    'Paid ${b.paidPct.toStringAsFixed(0)}%',
+                    context.l10n.anPaidPct(b.paidPct.toStringAsFixed(0)),
                     AppColors.success,
                   ),
                   Pill(
-                    'Partial ${b.partialPct.toStringAsFixed(0)}%',
+                    context.l10n.anPartialPct(b.partialPct.toStringAsFixed(0)),
                     AppColors.warning,
                   ),
                   Pill(
-                    'Unpaid ${b.unpaidPct.toStringAsFixed(0)}%',
+                    context.l10n.anUnpaidPct(b.unpaidPct.toStringAsFixed(0)),
                     AppColors.progressDanger,
                   ),
                   Pill(
-                    'Overpaid ${b.overpaidPct.toStringAsFixed(0)}%',
+                    context.l10n.anOverpaidPct(
+                      b.overpaidPct.toStringAsFixed(0),
+                    ),
                     const Color(0xFF4FC3F7),
                   ),
                 ],
@@ -697,7 +715,7 @@ class DisbursementsCard extends StatelessWidget {
 
     return AsyncCard<DisbursementData>(
       cacheKey: 'disb|${f.key}',
-      title: 'Disbursements',
+      title: context.l10n.anDisbursements,
       skeletonHeight: 180,
       load: () => AnalyticsService.disbursements(
         from: f.fromStr,
@@ -705,9 +723,9 @@ class DisbursementsCard extends StatelessWidget {
         scope: f.scope('admin'),
       ),
       builder: (context, d) => AnalyticsFrame(
-        title: 'Disbursements',
+        title: context.l10n.anDisbursements,
         trailing: Text(
-          '${d.loans} loans',
+          context.l10n.anLoansCount(d.loans),
           style: text.labelMedium?.copyWith(
             color: AppColors.darkOnSurfaceMuted,
           ),
@@ -727,7 +745,7 @@ class DisbursementsCard extends StatelessWidget {
                   [(num.tryParse('${p['disbursed']}') ?? 0).toDouble()],
               ],
               colors: const [AppColors.stepCurrentLabel],
-              names: const ['Disbursed'],
+              names: [context.l10n.anDisbursed],
             ),
           ],
         ),
@@ -746,14 +764,15 @@ class EarningsCard extends StatelessWidget {
 
     return AsyncCard<EarningsData>(
       cacheKey: 'earn|${f.fromStr}|${f.toStr}|${f.adminId}|${f.tick}',
-      title: 'Earnings',
+      title: context.l10n.anEarnings,
       skeletonHeight: 180,
       load: () => AnalyticsService.earnings(
         from: f.fromStr,
         to: f.toStr,
         adminOnly: f.adminOnly,
       ),
-      builder: (context, e) => _earningsBody(context, e, text, 'Earnings'),
+      builder: (context, e) =>
+          _earningsBody(context, e, text, context.l10n.anEarnings),
     );
   }
 }
@@ -776,14 +795,26 @@ Widget _earningsBody(
           children: [
             Expanded(
               child: StatCol(
-                'TOTAL',
+                context.l10n.anTotal,
                 Money.compact(e.total),
                 color: AppColors.success,
               ),
             ),
-            Expanded(child: StatCol('FEES', Money.compact(e.fees))),
-            Expanded(child: StatCol('INTEREST', Money.compact(e.interest))),
-            Expanded(child: StatCol('EXPECTED', Money.compact(e.expected))),
+            Expanded(
+              child: StatCol(context.l10n.anFeesUpper, Money.compact(e.fees)),
+            ),
+            Expanded(
+              child: StatCol(
+                context.l10n.anInterestUpper,
+                Money.compact(e.interest),
+              ),
+            ),
+            Expanded(
+              child: StatCol(
+                context.l10n.anExpected,
+                Money.compact(e.expected),
+              ),
+            ),
           ],
         ),
         AppGap.h12,
@@ -793,18 +824,25 @@ Widget _earningsBody(
             for (final p in e.series) [v(p, 'fees'), v(p, 'interest_earned')],
           ],
           colors: const [AppColors.warning, AppColors.success],
-          names: const ['Fees', 'Interest'],
+          names: [context.l10n.anFees, context.l10n.anInterest],
         ),
         AppGap.h8,
         Row(
           children: [
             Container(width: 10, height: 10, color: AppColors.warning),
             AppGap.w8,
-            Text('Fees', style: text.labelMedium),
+            Text(context.l10n.anFees, style: text.labelMedium),
             AppGap.w12,
             Container(width: 10, height: 10, color: AppColors.success),
             AppGap.w8,
-            Text('Interest earned', style: text.labelMedium),
+            Flexible(
+              child: Text(
+                context.l10n.anInterestEarned,
+                style: text.labelMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ],
@@ -813,8 +851,12 @@ Widget _earningsBody(
 }
 
 /// Used by the Platform Money chip.
-Widget earningsBody(BuildContext context, EarningsData e) =>
-    _earningsBody(context, e, Theme.of(context).textTheme, 'Platform earnings');
+Widget earningsBody(BuildContext context, EarningsData e) => _earningsBody(
+  context,
+  e,
+  Theme.of(context).textTheme,
+  context.l10n.anPlatformEarnings,
+);
 
 class MaturingCard extends StatelessWidget {
   final AnalyticsFilters f;
@@ -825,8 +867,8 @@ class MaturingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return PagedCard<MaturingRow>(
       cacheKey: 'mat|$days|${f.scopeKey}',
-      title: 'Maturing in $days days',
-      empty: 'No loans mature in the next $days days.',
+      title: context.l10n.anMaturingIn(days),
+      empty: context.l10n.anNoneMaturing(days),
       load: (p) => AnalyticsService.maturing(
         days: days,
         page: p,
@@ -835,9 +877,9 @@ class MaturingCard extends StatelessWidget {
       rowBuilder: (context, r, _) => RankedRow(
         name: r.name,
         primary: Money.compact(r.outstanding),
-        secondary: 'Weekly ${Money.compact(r.weekly)}',
+        secondary: context.l10n.anWeeklyAmount(Money.compact(r.weekly)),
         pill: Pill(
-          '${r.daysLeft}d left',
+          context.l10n.anDaysLeft(r.daysLeft),
           r.daysLeft < 3
               ? AppColors.progressDanger
               : (r.daysLeft < 7 ? AppColors.warning : AppColors.success),
@@ -858,8 +900,8 @@ class RiskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return PagedCard<RiskRow>(
       cacheKey: 'risk|${f.scopeKey}',
-      title: 'Customers at risk',
-      empty: 'No customers at risk right now.',
+      title: context.l10n.anCustomersAtRisk,
+      empty: context.l10n.anNoneAtRisk,
       load: (p) => AnalyticsService.risk(page: p, scope: f.scope('admin')),
       rowBuilder: (context, r, _) {
         final color = r.score >= 60
@@ -871,9 +913,12 @@ class RiskCard extends StatelessWidget {
               name: r.name,
               primary: Money.compact(r.outstanding),
               secondary:
-                  '${r.daysPastDue} days late • ${r.missedWeeks} missed weeks'
-                  '${r.referrerAtRisk ? ' • referrer at risk' : ''}',
-              pill: Pill('Risk ${r.score.toStringAsFixed(0)}', color),
+                  context.l10n.anRiskLine(r.daysPastDue, r.missedWeeks) +
+                  (r.referrerAtRisk ? context.l10n.anReferrerAtRisk : ''),
+              pill: Pill(
+                context.l10n.anRiskScore(r.score.toStringAsFixed(0)),
+                color,
+              ),
               trailing: r.phone.isEmpty ? null : CallIconButton(phone: r.phone),
               onTap: () => _openLoan(context, r.loanId),
             ),
@@ -902,11 +947,11 @@ class RepeatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<RepeatData>(
       cacheKey: 'repeat|${f.scopeKey}',
-      title: 'Repeat borrowers',
+      title: context.l10n.anRepeatBorrowers,
       skeletonHeight: 160,
       load: () => AnalyticsService.repeat(scope: f.scope('admin')),
       builder: (context, r) => AnalyticsFrame(
-        title: 'Repeat borrowers',
+        title: context.l10n.anRepeatBorrowers,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -914,19 +959,22 @@ class RepeatCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: StatCol(
-                    'REPEAT RATE',
+                    context.l10n.anRepeatRate,
                     '${r.repeatRate.toStringAsFixed(1)}%',
                     color: AppColors.success,
                   ),
                 ),
                 Expanded(
                   child: StatCol(
-                    'RETENTION',
+                    context.l10n.anRetention,
                     '${r.retentionRate.toStringAsFixed(1)}%',
                   ),
                 ),
                 Expanded(
-                  child: StatCol('AVG LOANS', r.avgLoans.toStringAsFixed(1)),
+                  child: StatCol(
+                    context.l10n.anAvgLoans,
+                    r.avgLoans.toStringAsFixed(1),
+                  ),
                 ),
               ],
             ),
@@ -935,14 +983,16 @@ class RepeatCard extends StatelessWidget {
               height: 130,
               labels: [
                 for (final b in r.buckets)
-                  '${b['loans']} loan${'${b['loans']}' == '1' ? '' : 's'}',
+                  context.l10n.anLoanCountLabel(
+                    int.tryParse('${b['loans']}') ?? 0,
+                  ),
               ],
               stacks: [
                 for (final b in r.buckets)
                   [(num.tryParse('${b['customers']}') ?? 0).toDouble()],
               ],
               colors: const [AppColors.stepCurrentLabel],
-              names: const ['Customers'],
+              names: [context.l10n.anCustomers],
               money: false,
             ),
           ],
@@ -960,24 +1010,30 @@ class ReferralsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<List<Referrer>>(
       cacheKey: 'refs|${f.scopeKey}',
-      title: 'Top referrers',
+      title: context.l10n.anTopReferrers,
       skeletonHeight: 150,
       load: () => AnalyticsService.referrals(scope: f.scope('admin')),
       builder: (context, list) => AnalyticsFrame(
-        title: 'Top referrers',
+        title: context.l10n.anTopReferrers,
         child: list.isEmpty
-            ? const EmptyNote('No referrals yet.')
+            ? EmptyNote(context.l10n.anNoReferrals)
             : Column(
                 children: [
                   for (var i = 0; i < list.length; i++)
                     RankedRow(
                       rank: i + 1,
                       name: list[i].name,
-                      primary:
-                          '${list[i].conversionPct.toStringAsFixed(0)}% converted',
+                      primary: context.l10n.anConverted(
+                        list[i].conversionPct.toStringAsFixed(0),
+                      ),
                       secondary:
-                          'Referred ${list[i].referred} • converted ${list[i].converted}'
-                          '${list[i].atRisk > 0 ? ' • ${list[i].atRisk} at risk' : ''}',
+                          context.l10n.anReferredConverted(
+                            list[i].referred,
+                            list[i].converted,
+                          ) +
+                          (list[i].atRisk > 0
+                              ? context.l10n.anAtRiskCount(list[i].atRisk)
+                              : ''),
                     ),
                 ],
               ),
@@ -1005,7 +1061,7 @@ class _GeographyCardState extends State<GeographyCard> {
 
     return AsyncCard<List<GeoArea>>(
       cacheKey: 'geo|${widget.platform}|$_level|${f.scopeKey}',
-      title: 'Geography',
+      title: context.l10n.anGeography,
       skeletonHeight: 200,
       load: () => AnalyticsService.geography(
         level: _level,
@@ -1019,19 +1075,22 @@ class _GeographyCardState extends State<GeographyCard> {
         );
 
         return AnalyticsFrame(
-          title: 'Outstanding by area',
+          title: context.l10n.anOutstandingByArea,
           trailing: SegmentedButton<String>(
             showSelectedIcon: false,
             style: const ButtonStyle(visualDensity: VisualDensity.compact),
-            segments: const [
-              ButtonSegment(value: 'district', label: Text('District')),
-              ButtonSegment(value: 'city', label: Text('City')),
+            segments: [
+              ButtonSegment(
+                value: 'district',
+                label: Text(context.l10n.anDistrict),
+              ),
+              ButtonSegment(value: 'city', label: Text(context.l10n.anCity)),
             ],
             selected: {_level},
             onSelectionChanged: (v) => setState(() => _level = v.first),
           ),
           child: areas.isEmpty || maxV == 0
-              ? const EmptyNote('No borrowers in this scope yet.')
+              ? EmptyNote(context.l10n.anNoBorrowersScope)
               : Column(
                   children: [
                     for (final a in areas)
@@ -1070,7 +1129,10 @@ class _GeographyCardState extends State<GeographyCard> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${a.borrowers} borrowers • PAR ${a.parPct.toStringAsFixed(1)}%',
+                              context.l10n.anBorrowersPar(
+                                a.borrowers,
+                                a.parPct.toStringAsFixed(1),
+                              ),
                               style: text.labelMedium?.copyWith(
                                 color: AppColors.darkOnSurfaceMuted,
                               ),
@@ -1103,8 +1165,10 @@ class EmployeesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return PagedCard<EmployeePerf>(
       cacheKey: 'emp|$platform|${f.fromStr}|${f.toStr}|${f.adminId}|${f.tick}',
-      title: platform ? 'Employee leaderboard' : 'Team leaderboard',
-      empty: 'No employees to show yet.',
+      title: platform
+          ? context.l10n.anEmployeeLeaderboard
+          : context.l10n.anTeamLeaderboard,
+      empty: context.l10n.anNoEmployees,
       load: (p) => AnalyticsService.employees(
         from: f.fromStr,
         to: f.toStr,
@@ -1117,8 +1181,8 @@ class EmployeesCard extends StatelessWidget {
         name: e.name,
         primary: Money.compact(e.collected),
         secondary:
-            '${platform ? '${e.adminName} • ' : ''}PAR ${e.parPct.toStringAsFixed(0)}% • '
-            '${e.overdueLoans} overdue',
+            '${platform ? '${e.adminName} • ' : ''}'
+            '${context.l10n.anParOverdue(e.parPct.toStringAsFixed(0), e.overdueLoans)}',
         pill: Pill('${e.rate.toStringAsFixed(0)}%', rateColor(e.rate)),
         onTap: () => onEmployee(e.id, e.name),
       ),
@@ -1170,7 +1234,7 @@ class EmployeeSheet extends StatelessWidget {
                 children: [
                   if (name.isEmpty) ...[
                     Text(
-                      s.name.isEmpty ? 'Employee' : s.name,
+                      s.name.isEmpty ? context.l10n.anEmployee : s.name,
                       style: text.headlineSmall,
                     ),
                     AppGap.h12,
@@ -1180,37 +1244,44 @@ class EmployeeSheet extends StatelessWidget {
                       children: [
                         Expanded(
                           child: StatCol(
-                            'THIS MONTH',
+                            context.l10n.anThisMonth,
                             Money.compact(o.month),
                             color: AppColors.success,
                           ),
                         ),
                         Expanded(
                           child: StatCol(
-                            'OUTSTANDING',
+                            context.l10n.loanOutstanding,
                             Money.compact(o.totalOutstanding),
                           ),
                         ),
                         Expanded(
                           child: StatCol(
-                            'PAR',
+                            context.l10n.anPAR,
                             '${o.parPct.toStringAsFixed(1)}%',
                           ),
                         ),
-                        Expanded(child: StatCol('OVERDUE', '${o.overdue}')),
+                        Expanded(
+                          child: StatCol(
+                            context.l10n.statusOverdue,
+                            '${o.overdue}',
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   AppGap.h12,
                   AnalyticsFrame(
-                    title: 'Collections',
+                    title: context.l10n.anTabCollections,
                     child: MultiLine(
                       labels: [for (final p in pts) p.label],
                       series: [
-                        LineSeries('Collected', AppColors.success, [
-                          for (final p in pts) p.collected,
-                        ]),
-                        LineSeries('Target', AppColors.warning, [
+                        LineSeries(
+                          context.l10n.anCollected,
+                          AppColors.success,
+                          [for (final p in pts) p.collected],
+                        ),
+                        LineSeries(context.l10n.anTarget, AppColors.warning, [
                           for (final p in pts) p.target ?? 0,
                         ], dashed: true),
                       ],
@@ -1218,20 +1289,22 @@ class EmployeeSheet extends StatelessWidget {
                   ),
                   AppGap.h12,
                   AnalyticsFrame(
-                    title: 'Outstanding by age',
+                    title: context.l10n.anOutstandingByAge,
                     child: AgingBody(buckets: s.aging),
                   ),
                   AppGap.h12,
                   AnalyticsFrame(
-                    title: 'Customers at risk',
+                    title: context.l10n.anCustomersAtRisk,
                     child: s.risky.isEmpty
-                        ? const EmptyNote('No risky customers.')
+                        ? EmptyNote(context.l10n.anNoRisky)
                         : Column(
                             children: [
                               for (final r in s.risky)
                                 RankedRow(
                                   name: r.name,
-                                  primary: 'Risk ${r.score.toStringAsFixed(0)}',
+                                  primary: context.l10n.anRiskScore(
+                                    r.score.toStringAsFixed(0),
+                                  ),
                                   onTap: () {
                                     Navigator.of(context).pop();
                                     _openLoan(context, r.loanId);
@@ -1271,7 +1344,7 @@ class _ForecastCardState extends State<ForecastCard> {
 
     return AsyncCard<Forecast>(
       cacheKey: 'fc|${widget.platform}|$_weeks|${f.scopeKey}',
-      title: 'Cash-flow forecast',
+      title: context.l10n.anCashflowForecast,
       skeletonHeight: 220,
       load: () => AnalyticsService.forecast(
         weeks: _weeks,
@@ -1293,7 +1366,7 @@ class _ForecastCardState extends State<ForecastCard> {
         );
 
         return AnalyticsFrame(
-          title: 'Expected next $_weeks weeks',
+          title: context.l10n.anExpectedNextWeeks(_weeks),
           trailing: toggle,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1306,7 +1379,7 @@ class _ForecastCardState extends State<ForecastCard> {
               ),
               if (fc.arrears > 0)
                 Text(
-                  'Plus ${Money.compact(fc.arrears)} overdue and due now',
+                  context.l10n.anPlusArrears(Money.compact(fc.arrears)),
                   style: text.labelMedium?.copyWith(color: AppColors.warning),
                 ),
               AppGap.h12,
@@ -1319,12 +1392,12 @@ class _ForecastCardState extends State<ForecastCard> {
                     [(num.tryParse('${w['expected']}') ?? 0).toDouble()],
                 ],
                 colors: const [AppColors.stepCurrentLabel],
-                names: const ['Due'],
+                names: [context.l10n.anDue],
                 highlight: 0,
               ),
               AppGap.h8,
               Text(
-                '${fc.assumption} The current week is highlighted.',
+                '${fc.assumption}${context.l10n.anCurrentWeekHighlighted}',
                 style: text.labelSmall?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/data/models/managed_account.dart';
@@ -110,7 +111,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
     final o = _overview;
     if (s == null && o == null) {
       return CardMessage(
-        message: _headerError ?? 'Could not load the counts.',
+        message: _headerError ?? context.l10n.manCountsFailed,
         onRetry: _loadHeader,
       );
     }
@@ -122,13 +123,23 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
       return StatStrip(
         items: [
           (
-            'PENDING',
+            context.l10n.manPending,
             '${m.where((x) => x.isActive && !x.isVerified).length}',
-            'awaiting approval',
+            context.l10n.manAwaitingApproval,
             AppColors.warning,
           ),
-          ('ACTIVE', '$active', 'can sign in', AppColors.success),
-          ('INACTIVE', '$inactive', 'deactivated', AppColors.progressDanger),
+          (
+            context.l10n.manActive,
+            '$active',
+            context.l10n.manCanSignIn,
+            AppColors.success,
+          ),
+          (
+            context.l10n.manInactive,
+            '$inactive',
+            context.l10n.manDeactivatedLower,
+            AppColors.progressDanger,
+          ),
         ],
       );
     }
@@ -136,12 +147,22 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
     final teams = o!.teams;
     return StatStrip(
       items: [
-        ('PENDING', '$_pending', 'awaiting approval', AppColors.warning),
-        ('TEAMS', '${teams.length}', 'approved admins', AppColors.success),
         (
-          'EMPLOYEES',
+          context.l10n.manPending,
+          '$_pending',
+          context.l10n.manAwaitingApproval,
+          AppColors.warning,
+        ),
+        (
+          context.l10n.manTeams,
+          '${teams.length}',
+          context.l10n.manApprovedAdmins,
+          AppColors.success,
+        ),
+        (
+          context.l10n.manEmployees,
           '${teams.fold<int>(0, (a, t) => a + t.membersCount)}',
-          'across teams',
+          context.l10n.manAcrossTeams,
           AppColors.stepCurrentLabel,
         ),
       ],
@@ -174,39 +195,36 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   Future<bool> _approve(ManagedAccount a) => _run(
     a,
     () => ManagementService.setEmployeeVerified(a.id, true),
-    (u) => '${a.displayName} approved. They can sign in now.',
+    (u) => context.l10n.manApprovedCanSignIn(a.displayName),
   );
 
   Future<bool> _reject(ManagedAccount a) async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Reject ${a.displayName}?',
-      message:
-          'The account is deactivated and cannot sign in. It is never deleted.',
-      confirmText: 'Reject',
+      title: context.l10n.manRejectTitle(a.displayName),
+      message: context.l10n.manRejectMessage,
+      confirmText: context.l10n.manReject,
     );
     if (!ok || !mounted) return false;
     return _run(
       a,
       () => ManagementService.setEmployeeActive(a.id, false),
-      (u) => '${a.displayName} rejected.',
+      (u) => context.l10n.manRejected(a.displayName),
     );
   }
 
   Future<bool> _deactivate(ManagedAccount a) async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Deactivate ${a.displayName}?',
-      message:
-          'They are signed out once their access token expires. '
-          'Their customers and loans stay as they are.',
-      confirmText: 'Deactivate',
+      title: context.l10n.manDeactivateTitle(a.displayName),
+      message: context.l10n.manDeactivateUserMsg,
+      confirmText: context.l10n.manDeactivate,
     );
     if (!ok || !mounted) return false;
     return _run(
       a,
       () => ManagementService.setEmployeeActive(a.id, false),
-      (u) => '${a.displayName} deactivated.',
+      (u) => context.l10n.manDeactivated(a.displayName),
     );
   }
 
@@ -214,8 +232,8 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
     a,
     () => ManagementService.setEmployeeActive(a.id, true),
     (u) => u.status == AccountStatus.pending
-        ? '${a.displayName} reactivated. They are waiting for approval again.'
-        : '${a.displayName} reactivated.',
+        ? context.l10n.manReactivatedPending(a.displayName)
+        : context.l10n.manReactivated(a.displayName),
   );
 
   Future<void> _create() async {
@@ -250,7 +268,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
       child: Align(
         alignment: Alignment.centerLeft,
         child: PopupMenuButton<String?>(
-          tooltip: 'Filter by admin',
+          tooltip: context.l10n.manFilterByAdmin,
           onSelected: (id) {
             final name = id == null
                 ? null
@@ -258,9 +276,9 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
             _setAdmin(id, name);
           },
           itemBuilder: (_) => [
-            const PopupMenuItem<String?>(
+            PopupMenuItem<String?>(
               value: null,
-              child: Text('All admins'),
+              child: Text(context.l10n.anAllAdmins),
             ),
             for (final t in teams)
               PopupMenuItem<String?>(value: t.adminId, child: Text(t.userName)),
@@ -283,7 +301,14 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                   color: AppColors.darkOnSurfaceMuted,
                 ),
                 const SizedBox(width: 6),
-                Text(_adminFilterName ?? 'All admins', style: text.labelLarge),
+                Flexible(
+                  child: Text(
+                    _adminFilterName ?? context.l10n.anAllAdmins,
+                    style: text.labelLarge,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
                 const Icon(Icons.keyboard_arrow_down_rounded, size: 18),
               ],
             ),
@@ -297,8 +322,10 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
   Widget build(BuildContext context) {
     if (!CurrentUser.instance.hasRole(UserRole.admin)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Manage users')),
-        body: const Center(child: Text("You don't have access to this view.")),
+        appBar: AppBar(title: Text(context.l10n.menuManageUsers)),
+        body: Center(
+          child: Text(context.l10n.anNoAccess, textAlign: TextAlign.center),
+        ),
       );
     }
 
@@ -308,7 +335,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text('Manage users'),
+        title: Text(context.l10n.menuManageUsers),
         actions: [
           ExportMenuButton(
             types: const [
@@ -321,7 +348,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
             ),
           ),
           IconButton(
-            tooltip: 'Add employee',
+            tooltip: context.l10n.empAddEmployee,
             icon: const Icon(Icons.person_add_alt_1_outlined),
             onPressed: _create,
           ),
@@ -349,7 +376,7 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
               child: ManageSearch(
-                hint: 'Search by name, phone or email',
+                hint: context.l10n.manSearchHint,
                 onChanged: _c.setSearch,
               ),
             ),
@@ -360,9 +387,9 @@ class _ManageUsersScreenState extends State<ManageUsersScreen> {
                 header: _header(),
                 onRefresh: _refresh,
                 emptyMessage: (s) => switch (s) {
-                  'pending' => 'No employees are waiting for approval.',
-                  'active' => 'No active employees yet.',
-                  _ => 'No inactive employees.',
+                  'pending' => context.l10n.manNoEmployeesPending,
+                  'active' => context.l10n.manNoActiveEmployees,
+                  _ => context.l10n.manNoInactiveEmployees,
                 },
                 itemBuilder: (context, a) => AccountCard(
                   a: a,

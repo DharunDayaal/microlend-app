@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 
 class DialogHelper {
   DialogHelper._();
@@ -8,8 +9,8 @@ class DialogHelper {
     BuildContext context, {
     required String title,
     required String message,
-    String confirmText = 'Confirm',
-    String cancelText = 'Cancel',
+    String? confirmText,
+    String? cancelText,
   }) async {
     final result = await showDialog<bool>(
       context: context,
@@ -19,11 +20,11 @@ class DialogHelper {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(cancelText),
+            child: Text(cancelText ?? ctx.l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(confirmText),
+            child: Text(confirmText ?? ctx.l10n.commonConfirm),
           ),
         ],
       ),

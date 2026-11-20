@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -84,7 +86,7 @@ class _AccountSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final (label, color) = statusLook(a.status);
+    final (label, color) = statusLook(context, a.status);
 
     return FractionallySizedBox(
       heightFactor: 0.88,
@@ -110,7 +112,10 @@ class _AccountSheet extends StatelessWidget {
                       spacing: AppSizes.sm,
                       children: [
                         Pill(label, color),
-                        Pill(a.role.label.toUpperCase(), roleColor(a.role)),
+                        Pill(
+                          a.role.l10nLabel(context).toUpperCase(),
+                          roleColor(a.role),
+                        ),
                       ],
                     ),
                   ],
@@ -124,7 +129,7 @@ class _AccountSheet extends StatelessWidget {
               children: [
                 InfoRow(
                   icon: Icons.phone_outlined,
-                  label: 'Phone',
+                  label: context.l10n.accPhone,
                   value: a.phone.isEmpty
                       ? '--'
                       : PhoneFormatter.display(a.phone),
@@ -135,13 +140,13 @@ class _AccountSheet extends StatelessWidget {
                 const Divider(height: 1, color: AppColors.darkBorder),
                 InfoRow(
                   icon: Icons.mail_outline,
-                  label: 'Email',
-                  value: a.email.isEmpty ? 'Not added' : a.email,
+                  label: context.l10n.accEmail,
+                  value: a.email.isEmpty ? context.l10n.accNotAdded : a.email,
                 ),
                 const Divider(height: 1, color: AppColors.darkBorder),
                 InfoRow(
                   icon: Icons.event_outlined,
-                  label: 'Joined',
+                  label: context.l10n.accJoined,
                   value: DateFormatter.date(a.createdAt),
                 ),
                 if (!isAdminAccount &&
@@ -150,7 +155,7 @@ class _AccountSheet extends StatelessWidget {
                   const Divider(height: 1, color: AppColors.darkBorder),
                   InfoRow(
                     icon: Icons.admin_panel_settings_outlined,
-                    label: 'Works under',
+                    label: context.l10n.empWorksUnder,
                     value: a.adminName!,
                   ),
                 ],
@@ -159,11 +164,13 @@ class _AccountSheet extends StatelessWidget {
                   InfoRow(
                     icon: Icons.tune_rounded,
                     label: isAdminAccount
-                        ? 'Loan defaults'
-                        : 'Loan defaults (own)',
-                    value:
-                        'Fee ${_num(a.fee!)}% • Interest ${_num(a.interest ?? 0)}% • '
-                        '${_num(a.months ?? 0)} months',
+                        ? context.l10n.empLoanDefaults
+                        : context.l10n.accLoanDefaultsOwn,
+                    value: context.l10n.accDefaultsLine(
+                      _num(a.fee!),
+                      _num(a.interest ?? 0),
+                      _num(a.months ?? 0),
+                    ),
                   ),
                 ],
               ],
@@ -173,7 +180,7 @@ class _AccountSheet extends StatelessWidget {
           if (isAdminAccount) _TeamSection(a: a) else _EmployeeSection(a: a),
           AppGap.h16,
           AppButton(
-            label: 'History',
+            label: context.l10n.commonHistory,
             outlined: true,
             prefixIcon: Icons.history_rounded,
             radius: AppSizes.md,
@@ -209,33 +216,42 @@ class _TeamSection extends StatelessWidget {
 
     return AsyncCard<TeamSummary>(
       cacheKey: 'team|${a.id}',
-      title: 'Team',
+      title: context.l10n.auditTeam,
       skeletonHeight: 120,
       load: () => ManagementService.team(adminId: a.id),
       builder: (context, t) => AnalyticsFrame(
-        title: 'Team (${t.members.length})',
+        title: context.l10n.accTeamCount(t.members.length),
         trailing: t.pendingCount > 0
-            ? Pill('${t.pendingCount} pending', AppColors.warning)
+            ? Pill(
+                context.l10n.accPendingCount(t.pendingCount),
+                AppColors.warning,
+              )
             : null,
         child: t.members.isEmpty
-            ? const EmptyNote('No employees under this admin yet.')
+            ? EmptyNote(context.l10n.accNoEmployees)
             : Column(
                 children: [
                   for (final m in t.members)
                     RankedRow(
                       name: m.userName,
-                      primary: '${m.customersCount} customers',
+                      primary: context.l10n.accCustomersCount(m.customersCount),
                       secondary: m.phoneNumber.isEmpty
                           ? null
                           : PhoneFormatter.display(m.phoneNumber),
                       pill: !m.isActive
-                          ? Pill('INACTIVE', AppColors.progressDanger)
+                          ? Pill(
+                              context.l10n.manInactive,
+                              AppColors.progressDanger,
+                            )
                           : (!m.isVerified
-                                ? Pill('PENDING', AppColors.warning)
+                                ? Pill(
+                                    context.l10n.manPending,
+                                    AppColors.warning,
+                                  )
                                 : null),
                     ),
                   Text(
-                    'Open Manage users to approve or deactivate employees.',
+                    context.l10n.accOpenManageUsers,
                     style: text.labelSmall?.copyWith(
                       color: AppColors.darkOnSurfaceMuted,
                     ),
@@ -255,7 +271,7 @@ class _EmployeeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<ManagedAccount>(
       cacheKey: 'emp|${a.id}',
-      title: 'Activity',
+      title: context.l10n.accActivity,
       skeletonHeight: 100,
       load: () => ManagementService.employee(a.id),
       builder: (context, d) => Column(
@@ -264,21 +280,21 @@ class _EmployeeSection extends StatelessWidget {
           StatStrip(
             items: [
               (
-                'CUSTOMERS',
+                context.l10n.accCustomers,
                 '${d.customersCount ?? 0}',
-                'created',
+                context.l10n.accCreated,
                 AppColors.stepCurrentLabel,
               ),
               (
-                'ACTIVE LOANS',
+                context.l10n.accActiveLoans,
                 '${d.activeLoans ?? 0}',
-                'active and overdue',
+                context.l10n.accActiveAndOverdue,
                 AppColors.success,
               ),
               (
-                'OVERDUE',
+                context.l10n.statusOverdue,
                 '${d.overdueLoans ?? 0}',
-                'loans right now',
+                context.l10n.anLoansRightNow,
                 (d.overdueLoans ?? 0) > 0
                     ? AppColors.progressDanger
                     : AppColors.success,
@@ -287,7 +303,7 @@ class _EmployeeSection extends StatelessWidget {
           ),
           AppGap.h12,
           AppButton(
-            label: 'View performance',
+            label: context.l10n.accViewPerformance,
             outlined: true,
             prefixIcon: Icons.insights_outlined,
             radius: AppSizes.md,

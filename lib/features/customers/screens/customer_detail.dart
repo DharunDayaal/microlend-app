@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -183,13 +185,13 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => context.pop(),
         ),
-        title: Text("Back", style: textTheme.bodyLarge),
+        title: Text(context.l10n.commonBack, style: textTheme.bodyLarge),
         titleSpacing: 2,
         actions: [
           if (CurrentUser.instance.hasRole(UserRole.admin) &&
               _customerDetails != null)
             IconButton(
-              tooltip: 'History',
+              tooltip: context.l10n.commonHistory,
               icon: const Icon(Icons.history_rounded),
               onPressed: () => context.push(
                 AppRoutes.auditFor(
@@ -311,8 +313,12 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                                 ),
                                                 TextSpan(
                                                   style: textTheme.labelLarge,
-                                                  text:
-                                                      "• Reg: ${DateFormatter.dateTime(_customerDetails?.createdAt)}",
+                                                  text: context.l10n.custRegOn(
+                                                    DateFormatter.dateTime(
+                                                      _customerDetails
+                                                          ?.createdAt,
+                                                    ),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -332,13 +338,25 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                                   color: AppColors.warning,
                                                   size: 20,
                                                 ),
-                                                Text(
-                                                  "Cycle ${_customerDetails?.creditHistory.totalLoans.toString() ?? '0'} Eligible",
-                                                  style: textTheme.labelMedium
-                                                      ?.copyWith(
-                                                        color:
-                                                            AppColors.warning,
-                                                      ),
+                                                Flexible(
+                                                  child: Text(
+                                                    context.l10n
+                                                        .custCycleEligible(
+                                                          _customerDetails
+                                                                  ?.creditHistory
+                                                                  .totalLoans
+                                                                  .toString() ??
+                                                              '0',
+                                                        ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: textTheme.labelMedium
+                                                        ?.copyWith(
+                                                          color:
+                                                              AppColors.warning,
+                                                        ),
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -422,15 +440,26 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              "Assigned Route",
+                                              context
+                                                  .l10n
+                                                  .custAssignedRouteLabel,
                                               style: textTheme.labelLarge
                                                   ?.copyWith(
                                                     color: AppColors.lightHint,
                                                   ),
                                             ),
                                             Text(
-                                              "${TextFormatter.titleCase(_customerDetails?.preferredPaymentDay ?? '')} Route",
+                                              context.l10n.custDayRoute(
+                                                weekdayLabel(
+                                                  context,
+                                                  _customerDetails
+                                                          ?.preferredPaymentDay ??
+                                                      '',
+                                                ),
+                                              ),
                                               style: textTheme.headlineSmall,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ],
                                         ),
@@ -464,7 +493,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                           AppGap.h16,
                           if (!_isLoading)
                             AppButton(
-                              label: "Call Borrower",
+                              label: context.l10n.custCallBorrower,
                               prefixIcon: Icons.call_outlined,
                               outlined: true,
                               iconColor: AppColors.success,
@@ -475,7 +504,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
                                 if (!ok && context.mounted) {
                                   AppSnackbar.error(
                                     context,
-                                    'Unable to open dialer',
+                                    context.l10n.commonUnableOpenDialer,
                                   );
                                 }
                               },
@@ -529,9 +558,7 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> {
         customerName: _customerDetails?.customerName ?? '',
         cycleNo: _customerLoans.length + 1,
         canIssue: !_isLoading && _customerDetails != null && !_hasOpenLoan,
-        blockedMessage: _hasOpenLoan
-            ? 'Close the current active loan before issuing a new one.'
-            : null,
+        blockedMessage: _hasOpenLoan ? context.l10n.custCloseActiveFirst : null,
         onPressed: _issueLoan,
       ),
     );

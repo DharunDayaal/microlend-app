@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 
@@ -62,7 +63,7 @@ class ErrorView extends StatelessWidget {
     return EmptyView(
       icon: Icons.error_outline,
       message: message,
-      actionLabel: 'Retry',
+      actionLabel: context.l10n.commonRetry,
       onAction: onRetry,
     );
   }

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -128,14 +129,17 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
         padding: const EdgeInsets.all(AppSizes.lg),
         shrinkWrap: true,
         children: [
-          Text('Works under', style: Theme.of(ctx).textTheme.headlineSmall),
+          Text(
+            ctx.l10n.empWorksUnder,
+            style: Theme.of(ctx).textTheme.headlineSmall,
+          ),
           AppGap.h8,
-          if (list.isEmpty) const Text('There are no active admins.'),
+          if (list.isEmpty) Text(ctx.l10n.empNoActiveAdmins),
           for (final a in list)
             ListTile(
               leading: const Icon(Icons.admin_panel_settings_outlined),
               title: Text(a.displayName),
-              subtitle: Text('${a.membersCount ?? 0} employees'),
+              subtitle: Text(ctx.l10n.empEmployeesCount(a.membersCount ?? 0)),
               onTap: () => Navigator.of(ctx).pop(a),
             ),
         ],
@@ -154,29 +158,34 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
   double? _v(TextEditingController c) => double.tryParse(c.text.trim());
 
   String? _check(double? v, double min, double max, String label) {
-    if (v == null) return 'Enter a number';
+    if (v == null) return context.l10n.empEnterNumber;
     if (v < min || v > max) {
-      return '$label must be ${fmtNum(min)} to ${fmtNum(max)}';
+      return context.l10n.empRangeError(label, fmtNum(min), fmtNum(max));
     }
     if (((v * 10) - (v * 10).round()).abs() > 1e-9) {
-      return 'One decimal place at most';
+      return context.l10n.empOneDecimal;
     }
     return null;
   }
 
-  String? get _eFee => _check(_v(_fee), 0, _lim.maxFeePercent, 'Fee');
-  String? get _eInterest =>
-      _check(_v(_interest), 0, _lim.maxInterestPercent, 'Interest');
+  String? get _eFee =>
+      _check(_v(_fee), 0, _lim.maxFeePercent, context.l10n.empFee);
+  String? get _eInterest => _check(
+    _v(_interest),
+    0,
+    _lim.maxInterestPercent,
+    context.l10n.empInterest,
+  );
   String? get _eMonths =>
-      _check(_v(_months), _lim.minMonths, _lim.maxMonths, 'Term');
+      _check(_v(_months), _lim.minMonths, _lim.maxMonths, context.l10n.empTerm);
   bool get _defaultsValid =>
       _eFee == null && _eInterest == null && _eMonths == null;
 
   String? _vName(String? v) {
     final s = (v ?? '').trim();
-    if (s.length < 2) return 'Name needs at least 2 characters';
+    if (s.length < 2) return context.l10n.empNameTooShort;
     if (!RegExp(r"^[\p{L} .'\-]+$", unicode: true).hasMatch(s)) {
-      return "Use letters, spaces and . ' - only";
+      return context.l10n.empNameChars;
     }
     return null;
   }
@@ -184,7 +193,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
   String? _vPhone(String? v) {
     final digits = (v ?? '').replaceAll(RegExp(r'[^\d]'), '');
     return digits.length < 10 || digits.length > 15
-        ? 'Enter a valid mobile number'
+        ? context.l10n.empInvalidMobile
         : null;
   }
 
@@ -193,7 +202,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
     if (s.isEmpty) return null; // optional
     return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(s)
         ? null
-        : 'Enter a valid email';
+        : context.l10n.empInvalidEmail;
   }
 
   bool get _dirty =>
@@ -213,11 +222,11 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
   Future<void> _submit() async {
     if (_saving || !(_form.currentState?.validate() ?? false)) return;
     if (_isSuper && _admin == null) {
-      setState(() => _err = 'Choose the admin this employee works under.');
+      setState(() => _err = context.l10n.empChooseAdmin);
       return;
     }
     if (_customize && !_defaultsValid) {
-      setState(() => _err = 'Fix the loan defaults first.');
+      setState(() => _err = context.l10n.empFixDefaults);
       return;
     }
 
@@ -246,19 +255,14 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
     try {
       await ManagementService.createEmployee(body);
       if (!mounted) return;
-      AppSnackbar.success(
-        context,
-        '${_name.text.trim()} was added. If they cannot sign in yet, approve them under Pending.',
-      );
+      AppSnackbar.success(context, context.l10n.empAdded(_name.text.trim()));
       context.pop(true);
     } on ApiException catch (e) {
       if (!mounted) return;
       final l = e.message.toLowerCase();
       setState(() {
         if (e.isNetworkError) {
-          _err =
-              'No answer from the server. Check Manage users before trying again, '
-              'in case the account was already created.';
+          _err = context.l10n.empNoServerAnswer;
         } else if (l.contains('phone')) {
           _phoneErr = e.message;
         } else if (l.contains('email')) {
@@ -282,8 +286,10 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
   Widget build(BuildContext context) {
     if (!CurrentUser.instance.hasRole(UserRole.admin)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Add employee')),
-        body: const Center(child: Text("You don't have access to this view.")),
+        appBar: AppBar(title: Text(context.l10n.empAddEmployee)),
+        body: Center(
+          child: Text(context.l10n.anNoAccess, textAlign: TextAlign.center),
+        ),
       );
     }
 
@@ -310,10 +316,10 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
         if (didPop) return;
         final leave = await DialogHelper.confirm(
           context,
-          title: 'Discard this employee?',
-          message: 'You have details that are not saved.',
-          confirmText: 'Discard',
-          cancelText: 'Keep editing',
+          title: context.l10n.empDiscardTitle,
+          message: context.l10n.empDiscardMessage,
+          confirmText: context.l10n.empDiscard,
+          cancelText: context.l10n.empKeepEditing,
         );
         if (leave && context.mounted) context.pop();
       },
@@ -323,7 +329,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
             icon: Icons.arrow_back_ios,
             onPressed: () => Navigator.of(context).maybePop(),
           ),
-          title: const Text('Add employee'),
+          title: Text(context.l10n.empAddEmployee),
         ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
@@ -339,7 +345,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
             child: Padding(
               padding: const EdgeInsets.all(AppSizes.md),
               child: AppButton(
-                label: 'Create employee',
+                label: context.l10n.empCreate,
                 prefixIcon: Icons.person_add_alt_1_outlined,
                 radius: AppSizes.md,
                 isLoading: _saving,
@@ -359,7 +365,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                   ProfileCard(
                     icon: Icons.admin_panel_settings_outlined,
                     color: AppColors.warning,
-                    title: 'Works under',
+                    title: context.l10n.empWorksUnder,
                     child: _admins == null && _adminsError == null
                         ? const Padding(
                             padding: EdgeInsets.all(AppSizes.sm),
@@ -381,8 +387,10 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                             ),
                             child: InfoRow(
                               icon: Icons.person_search_outlined,
-                              label: 'Admin',
-                              value: _admin?.displayName ?? 'Choose an admin',
+                              label: context.l10n.empAdmin,
+                              value:
+                                  _admin?.displayName ??
+                                  context.l10n.empChooseAnAdmin,
                               trailing: const Icon(Icons.chevron_right_rounded),
                             ),
                           ),
@@ -392,7 +400,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                 ProfileCard(
                   icon: Icons.badge_outlined,
                   color: AppColors.stepCurrentLabel,
-                  title: 'Account',
+                  title: context.l10n.empAccount,
                   child: Column(
                     children: [
                       TextFormField(
@@ -402,8 +410,8 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         textInputAction: TextInputAction.next,
                         forceErrorText: _nameErr,
                         validator: _vName,
-                        decoration: const InputDecoration(
-                          labelText: 'Full name',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.empFullName,
                         ),
                       ),
                       AppGap.h12,
@@ -414,9 +422,9 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         textInputAction: TextInputAction.next,
                         forceErrorText: _phoneErr,
                         validator: _vPhone,
-                        decoration: const InputDecoration(
-                          labelText: 'Phone number',
-                          helperText: 'They sign in with this number.',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.empPhoneNumber,
+                          helperText: context.l10n.empPhoneHelper,
                         ),
                       ),
                       AppGap.h12,
@@ -427,8 +435,8 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         textInputAction: TextInputAction.next,
                         forceErrorText: _emailErr,
                         validator: _vEmail,
-                        decoration: const InputDecoration(
-                          labelText: 'Email (optional)',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.empEmailOptional,
                         ),
                       ),
                     ],
@@ -438,7 +446,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                 ProfileCard(
                   icon: Icons.lock_outline,
                   color: AppColors.success,
-                  title: 'Password',
+                  title: context.l10n.empPassword,
                   trailing: TextButton.icon(
                     onPressed: _saving
                         ? null
@@ -449,7 +457,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                             _showPass = true;
                           }),
                     icon: const Icon(Icons.auto_fix_high_rounded, size: 18),
-                    label: const Text('Generate'),
+                    label: Text(context.l10n.empGenerate),
                   ),
                   child: Column(
                     children: [
@@ -458,13 +466,14 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         enabled: !_saving,
                         obscureText: !_showPass,
                         forceErrorText: _passErr,
-                        validator: (v) => (v ?? '').length < 8
-                            ? 'Use at least 8 characters'
-                            : null,
+                        validator: (v) =>
+                            (v ?? '').length < 8 ? context.l10n.empMin8 : null,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: context.l10n.empPassword,
                           suffixIcon: IconButton(
-                            tooltip: _showPass ? 'Hide' : 'Show',
+                            tooltip: _showPass
+                                ? context.l10n.empHide
+                                : context.l10n.empShow,
                             onPressed: () =>
                                 setState(() => _showPass = !_showPass),
                             icon: Icon(
@@ -480,17 +489,15 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         controller: _confirm,
                         enabled: !_saving,
                         obscureText: !_showPass,
-                        validator: (v) =>
-                            v == _pass.text ? null : 'Passwords do not match',
-                        decoration: const InputDecoration(
-                          labelText: 'Confirm password',
+                        validator: (v) => v == _pass.text
+                            ? null
+                            : context.l10n.empPasswordsMismatch,
+                        decoration: InputDecoration(
+                          labelText: context.l10n.empConfirmPassword,
                         ),
                       ),
                       AppGap.h8,
-                      Text(
-                        'Share this password with them. They can change it later from their profile.',
-                        style: muted,
-                      ),
+                      Text(context.l10n.empSharePassword, style: muted),
                     ],
                   ),
                 ),
@@ -498,7 +505,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                 ProfileCard(
                   icon: Icons.tune_rounded,
                   color: AppColors.warning,
-                  title: 'Loan defaults',
+                  title: context.l10n.empLoanDefaults,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -506,13 +513,23 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         type: MaterialType.transparency,
                         child: SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: const Text('Customise for this employee'),
+                          title: Text(context.l10n.empCustomise),
                           subtitle: Text(
                             _customize
-                                ? 'These values are only for this employee.'
-                                : 'Uses ${_isSuper ? (_admin?.displayName ?? 'the admin') : 'your'} '
-                                      'defaults: fee ${fmtNum(_baseFee)}%, interest ${fmtNum(_baseInterest)}%, '
-                                      '${fmtNum(_baseMonths)} months. Later changes apply to them too.',
+                                ? context.l10n.empOnlyThisEmployee
+                                : _isSuper
+                                ? context.l10n.empUsesAdminDefaults(
+                                    _admin?.displayName ??
+                                        context.l10n.empTheAdmin,
+                                    fmtNum(_baseFee),
+                                    fmtNum(_baseInterest),
+                                    fmtNum(_baseMonths),
+                                  )
+                                : context.l10n.empUsesYourDefaults(
+                                    fmtNum(_baseFee),
+                                    fmtNum(_baseInterest),
+                                    fmtNum(_baseMonths),
+                                  ),
                             style: muted,
                           ),
                           value: _customize,
@@ -527,7 +544,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                       if (_customize) ...[
                         AppGap.h8,
                         AppStepField(
-                          label: 'Upfront fee',
+                          label: context.l10n.empUpfrontFee,
                           controller: _fee,
                           suffix: '%',
                           min: 0,
@@ -538,7 +555,7 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         ),
                         AppGap.h8,
                         AppStepField(
-                          label: 'Interest',
+                          label: context.l10n.empInterest,
                           controller: _interest,
                           suffix: '%',
                           min: 0,
@@ -549,9 +566,9 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                         ),
                         AppGap.h8,
                         AppStepField(
-                          label: 'Term',
+                          label: context.l10n.empTerm,
                           controller: _months,
-                          suffix: 'months',
+                          suffix: context.l10n.empMonthsSuffix,
                           min: _lim.minMonths,
                           max: _lim.maxMonths,
                           error: _eMonths,
@@ -564,15 +581,20 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                             onPressed: _saving
                                 ? null
                                 : () => setState(_resetDefaults),
-                            child: const Text('Reset to inherited values'),
+                            child: Text(context.l10n.empResetInherited),
                           ),
                         ),
                       ],
                       AppGap.h8,
                       Text(
-                        'On a ${money(10000)} loan: fee ${money(b.upfrontFee)}, '
-                        '${money(b.disbursedAmount)} handed over, ${money(b.totalPayable)} repayable, '
-                        '${money(b.weeklyPayable)} a week for $weeks weeks.',
+                        context.l10n.empExample(
+                          money(10000),
+                          money(b.upfrontFee),
+                          money(b.disbursedAmount),
+                          money(b.totalPayable),
+                          money(b.weeklyPayable),
+                          weeks,
+                        ),
                         style: muted,
                       ),
                     ],

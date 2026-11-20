@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
@@ -22,35 +24,37 @@ enum _Tab { pulse, collections, portfolio, customers, team, forecast }
 
 enum _PTab { admins, money, risk, geography, people }
 
-const _tabLabels = {
-  _Tab.pulse: 'Pulse',
-  _Tab.collections: 'Collections',
-  _Tab.portfolio: 'Portfolio',
-  _Tab.customers: 'Customers',
-  _Tab.team: 'Team',
-  _Tab.forecast: 'Forecast',
-};
+/// Tab names in [_Tab] order.
+List<String> _tabLabels(BuildContext context) {
+  final l = context.l10n;
+  return [
+    l.anTabPulse,
+    l.anTabCollections,
+    l.anTabPortfolio,
+    l.anTabCustomers,
+    l.anTabTeam,
+    l.anTabForecast,
+  ];
+}
 
-const _pTabLabels = {
-  _PTab.admins: 'Admins',
-  _PTab.money: 'Money',
-  _PTab.risk: 'Risk',
-  _PTab.geography: 'Geography',
-  _PTab.people: 'People',
-};
+/// Tab names in [_PTab] order.
+List<String> _pTabLabels(BuildContext context) {
+  final l = context.l10n;
+  return [
+    l.anTabAdmins,
+    l.anTabMoney,
+    l.anTabRisk,
+    l.anTabGeography,
+    l.anTabPeople,
+  ];
+}
 
 const _kPreset = 'analytics_preset';
 const _kFrom = 'analytics_from';
 const _kTo = 'analytics_to';
 const _kTab = 'analytics_tab';
 
-String _ago(DateTime t) {
-  final m = DateTime.now().difference(t).inMinutes;
-  if (m < 1) return 'just now';
-  if (m < 60) return '$m min ago';
-  final h = m ~/ 60;
-  return h < 24 ? '$h h ago' : '${h ~/ 24} d ago';
-}
+String _ago(BuildContext context, DateTime t) => agoText(context, t);
 
 class AdvancedAnalyticsScreen extends StatefulWidget {
   const AdvancedAnalyticsScreen({super.key});
@@ -258,9 +262,7 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
   }
 
   Widget _chips() {
-    final labels = _platform
-        ? _pTabLabels.values.toList()
-        : _tabLabels.values.toList();
+    final labels = _platform ? _pTabLabels(context) : _tabLabels(context);
     final selected = _platform ? _ptab.index : _tab.index;
 
     return SizedBox(
@@ -321,8 +323,10 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
               Expanded(
                 child: Text(
                   s.updatedAt == null
-                      ? 'You are offline.'
-                      : 'You are offline. Showing numbers from ${_ago(s.updatedAt!)}.',
+                      ? context.l10n.offlineNoData
+                      : context.l10n.offlineShowingFrom(
+                          _ago(context, s.updatedAt!),
+                        ),
                   style: text.labelMedium?.copyWith(color: AppColors.warning),
                 ),
               ),
@@ -340,11 +344,11 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
     // The menu hides this screen from a USER; a stale deep link ends here.
     if (!CurrentUser.instance.hasRole(UserRole.admin)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Advanced analytics')),
-        body: const Center(
+        appBar: AppBar(title: Text(context.l10n.menuAnalytics)),
+        body: Center(
           child: Padding(
-            padding: EdgeInsets.all(AppSizes.lg),
-            child: Text("You don't have access to this view."),
+            padding: const EdgeInsets.all(AppSizes.lg),
+            child: Text(context.l10n.anNoAccess, textAlign: TextAlign.center),
           ),
         ),
       );
@@ -356,7 +360,11 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text('Advanced analytics'),
+        title: Text(
+          context.l10n.menuAnalytics,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           ExportMenuButton(
             types: _platform
@@ -401,14 +409,14 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
                             width: double.infinity,
                             child: SegmentedButton<_Seg>(
                               showSelectedIcon: false,
-                              segments: const [
+                              segments: [
                                 ButtonSegment(
                                   value: _Seg.analytics,
-                                  label: Text('Analytics'),
+                                  label: Text(context.l10n.anSegAnalytics),
                                 ),
                                 ButtonSegment(
                                   value: _Seg.platform,
-                                  label: Text('Platform'),
+                                  label: Text(context.l10n.anSegPlatform),
                                 ),
                               ],
                               selected: {_seg},
@@ -445,8 +453,10 @@ class _AdvancedAnalyticsScreenState extends State<AdvancedAnalyticsScreen> {
                                 valueListenable: AnalyticsService.connection,
                                 builder: (_, s, _) => Text(
                                   s.updatedAt == null
-                                      ? 'Pull down to refresh.'
-                                      : 'Updated ${_ago(s.updatedAt!)}. Pull down to refresh.',
+                                      ? context.l10n.pullToRefresh
+                                      : context.l10n.updatedPullRefresh(
+                                          _ago(context, s.updatedAt!),
+                                        ),
                                   textAlign: TextAlign.center,
                                   style: text.labelSmall?.copyWith(
                                     color: AppColors.darkOnSurfaceMuted,

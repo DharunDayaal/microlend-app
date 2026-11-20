@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_progress_bar.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
@@ -85,7 +86,7 @@ class PaymentTile extends StatelessWidget {
                       Row(
                         children: [
                           AppChip(
-                            label: 'Week ${payment.weekNumber}',
+                            label: context.l10n.commonWeekN(payment.weekNumber),
                             backgroundColor: AppColors.darkPrimary.withAlpha(
                               AppAlphas.borderTint,
                             ),
@@ -103,7 +104,7 @@ class PaymentTile extends StatelessWidget {
                           if (isExtension) ...[
                             AppGap.w8,
                             AppChip(
-                              label: 'PAST TERM',
+                              label: context.l10n.payPastTerm,
                               backgroundColor: AppColors.dangerContainer,
                               foregroundColor: Colors.white,
                               borderColor: Colors.transparent,
@@ -135,7 +136,12 @@ class PaymentTile extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('AMOUNT PAID', style: text.labelMedium),
+                                Text(
+                                  context.l10n.payAmountPaid,
+                                  style: text.labelMedium,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 const SizedBox(height: 2),
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
@@ -155,7 +161,9 @@ class PaymentTile extends StatelessWidget {
                           ),
                           AppGap.w8,
                           AppChip(
-                            label: cleared ? 'WEEK CLEARED' : 'PARTIAL',
+                            label: cleared
+                                ? context.l10n.payWeekCleared
+                                : context.l10n.statusPartial,
                             backgroundColor: cleared
                                 ? AppColors.successContainer
                                 : AppColors.approvalGlowWarm,
@@ -184,16 +192,22 @@ class PaymentTile extends StatelessWidget {
                         value: progress,
                         height: 6,
                         color: accent,
-                        semanticsLabel: 'Week ${payment.weekNumber} progress',
+                        semanticsLabel: context.l10n.payWeekProgress(
+                          payment.weekNumber,
+                        ),
                       ),
                       const SizedBox(height: AppSizes.xs + 2),
                       Text(
                         cleared
-                            ? 'Week ${payment.weekNumber} fully collected '
-                                  '(${CurrencyFormatter.format(weekTarget)})'
-                            : '${CurrencyFormatter.format(weekCollected)} of '
-                                  '${CurrencyFormatter.format(weekTarget)} collected '
-                                  '• ${CurrencyFormatter.format(left)} left',
+                            ? context.l10n.payWeekFullyCollected(
+                                payment.weekNumber,
+                                CurrencyFormatter.format(weekTarget),
+                              )
+                            : context.l10n.payCollectedOfLeft(
+                                CurrencyFormatter.format(weekCollected),
+                                CurrencyFormatter.format(weekTarget),
+                                CurrencyFormatter.format(left),
+                              ),
                         style: text.labelMedium?.copyWith(color: muted),
                       ),
                       AppGap.h12,
@@ -201,7 +215,10 @@ class PaymentTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                         onTap: () {
                           DeviceUtils.copy(payment.id);
-                          AppSnackbar.success(context, 'Payment ID copied');
+                          AppSnackbar.success(
+                            context,
+                            context.l10n.payIdCopied,
+                          );
                         },
                         child: Container(
                           width: double.infinity,

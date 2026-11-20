@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -77,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     if (done == true && mounted) {
-      AppSnackbar.success(context, 'Phone number updated.');
+      AppSnackbar.success(context, context.l10n.profPhoneUpdated);
     }
   }
 
@@ -90,17 +91,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
     if (done == true && mounted) {
-      AppSnackbar.success(context, 'Password changed.');
+      AppSnackbar.success(context, context.l10n.profPasswordChanged);
     }
   }
 
   Future<void> _revokeOne(SessionInfo s) async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Sign out this device?',
-      message:
-          'Signed in on ${DateFormatter.dateTime(s.createdAt, fallback: '--')}.',
-      confirmText: 'Sign out',
+      title: context.l10n.profSignOutDevice,
+      message: context.l10n.profSignedInOn(
+        DateFormatter.dateTime(s.createdAt, fallback: '--'),
+      ),
+      confirmText: context.l10n.profSignOut,
     );
     if (!ok || !mounted) return;
     final err = await _c.revokeSession(s.id);
@@ -110,10 +112,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _revokeAll() async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Sign out of all devices?',
-      message:
-          'This device is signed out too, and you will need to log in again.',
-      confirmText: 'Sign out all',
+      title: context.l10n.profSignOutAllTitle,
+      message: context.l10n.profSignOutAllMsg,
+      confirmText: context.l10n.profSignOutAll,
     );
     if (!ok || !mounted) return;
     final err = await _c.revokeAllSessions();
@@ -123,11 +124,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _decideAdmin(AdminAccount a, bool approve) async {
     final ok = await DialogHelper.confirm(
       context,
-      title: approve ? 'Approve ${a.userName}?' : 'Reject ${a.userName}?',
+      title: approve
+          ? context.l10n.profApproveTitle(a.userName)
+          : context.l10n.manRejectTitle(a.userName),
       message: approve
-          ? 'They will be able to sign in and manage a team.'
-          : 'The account will be deactivated. It is never deleted.',
-      confirmText: approve ? 'Approve' : 'Reject',
+          ? context.l10n.profApproveMsg
+          : context.l10n.profRejectMsg,
+      confirmText: approve ? context.l10n.manApprove : context.l10n.manReject,
     );
     if (!ok || !mounted) return;
 
@@ -140,7 +143,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else {
       AppSnackbar.success(
         context,
-        approve ? 'Admin approved.' : 'Admin rejected.',
+        approve
+            ? context.l10n.profAdminApproved
+            : context.l10n.profAdminRejected,
       );
     }
   }
@@ -152,16 +157,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       (_) => EditLimitsSheet(limits: lim, onSave: _c.updateLimits),
     );
     if (done == true && mounted) {
-      AppSnackbar.success(context, 'Limits updated.');
+      AppSnackbar.success(context, context.l10n.profLimitsUpdated);
     }
   }
 
   Future<void> _logout() async {
     final ok = await DialogHelper.confirm(
       context,
-      title: 'Log out?',
-      message: 'You will need to sign in again.',
-      confirmText: 'Log out',
+      title: context.l10n.menuLogOutConfirm,
+      message: context.l10n.menuLogOutSub,
+      confirmText: context.l10n.menuLogOut,
     );
     if (ok) await AuthService.logout();
   }
@@ -169,10 +174,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _confirmLeave() async {
     final leave = await DialogHelper.confirm(
       context,
-      title: 'Discard changes?',
-      message: 'You have edits that are not saved.',
-      confirmText: 'Discard',
-      cancelText: 'Keep editing',
+      title: context.l10n.profDiscardChanges,
+      message: context.l10n.profUnsavedEdits,
+      confirmText: context.l10n.empDiscard,
+      cancelText: context.l10n.empKeepEditing,
     );
     if (leave && mounted) {
       _dirty.clear();
@@ -195,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.arrow_back_ios,
             onPressed: () => Navigator.of(context).maybePop(),
           ),
-          title: const Text('My profile'),
+          title: Text(context.l10n.menuMyProfile),
         ),
         body: SafeArea(
           child: ListenableBuilder(listenable: _c, builder: (_, _) => _body()),
@@ -231,7 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
       return ErrorView(
-        message: section.error ?? 'Could not load your profile.',
+        message: section.error ?? context.l10n.profLoadFailed,
         onRetry: _c.load,
       );
     }
@@ -290,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const AppInfoCard(),
           AppGap.h16,
           AppButton(
-            label: 'Log out',
+            label: context.l10n.menuLogOut,
             outlined: true,
             prefixIcon: Icons.logout_rounded,
             radius: AppSizes.md,

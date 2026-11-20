@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/utils/constants/alphas.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
@@ -21,11 +22,11 @@ class CallIconButton extends StatelessWidget {
       icon: Icons.call_outlined,
       color: iconColor,
       backgroundColor: AppColors.darkBorder.withAlpha(AppAlphas.badgeFill),
-      tooltip: 'Call',
+      tooltip: context.l10n.commonCall,
       onPressed: () async {
         final ok = await LauncherUtils.call(phone);
         if (!ok && context.mounted) {
-          AppSnackbar.error(context, 'Unable to open dialer');
+          AppSnackbar.error(context, context.l10n.commonUnableOpenDialer);
         }
       },
     );

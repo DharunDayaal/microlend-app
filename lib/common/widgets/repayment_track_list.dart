@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
@@ -133,6 +134,7 @@ class RepaymentTrackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
+    final l = context.l10n;
     const muted = AppColors.darkOnSurfaceMuted;
 
     final track = row.track;
@@ -157,41 +159,41 @@ class RepaymentTrackCard extends StatelessWidget {
 
     switch (row.state) {
       case RepaymentRowState.paid:
-        chipLabel = 'PAID';
+        chipLabel = l.statusPaid;
         chipBg = AppColors.successContainer;
         chipFg = Colors.white;
-        sub = _join([ref, 'Due ${DateFormatter.dayMonth(row.due)}']);
-        right = 'Paid in full';
+        sub = _join([ref, l.trackDueOn(DateFormatter.dayMonth(row.due))]);
+        right = l.trackPaidInFull;
         rightColor = AppColors.success;
         tint = AppColors.darkRim.withAlpha(AppAlphas.badgeFill);
       case RepaymentRowState.partial:
-        chipLabel = 'PARTIAL';
+        chipLabel = l.statusPartial;
         chipBg = AppColors.approvalGlowWarm;
         chipFg = AppColors.progressWarning;
         chipIcon = Icons.schedule;
         sub = ref;
-        right = '$remaining Due to clear';
+        right = l.trackDueToClear(remaining);
         rightColor = AppColors.warning;
         tint = AppColors.warning.withAlpha(AppAlphas.watermark);
         border = AppColors.warning.withAlpha(AppAlphas.borderTint);
       case RepaymentRowState.missed:
-        chipLabel = 'UNPAID';
+        chipLabel = l.statusUnpaid;
         chipBg = AppColors.dangerContainer.withAlpha(AppAlphas.borderTint);
         chipFg = AppColors.progressDanger;
-        sub = _join([ref, 'Not collected']);
-        right = '$remaining pending';
+        sub = _join([ref, l.trackNotCollected]);
+        right = l.trackPending(remaining);
         rightColor = AppColors.progressDanger;
         tint = AppColors.darkRim.withAlpha(AppAlphas.badgeFill);
       case RepaymentRowState.scheduled:
-        chipLabel = 'SCHEDULED';
+        chipLabel = l.statusScheduled;
         chipBg = AppColors.darkBorder;
         chipFg = AppColors.darkOnSurface;
-        sub = 'Due ${DateFormatter.weekdayDate(row.due)}';
-        right = 'Upcoming';
+        sub = l.trackDueOn(DateFormatter.weekdayDate(row.due));
+        right = l.trackUpcoming;
         rightColor = AppColors.stepCurrentLabel;
         tint = AppColors.darkRim.withAlpha(AppAlphas.badgeFill);
       case RepaymentRowState.upcoming:
-        chipLabel = 'UPCOMING';
+        chipLabel = l.statusUpcoming;
         chipBg = AppColors.darkBorder.withAlpha(AppAlphas.badgeFill);
         chipFg = muted;
         opacity = 0.6;
@@ -203,12 +205,12 @@ class RepaymentTrackCard extends StatelessWidget {
       tint = AppColors.dangerContainer.withAlpha(AppAlphas.watermark);
       opacity = 1;
       if (unpaid) {
-        chipLabel = 'OVERDUE';
+        chipLabel = l.statusOverdue;
         chipBg = AppColors.dangerContainer;
         chipFg = Colors.white;
         chipIcon = null;
-        sub = _join([ref, 'Past $totalWeeks-week term']);
-        right = '$remaining overdue';
+        sub = _join([ref, l.trackPastTerm(totalWeeks)]);
+        right = l.trackOverdueAmount(remaining);
         rightColor = AppColors.progressDanger;
       }
     }
@@ -273,7 +275,7 @@ class RepaymentTrackCard extends StatelessWidget {
             Row(
               children: [
                 AppChip(
-                  label: 'Wk ${NumberFormatter.pad2(row.week)}',
+                  label: l.trackWeekShort(NumberFormatter.pad2(row.week)),
                   backgroundColor: weekBg,
                   foregroundColor: weekFg,
                   borderColor: Colors.transparent,
@@ -330,11 +332,16 @@ class RepaymentTrackCard extends StatelessWidget {
                   ),
                   if (right != null) ...[
                     AppGap.w8,
-                    Text(
-                      right,
-                      style: text.labelMedium?.copyWith(
-                        color: rightColor,
-                        fontWeight: FontWeight.w700,
+                    Flexible(
+                      child: Text(
+                        right,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: text.labelMedium?.copyWith(
+                          color: rightColor,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -345,7 +352,9 @@ class RepaymentTrackCard extends StatelessWidget {
             if (canCollect && onCollect != null) ...[
               const SizedBox(height: AppSizes.sm),
               AppButton(
-                label: 'Collect ${CurrencyFormatter.format(row.remaining)}',
+                label: l.trackCollectAmount(
+                  CurrencyFormatter.format(row.remaining),
+                ),
                 prefixIcon: Icons.payments_outlined,
                 height: 40,
                 radius: AppSizes.radiusMd,

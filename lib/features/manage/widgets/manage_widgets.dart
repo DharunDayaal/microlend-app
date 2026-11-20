@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -15,11 +16,15 @@ import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
 
-(String, Color) statusLook(AccountStatus s) => switch (s) {
-  AccountStatus.pending => ('PENDING', AppColors.warning),
-  AccountStatus.active => ('ACTIVE', AppColors.success),
-  AccountStatus.inactive => ('INACTIVE', AppColors.progressDanger),
-};
+(String, Color) statusLook(BuildContext context, AccountStatus s) =>
+    switch (s) {
+      AccountStatus.pending => (context.l10n.manPending, AppColors.warning),
+      AccountStatus.active => (context.l10n.manActive, AppColors.success),
+      AccountStatus.inactive => (
+        context.l10n.manInactive,
+        AppColors.progressDanger,
+      ),
+    };
 
 String _num(double v) =>
     v == v.truncateToDouble() ? v.toInt().toString() : v.toStringAsFixed(1);
@@ -37,10 +42,10 @@ class StatusTabs extends StatelessWidget {
     this.pendingBadge = 0,
   });
 
-  static const _items = [
-    ('pending', 'Pending'),
-    ('active', 'Active'),
-    ('inactive', 'Inactive'),
+  static List<(String, String)> _items(BuildContext context) => [
+    ('pending', context.l10n.manTabPending),
+    ('active', context.l10n.manTabActive),
+    ('inactive', context.l10n.manTabInactive),
   ];
 
   @override
@@ -56,7 +61,7 @@ class StatusTabs extends StatelessWidget {
       ),
       child: Row(
         children: [
-          for (final (key, label) in _items)
+          for (final (key, label) in _items(context))
             Expanded(
               child: Semantics(
                 button: true,
@@ -164,7 +169,7 @@ class _ManageSearchState extends State<ManageSearch> {
         suffixIcon: _c.text.isEmpty
             ? null
             : IconButton(
-                tooltip: 'Clear',
+                tooltip: context.l10n.commonClear,
                 icon: const Icon(Icons.close),
                 onPressed: () {
                   _c.clear();
@@ -259,7 +264,7 @@ class AccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final (label, color) = statusLook(a.status);
+    final (label, color) = statusLook(context, a.status);
     final muted = text.labelMedium?.copyWith(
       color: AppColors.darkOnSurfaceMuted,
     );
@@ -304,29 +309,38 @@ class AccountCard extends StatelessWidget {
             runSpacing: AppSizes.sm,
             children: [
               if (isAdminAccount)
-                _Chip(Icons.groups_outlined, '${a.membersCount ?? 0} employees')
+                _Chip(
+                  Icons.groups_outlined,
+                  context.l10n.empEmployeesCount(a.membersCount ?? 0),
+                )
               else ...[
                 _Chip(
                   Icons.people_alt_outlined,
-                  '${a.customersCount ?? 0} customers',
+                  context.l10n.accCustomersCount(a.customersCount ?? 0),
                 ),
                 if (showAdminName && (a.adminName ?? '').isNotEmpty)
                   _Chip(Icons.admin_panel_settings_outlined, a.adminName!),
                 if (a.hasOwnDefaults != null)
                   _Chip(
                     Icons.tune_rounded,
-                    a.hasOwnDefaults! ? 'Own defaults' : 'Admin defaults',
+                    a.hasOwnDefaults!
+                        ? context.l10n.manOwnDefaults
+                        : context.l10n.manAdminDefaults,
                   ),
               ],
               if (isAdminAccount && a.fee != null)
                 _Chip(
                   Icons.percent_rounded,
-                  'Fee ${_num(a.fee!)}% • Int ${_num(a.interest ?? 0)}% • ${_num(a.months ?? 0)} mo',
+                  context.l10n.manDefaultsShort(
+                    _num(a.fee!),
+                    _num(a.interest ?? 0),
+                    _num(a.months ?? 0),
+                  ),
                 ),
               if (a.createdAt != null)
                 _Chip(
                   Icons.event_outlined,
-                  'Joined ${DateFormatter.date(a.createdAt)}',
+                  context.l10n.manJoinedOn(DateFormatter.date(a.createdAt)),
                 ),
             ],
           ),
@@ -428,11 +442,17 @@ class AccountActionBar extends StatelessWidget {
       case AccountStatus.pending:
         return Row(
           children: [
-            Expanded(child: danger('Reject', Icons.close_rounded, onReject)),
+            Expanded(
+              child: danger(
+                context.l10n.manReject,
+                Icons.close_rounded,
+                onReject,
+              ),
+            ),
             AppGap.w12,
             Expanded(
               child: AppButton(
-                label: 'Approve',
+                label: context.l10n.manApprove,
                 prefixIcon: Icons.check_rounded,
                 radius: AppSizes.md,
                 height: 44,
@@ -447,7 +467,7 @@ class AccountActionBar extends StatelessWidget {
             if (onDetails != null) ...[
               Expanded(
                 child: AppButton(
-                  label: 'Details',
+                  label: context.l10n.manDetails,
                   outlined: true,
                   prefixIcon: Icons.visibility_outlined,
                   radius: AppSizes.md,
@@ -458,7 +478,11 @@ class AccountActionBar extends StatelessWidget {
               AppGap.w12,
             ],
             Expanded(
-              child: danger('Deactivate', Icons.block_rounded, onDeactivate),
+              child: danger(
+                context.l10n.manDeactivate,
+                Icons.block_rounded,
+                onDeactivate,
+              ),
             ),
           ],
         );
@@ -466,7 +490,7 @@ class AccountActionBar extends StatelessWidget {
         return SizedBox(
           width: double.infinity,
           child: AppButton(
-            label: 'Reactivate',
+            label: context.l10n.manReactivate,
             outlined: true,
             prefixIcon: Icons.restart_alt_rounded,
             radius: AppSizes.md,
@@ -623,7 +647,7 @@ class _ManageListViewState extends State<ManageListView> {
                   icon: Icons.groups_outlined,
                   message: c.search.isEmpty
                       ? widget.emptyMessage(c.status)
-                      : 'Nobody matches "${c.search}".',
+                      : context.l10n.manNobodyMatches(c.search),
                 ),
               ],
             );
@@ -658,7 +682,7 @@ class _ManageListViewState extends State<ManageListView> {
                     Text(c.moreError!, textAlign: TextAlign.center),
                     TextButton(
                       onPressed: c.retryMore,
-                      child: const Text('Tap to retry'),
+                      child: Text(context.l10n.commonTapToRetry),
                     ),
                   ],
                 );
@@ -666,7 +690,10 @@ class _ManageListViewState extends State<ManageListView> {
               return c.hasNext
                   ? const SizedBox.shrink()
                   : Center(
-                      child: Text('That is everyone', style: text.bodySmall),
+                      child: Text(
+                        context.l10n.manThatIsEveryone,
+                        style: text.bodySmall,
+                      ),
                     );
             },
           );

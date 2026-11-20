@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/data/models/profile_model.dart';
@@ -118,7 +119,9 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
     InputDecoration deco(String label) => InputDecoration(
       labelText: label,
       suffixIcon: IconButton(
-        tooltip: _show ? 'Hide passwords' : 'Show passwords',
+        tooltip: _show
+            ? context.l10n.profHidePasswords
+            : context.l10n.profShowPasswords,
         onPressed: () => setState(() => _show = !_show),
         icon: Icon(
           _show ? Icons.visibility_off_outlined : Icons.visibility_outlined,
@@ -132,9 +135,9 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SheetTitle(
-            'Change password',
-            'Your other devices will be signed out.',
+          _SheetTitle(
+            context.l10n.profChangePassword,
+            context.l10n.profOtherDevicesSignedOut,
           ),
           TextFormField(
             controller: _current,
@@ -142,8 +145,8 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
             obscureText: !_show,
             forceErrorText: _currentErr,
             validator: (v) =>
-                (v ?? '').isEmpty ? 'Enter your current password' : null,
-            decoration: deco('Current password'),
+                (v ?? '').isEmpty ? context.l10n.profEnterCurrent : null,
+            decoration: deco(context.l10n.profCurrentPassword),
           ),
           AppGap.h12,
           TextFormField(
@@ -152,19 +155,22 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
             obscureText: !_show,
             validator: (v) {
               final s = v ?? '';
-              if (s.length < 8) return 'Use at least 8 characters';
-              if (s == _current.text) return 'Choose a different password';
+              if (s.length < 8) return context.l10n.empMin8;
+              if (s == _current.text) {
+                return context.l10n.profDifferentPassword;
+              }
               return null;
             },
-            decoration: deco('New password'),
+            decoration: deco(context.l10n.profNewPassword),
           ),
           AppGap.h12,
           TextFormField(
             controller: _confirm,
             enabled: !_saving,
             obscureText: !_show,
-            validator: (v) => v == _next.text ? null : 'Passwords do not match',
-            decoration: deco('Confirm new password'),
+            validator: (v) =>
+                v == _next.text ? null : context.l10n.empPasswordsMismatch,
+            decoration: deco(context.l10n.profConfirmNewPassword),
           ),
           if (_err != null) ...[
             AppGap.h8,
@@ -177,7 +183,7 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
           ],
           AppGap.h16,
           AppButton(
-            label: 'Update password',
+            label: context.l10n.profUpdatePassword,
             radius: AppSizes.md,
             isLoading: _saving,
             onPressed: _submit,
@@ -242,12 +248,12 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
   Future<void> _send() async {
     final digits = _phone.text.replaceAll(RegExp(r'[^\d]'), '');
     if (digits.length < 10 || digits.length > 15) {
-      setState(() => _err = 'Enter a valid mobile number');
+      setState(() => _err = context.l10n.empInvalidMobile);
       return;
     }
     final phone = PhoneFormatter.toE164(_phone.text);
     if (phone == widget.currentPhone) {
-      setState(() => _err = 'That is already your phone number');
+      setState(() => _err = context.l10n.profSamePhone);
       return;
     }
 
@@ -265,7 +271,7 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
     } on ApiException catch (e) {
       if (mounted) setState(() => _err = e.message);
     } catch (_) {
-      if (mounted) setState(() => _err = 'Could not send the code. Try again.');
+      if (mounted) setState(() => _err = context.l10n.profSendCodeFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -273,7 +279,7 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
 
   Future<void> _verify() async {
     if (_code.text.length != 6) {
-      setState(() => _err = 'Enter the 6-digit code');
+      setState(() => _err = context.l10n.profEnterCode);
       return;
     }
     setState(() {
@@ -296,7 +302,7 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
     } on ApiException catch (e) {
       if (mounted) setState(() => _err = e.message);
     } catch (_) {
-      if (mounted) setState(() => _err = 'Something went wrong. Try again.');
+      if (mounted) setState(() => _err = context.l10n.profSomethingWrong);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -311,10 +317,10 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SheetTitle(
-          'Change phone number',
+          context.l10n.profChangePhone,
           _step == 0
-              ? 'We will send a code to the new number.'
-              : 'Code sent to ${PhoneFormatter.display(_target)}',
+              ? context.l10n.profWillSendCode
+              : context.l10n.profCodeSentTo(PhoneFormatter.display(_target)),
         ),
         if (_step == 0)
           TextField(
@@ -324,7 +330,7 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'[\d+ ]')),
             ],
-            decoration: const InputDecoration(labelText: 'New phone number'),
+            decoration: InputDecoration(labelText: context.l10n.profNewPhone),
           )
         else
           TextField(
@@ -333,8 +339,8 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
             keyboardType: TextInputType.number,
             maxLength: 6,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: const InputDecoration(
-              labelText: '6-digit code',
+            decoration: InputDecoration(
+              labelText: context.l10n.profSixDigitCode,
               counterText: '',
             ),
           ),
@@ -349,7 +355,9 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
         ],
         AppGap.h16,
         AppButton(
-          label: _step == 0 ? 'Send code' : 'Verify and update',
+          label: _step == 0
+              ? context.l10n.profSendCode
+              : context.l10n.profVerifyUpdate,
           radius: AppSizes.md,
           isLoading: _busy,
           onPressed: _step == 0 ? _send : _verify,
@@ -365,13 +373,15 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
                         _step = 0;
                         _err = null;
                       }),
-                child: const Text('Use another number'),
+                child: Text(context.l10n.profUseAnother),
               ),
               const Spacer(),
               TextButton(
                 onPressed: (_busy || _cooldown > 0) ? null : _send,
                 child: Text(
-                  _cooldown > 0 ? 'Resend in ${_cooldown}s' : 'Resend code',
+                  _cooldown > 0
+                      ? context.l10n.profResendIn(_cooldown)
+                      : context.l10n.profResendCode,
                 ),
               ),
             ],
@@ -414,6 +424,19 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
     ('max_interest_percent', 'Maximum interest (%)', true, 1000.0),
   ];
 
+  String _fieldLabel(String key) {
+    final l = context.l10n;
+    return switch (key) {
+      'min_principal' => l.profMinPrincipal,
+      'max_principal' => l.profMaxPrincipal,
+      'min_months' => l.profMinTerm,
+      'max_months' => l.profMaxTerm,
+      'max_fee_percent' => l.profMaxFee,
+      'max_interest_percent' => l.profMaxInterest,
+      _ => key,
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -446,13 +469,11 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
     if (_saving || !(_form.currentState?.validate() ?? false)) return;
 
     if (_v('min_principal')! > _v('max_principal')!) {
-      setState(
-        () => _err = 'Minimum principal cannot exceed maximum principal',
-      );
+      setState(() => _err = context.l10n.profMinPrincipalExceeds);
       return;
     }
     if (_v('min_months')! > _v('max_months')!) {
-      setState(() => _err = 'Minimum term cannot exceed maximum term');
+      setState(() => _err = context.l10n.profMinTermExceeds);
       return;
     }
 
@@ -461,7 +482,7 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
         if (_v(e.key) != e.value) e.key: _v(e.key)!,
     };
     if (changes.isEmpty) {
-      setState(() => _err = 'Change at least one limit');
+      setState(() => _err = context.l10n.profChangeOneLimit);
       return;
     }
 
@@ -491,10 +512,7 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _SheetTitle(
-            'Loan limits',
-            'Existing admin defaults are not rewritten. A tighter limit applies the next time defaults are saved.',
-          ),
+          _SheetTitle(context.l10n.profLoanLimits, context.l10n.profLimitsNote),
           for (final f in _fields) ...[
             TextFormField(
               controller: _c[f.$1],
@@ -512,17 +530,17 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
                 if (n == null || n <= 0) {
                   return f.$1 == 'max_fee_percent' && n == 0
                       ? null
-                      : 'Enter a positive number';
+                      : context.l10n.profPositiveNumber;
                 }
                 if (f.$3 && ((n * 10) - (n * 10).round()).abs() > 1e-9) {
-                  return 'One decimal place at most';
+                  return context.l10n.empOneDecimal;
                 }
                 if (f.$4 != null && n > f.$4!) {
-                  return 'Must be ${fmtNum(f.$4!)} or less';
+                  return context.l10n.profMustBeOrLess(fmtNum(f.$4!));
                 }
                 return null;
               },
-              decoration: InputDecoration(labelText: f.$2),
+              decoration: InputDecoration(labelText: _fieldLabel(f.$1)),
             ),
             AppGap.h12,
           ],
@@ -536,7 +554,7 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
             AppGap.h12,
           ],
           AppButton(
-            label: 'Save limits',
+            label: context.l10n.profSaveLimits,
             radius: AppSizes.md,
             isLoading: _saving,
             onPressed: _submit,

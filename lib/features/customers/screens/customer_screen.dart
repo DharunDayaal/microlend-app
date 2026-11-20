@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_chip_select.dart';
@@ -19,7 +21,6 @@ import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/currency_formatter.dart';
 import 'package:micro_lending_app/utils/formatters/date_formatter.dart';
 import 'package:micro_lending_app/utils/formatters/phone_formatter.dart';
-import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
 import 'package:micro_lending_app/utils/helpers/debouncer.dart';
 import 'package:micro_lending_app/utils/helpers/snackbar_helper.dart';
 import 'package:micro_lending_app/utils/network/api_exception.dart';
@@ -210,7 +211,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     return Scaffold(
       floatingActionButton: _showFloatingActionButton
           ? AppButton(
-              label: "Add Borrower",
+              label: context.l10n.custAddBorrower,
               onPressed: () => context.push(AppRoutes.addCustomer),
               prefixIcon: Icons.person_outline_rounded,
               width: 180,
@@ -230,7 +231,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     label: "",
                     showHeader: false,
                     prefixIcon: Icons.search,
-                    hint: "Search borrower, street, city, district...",
+                    hint: context.l10n.custSearchHint,
                     controller: _searchController,
                     onChanged: _onSearchChanged,
                     textInputAction: TextInputAction.done,
@@ -246,13 +247,19 @@ class _CustomerScreenState extends State<CustomerScreen> {
                       for (final option in _weekdayOptions)
                         ChipOption(
                           value: option["value"]!,
-                          label: option["label"]!,
+                          label: weekdayLabel(
+                            context,
+                            option["value"]!,
+                            short: true,
+                          ),
                         ),
                     ],
                   ),
                   Text(
-                    "${TextFormatter.titleCase(_weekday)} Batch",
+                    context.l10n.custDayBatch(weekdayLabel(context, _weekday)),
                     style: textTheme.headlineSmall,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   AppGap.h4,
                 ],
@@ -299,10 +306,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
       return ListView(
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           EmptyView(
             icon: Icons.people_outline,
-            message: 'No customers scheduled',
+            message: context.l10n.custNoneScheduled,
           ),
         ],
       );
@@ -329,7 +336,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
           Text(_loadMoreError!, textAlign: TextAlign.center),
           TextButton(
             onPressed: _retryLoadMore,
-            child: const Text('Tap to retry'),
+            child: Text(context.l10n.commonTapToRetry),
           ),
         ],
       );
@@ -338,7 +345,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     if (!_hasNext) {
       return Center(
         child: Text(
-          'No more customers',
+          context.l10n.custNoMore,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );
@@ -365,7 +372,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("TODAY'S TARGET ROUTE", style: textTheme.labelLarge),
+                    Text(
+                      context.l10n.custTodaysTarget,
+                      style: textTheme.labelLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     AppGap.h4,
                     _summaryLoading
                         ? const AppShimmer(
@@ -385,7 +397,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: " due",
+                                    text: context.l10n.custDueSuffix,
                                     style: textTheme.bodyLarge?.copyWith(
                                       fontWeight: FontWeight.normal,
                                     ),
@@ -420,7 +432,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 child: _statTile(
                   icon: Icons.check_circle_outline_outlined,
                   color: AppColors.success,
-                  title: "Collected",
+                  title: context.l10n.custCollected,
                   value: CurrencyFormatter.format(_summary?.totalCollected),
                   textTheme: textTheme,
                 ),
@@ -430,8 +442,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 child: _statTile(
                   icon: Icons.pending_actions_outlined,
                   color: AppColors.progressWarning,
-                  title: "Pending",
-                  value: "${_summary?.borrowersPending ?? 0} Borrowers",
+                  title: context.l10n.custPending,
+                  value: context.l10n.custBorrowersCount(
+                    _summary?.borrowersPending ?? 0,
+                  ),
                   textTheme: textTheme,
                 ),
               ),
@@ -505,6 +519,8 @@ class _CustomerTile extends StatelessWidget {
                   children: [
                     Text(
                       customer.customerName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -516,7 +532,9 @@ class _CustomerTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
-                      '${customer.streetName ?? 'N/A'} • ${customer.district}',
+                      '${customer.streetName ?? context.l10n.commonNA} • ${customer.district}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),

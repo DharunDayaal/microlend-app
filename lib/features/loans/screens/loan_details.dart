@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_payment_sheet.dart';
@@ -177,9 +179,8 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
     // Reopening a defaulted loan must not create a second open loan.
     final blocked = switch (_canIssueNew) {
       true => null,
-      false => 'This borrower already has another active or overdue loan.',
-      null =>
-        'Could not check the borrower’s other loans. Refresh and try again.',
+      false => context.l10n.loanReopenBlockedOther,
+      null => context.l10n.loanReopenCheckFailed,
     };
 
     final changed = await ChangeStatusSheet.show(
@@ -191,7 +192,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
     if (!changed || !mounted) return;
 
     _changed = true; // the loans list reloads when we leave
-    AppSnackbar.success(context, 'Loan status updated.');
+    AppSnackbar.success(context, context.l10n.loanStatusUpdated);
     await _load(silent: true); // the status always comes from the server
   }
 
@@ -247,7 +248,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
       if (result == null || !mounted) return;
 
       _changed = true;
-      AppSnackbar.success(context, 'Payment recorded.');
+      AppSnackbar.success(context, context.l10n.loanPaymentRecorded);
       await _load(silent: true); // balances always come from the server
     } finally {
       if (mounted) setState(() => _paying = false);
@@ -271,7 +272,9 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
         final phone = _customer?.phoneNumber;
         if (phone == null) return;
         final ok = await LauncherUtils.call(phone);
-        if (!ok && mounted) AppSnackbar.error(context, 'Unable to open dialer');
+        if (!ok && mounted) {
+          AppSnackbar.error(context, context.l10n.commonUnableOpenDialer);
+        }
       case _MenuAction.changeStatus:
         await _changeStatus();
       case _MenuAction.history:
@@ -279,7 +282,9 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
           AppRoutes.auditFor(
             entityType: 'LOAN',
             entityId: widget.loanId,
-            label: 'Loan ${TextFormatter.dummyId(widget.loanId, '#LN')}',
+            label: context.l10n.loanTitleId(
+              TextFormatter.dummyId(widget.loanId, '#LN'),
+            ),
           ),
         );
     }
@@ -315,8 +320,12 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Loan ${TextFormatter.dummyId(widget.loanId, '#LN')}',
+            context.l10n.loanTitleId(
+              TextFormatter.dummyId(widget.loanId, '#LN'),
+            ),
             style: text.headlineSmall,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           if (s != null)
             Row(
@@ -325,7 +334,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
                 Icon(s.view.icon, size: 14, color: s.view.color),
                 const SizedBox(width: 4),
                 Text(
-                  s.view.label,
+                  s.stage.l10nLabel(context),
                   style: text.labelMedium?.copyWith(
                     color: s.view.color,
                     fontWeight: FontWeight.w700,
@@ -340,29 +349,29 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
           enabled: s != null,
           onSelected: _onMenu,
           itemBuilder: (_) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _MenuAction.tracks,
               child: ListTile(
                 dense: true,
-                leading: Icon(Icons.list_alt_outlined),
-                title: Text('Repayment tracks'),
+                leading: const Icon(Icons.list_alt_outlined),
+                title: Text(context.l10n.loanMenuTracks),
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: _MenuAction.payments,
               child: ListTile(
                 dense: true,
-                leading: Icon(Icons.receipt_long_outlined),
-                title: Text('Payment history'),
+                leading: const Icon(Icons.receipt_long_outlined),
+                title: Text(context.l10n.loanMenuPayments),
               ),
             ),
             if (_customer != null)
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: _MenuAction.call,
                 child: ListTile(
                   dense: true,
-                  leading: Icon(Icons.call_outlined),
-                  title: Text('Call borrower'),
+                  leading: const Icon(Icons.call_outlined),
+                  title: Text(context.l10n.loanMenuCall),
                 ),
               ),
             if (s != null &&
@@ -371,21 +380,21 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
                   s.stage,
                   CurrentUser.instance.role,
                 ).isNotEmpty)
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: _MenuAction.changeStatus,
                 child: ListTile(
                   dense: true,
-                  leading: Icon(Icons.swap_horiz_rounded),
-                  title: Text('Change status'),
+                  leading: const Icon(Icons.swap_horiz_rounded),
+                  title: Text(context.l10n.loanMenuChangeStatus),
                 ),
               ),
             if (CurrentUser.instance.hasRole(UserRole.admin))
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: _MenuAction.history,
                 child: ListTile(
                   dense: true,
-                  leading: Icon(Icons.history_rounded),
-                  title: Text('History'),
+                  leading: const Icon(Icons.history_rounded),
+                  title: Text(context.l10n.commonHistory),
                 ),
               ),
           ],
@@ -404,7 +413,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
         );
       }
       return ErrorView(
-        message: _loanError ?? 'Could not load this loan.',
+        message: _loanError ?? context.l10n.loanLoadFailed,
         onRetry: () => _load(),
       );
     }
@@ -450,7 +459,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
     }
     if (_customerLoading) return const LoanBorrowerStripSkeleton();
     return LoanBorrowerError(
-      message: _customerError ?? 'Could not load the borrower.',
+      message: _customerError ?? context.l10n.issueLoadBorrowerFailed,
       onRetry: _retryBorrower,
     );
   }
@@ -461,8 +470,8 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
 
     return [
       DetailSectionHeader(
-        title: 'Repayment schedule',
-        actionLabel: 'View all ${s.rows.length} weeks',
+        title: context.l10n.loanRepaymentSchedule,
+        actionLabel: context.l10n.loanViewAllWeeks(s.rows.length),
         onAction: _openTracks,
       ),
       AppGap.h8,
@@ -481,7 +490,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
           child: TextButton.icon(
             onPressed: _openTracks,
             icon: const Icon(Icons.warning_amber_rounded, size: 18),
-            label: Text('${s.hiddenPastDue} more overdue weeks'),
+            label: Text(context.l10n.loanMoreOverdueWeeks(s.hiddenPastDue)),
           ),
         ),
       AppGap.h8,
@@ -494,8 +503,10 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
       final week = s.firstOwed?.week;
       return LoanActionBar(
         label: overdue
-            ? 'Collect overdue • ${CurrencyFormatter.format(s.overdueAmount)}'
-            : 'Record payment',
+            ? context.l10n.loanCollectOverdue(
+                CurrencyFormatter.format(s.overdueAmount),
+              )
+            : context.l10n.loanRecordPayment,
         icon: Icons.payments_outlined,
         urgent: overdue,
         isLoading: _paying,
@@ -509,14 +520,14 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
         (s.stage == LoanStage.paidOff || s.stage == LoanStage.closed);
     if (canIssue) {
       return LoanActionBar(
-        label: 'Issue new loan',
+        label: context.l10n.loanIssueNew,
         icon: Icons.add_circle_outline,
         onPressed: _issueNewLoan,
       );
     }
 
     return LoanActionBar(
-      label: 'View payment history',
+      label: context.l10n.loanViewPaymentHistory,
       icon: Icons.receipt_long_outlined,
       outlined: true,
       onPressed: _openPayments,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/data/models/analytics_model.dart';
 import 'package:micro_lending_app/data/services/analytics_service.dart';
@@ -15,31 +16,31 @@ class PlatformOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<Overview>(
       cacheKey: 'sp-ov|${f.tick}',
-      title: 'Platform',
+      title: context.l10n.anSegPlatform,
       skeletonHeight: 130,
       load: AnalyticsService.spOverview,
       builder: (context, o) => AnalyticsFrame(
-        title: 'Platform at a glance',
+        title: context.l10n.anPlatformAtGlance,
         child: Column(
           children: [
             Row(
               children: [
                 Expanded(
                   child: StatCol(
-                    'COLLECTED (MONTH)',
+                    context.l10n.anCollectedMonth,
                     Money.compact(o.month),
                     color: AppColors.success,
                   ),
                 ),
                 Expanded(
                   child: StatCol(
-                    'OUTSTANDING',
+                    context.l10n.loanOutstanding,
                     Money.compact(o.totalOutstanding),
                   ),
                 ),
                 Expanded(
                   child: StatCol(
-                    'PAR',
+                    context.l10n.anPAR,
                     '${o.parPct.toStringAsFixed(1)}%',
                     color: AppColors.warning,
                   ),
@@ -49,10 +50,23 @@ class PlatformOverviewCard extends StatelessWidget {
             AppGap.h12,
             Row(
               children: [
-                Expanded(child: StatCol('ADMINS', '${o.admins ?? 0}')),
-                Expanded(child: StatCol('EMPLOYEES', '${o.employees ?? 0}')),
                 Expanded(
-                  child: StatCol('EARNED', Money.compact(o.totalEarned ?? 0)),
+                  child: StatCol(
+                    context.l10n.anAdminsUpper,
+                    '${o.admins ?? 0}',
+                  ),
+                ),
+                Expanded(
+                  child: StatCol(
+                    context.l10n.anEmployeesUpper,
+                    '${o.employees ?? 0}',
+                  ),
+                ),
+                Expanded(
+                  child: StatCol(
+                    context.l10n.anEarned,
+                    Money.compact(o.totalEarned ?? 0),
+                  ),
                 ),
               ],
             ),
@@ -72,16 +86,16 @@ class AdminsPerfCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<List<AdminPerf>>(
       cacheKey: 'sp-admins|${f.key}',
-      title: 'Admins',
+      title: context.l10n.anTabAdmins,
       skeletonHeight: 180,
       load: () => AnalyticsService.spAdmins(from: f.fromStr, to: f.toStr),
       builder: (context, list) {
         final sorted = [...list]
           ..sort((a, b) => b.collected.compareTo(a.collected));
         return AnalyticsFrame(
-          title: 'Admins',
+          title: context.l10n.anTabAdmins,
           child: sorted.isEmpty
-              ? const EmptyNote('No admins yet.')
+              ? EmptyNote(context.l10n.anNoAdmins)
               : Column(
                   children: [
                     for (var i = 0; i < sorted.length; i++)
@@ -89,10 +103,11 @@ class AdminsPerfCard extends StatelessWidget {
                         rank: i + 1,
                         name: sorted[i].name,
                         primary: Money.compact(sorted[i].collected),
-                        secondary:
-                            '${sorted[i].employees} employees • '
-                            'PAR ${sorted[i].parPct.toStringAsFixed(0)}% • '
-                            '${sorted[i].overdueLoans} overdue',
+                        secondary: context.l10n.anAdminRowLine(
+                          sorted[i].employees,
+                          sorted[i].parPct.toStringAsFixed(0),
+                          sorted[i].overdueLoans,
+                        ),
                         pill: Pill(
                           '${sorted[i].rate.toStringAsFixed(0)}%',
                           rateColor(sorted[i].rate),
@@ -115,16 +130,19 @@ class AdminsGrowthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<List<GrowthPoint>>(
       cacheKey: 'sp-growth|${f.key}',
-      title: 'Disbursed by admin',
+      title: context.l10n.anDisbursedByAdmin,
       skeletonHeight: 200,
       load: () => AnalyticsService.spGrowth(from: f.fromStr, to: f.toStr),
       builder: (context, pts) {
         final names = {for (final p in pts) p.adminId: p.adminName};
-        final (labels, series) = splitSeries([
-          for (final p in pts) (p.period, p.adminId, p.disbursed),
-        ], names);
+        final (labels, series) = splitSeries(
+          [for (final p in pts) (p.period, p.adminId, p.disbursed)],
+          names,
+          adminLabel: context.l10n.anAdminN,
+          othersLabel: context.l10n.anOthers,
+        );
         return AnalyticsFrame(
-          title: 'Disbursed by admin (monthly)',
+          title: context.l10n.anDisbursedByAdminMonthly,
           child: MultiLine(labels: labels, series: series),
         );
       },
@@ -149,7 +167,7 @@ class _PlatformTrendCardState extends State<PlatformTrendCard> {
 
     return AsyncCard<(List<TrendPoint>, Map<String, String>)>(
       cacheKey: 'sp-trend|$_split|${f.key}',
-      title: 'Collections',
+      title: context.l10n.anTabCollections,
       skeletonHeight: 220,
       load: () async {
         final r = await Future.wait([
@@ -165,7 +183,7 @@ class _PlatformTrendCardState extends State<PlatformTrendCard> {
       builder: (context, d) {
         final (pts, names) = d;
         final toggle = FilterChip(
-          label: const Text('Split by admin'),
+          label: Text(context.l10n.anSplitByAdmin),
           selected: _split,
           onSelected: (v) => setState(() => _split = v),
         );
@@ -173,23 +191,26 @@ class _PlatformTrendCardState extends State<PlatformTrendCard> {
         late final List<String> labels;
         late final List<LineSeries> series;
         if (_split) {
-          (labels, series) = splitSeries([
-            for (final p in pts) (p.label, p.adminId, p.collected),
-          ], names);
+          (labels, series) = splitSeries(
+            [for (final p in pts) (p.label, p.adminId, p.collected)],
+            names,
+            adminLabel: context.l10n.anAdminN,
+            othersLabel: context.l10n.anOthers,
+          );
         } else {
           labels = [for (final p in pts) p.label];
           series = [
-            LineSeries('Collected', AppColors.success, [
+            LineSeries(context.l10n.anCollected, AppColors.success, [
               for (final p in pts) p.collected,
             ]),
-            LineSeries('Target', AppColors.warning, [
+            LineSeries(context.l10n.anTarget, AppColors.warning, [
               for (final p in pts) p.target ?? 0,
             ], dashed: true),
           ];
         }
 
         return AnalyticsFrame(
-          title: 'Platform collections',
+          title: context.l10n.anPlatformCollections,
           trailing: toggle,
           child: MultiLine(labels: labels, series: series),
         );
@@ -206,7 +227,7 @@ class PlatformEarningsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<EarningsData>(
       cacheKey: 'sp-earn|${f.key}',
-      title: 'Earnings',
+      title: context.l10n.anEarnings,
       skeletonHeight: 200,
       load: () => AnalyticsService.earnings(
         from: f.fromStr,
@@ -228,7 +249,7 @@ class AccountsCard extends StatelessWidget {
 
     return AsyncCard<Map<String, dynamic>>(
       cacheKey: 'sp-acc|${f.tick}',
-      title: 'Accounts',
+      title: context.l10n.anAccounts,
       skeletonHeight: 160,
       load: AnalyticsService.spAccounts,
       builder: (context, d) {
@@ -238,7 +259,7 @@ class AccountsCard extends StatelessWidget {
             .toList();
 
         return AnalyticsFrame(
-          title: 'Accounts',
+          title: context.l10n.anAccounts,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -255,8 +276,12 @@ class AccountsCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                      AppGap.w8,
                       Text(
-                        '${r['active']} active • ${r['inactive']} inactive',
+                        context.l10n.anActiveInactive(
+                          '${r['active']}',
+                          '${r['inactive']}',
+                        ),
                         style: text.labelMedium?.copyWith(
                           color: AppColors.darkOnSurfaceMuted,
                         ),
@@ -265,7 +290,9 @@ class AccountsCard extends StatelessWidget {
                           0) ...[
                         AppGap.w8,
                         Pill(
-                          '${r['pending_verification']} pending',
+                          context.l10n.anPendingCount(
+                            '${r['pending_verification']}',
+                          ),
                           AppColors.warning,
                         ),
                       ],
@@ -275,7 +302,7 @@ class AccountsCard extends StatelessWidget {
               if (per.isNotEmpty) ...[
                 AppGap.h12,
                 Text(
-                  'EMPLOYEES PER ADMIN',
+                  context.l10n.anEmployeesPerAdmin,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                     letterSpacing: 0.6,
@@ -314,11 +341,11 @@ class PlatformAgingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<List<AgingBucket>>(
       cacheKey: 'sp-aging|${f.tick}',
-      title: 'Outstanding by age',
+      title: context.l10n.anOutstandingByAge,
       skeletonHeight: 150,
       load: AnalyticsService.spAging,
       builder: (context, b) => AnalyticsFrame(
-        title: 'Platform outstanding by age',
+        title: context.l10n.anPlatformOutstandingByAge,
         child: AgingBody(buckets: b),
       ),
     );
@@ -336,7 +363,7 @@ class ConcentrationCard extends StatelessWidget {
 
     return AsyncCard<Map<String, dynamic>>(
       cacheKey: 'sp-conc|${f.tick}',
-      title: 'Risk concentration',
+      title: context.l10n.anRiskConcentration,
       skeletonHeight: 240,
       load: AnalyticsService.spConcentration,
       builder: (context, d) {
@@ -348,7 +375,7 @@ class ConcentrationCard extends StatelessWidget {
         return Column(
           children: [
             AnalyticsFrame(
-              title: 'Outstanding by admin',
+              title: context.l10n.anOutstandingByAdmin,
               trailing: Text(
                 Money.compact(n(d['total_outstanding'])),
                 style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -372,7 +399,9 @@ class ConcentrationCard extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${n(a['share_pct']).toStringAsFixed(0)}% of book',
+                                context.l10n.anShareOfBook(
+                                  n(a['share_pct']).toStringAsFixed(0),
+                                ),
                                 style: text.labelMedium,
                               ),
                             ],
@@ -390,7 +419,7 @@ class ConcentrationCard extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${Money.compact(n(a['outstanding']))} • PAR ${n(a['par_pct']).toStringAsFixed(0)}%',
+                            '${Money.compact(n(a['outstanding']))} • ${context.l10n.anPar(n(a['par_pct']).toStringAsFixed(0))}',
                             style: text.labelMedium?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -403,9 +432,9 @@ class ConcentrationCard extends StatelessWidget {
             ),
             AppGap.h12,
             AnalyticsFrame(
-              title: 'Largest exposures',
+              title: context.l10n.anLargestExposures,
               child: top.isEmpty
-                  ? const EmptyNote('No exposures to show.')
+                  ? EmptyNote(context.l10n.anNoExposures)
                   : Column(
                       children: [
                         for (var i = 0; i < top.length; i++)
@@ -413,8 +442,10 @@ class ConcentrationCard extends StatelessWidget {
                             rank: i + 1,
                             name: '${top[i]['customer_name']}',
                             primary: Money.compact(n(top[i]['outstanding'])),
-                            secondary:
-                                '${top[i]['days_past_due']} days late • ${n(top[i]['share_pct']).toStringAsFixed(1)}% of book',
+                            secondary: context.l10n.anExposureLine(
+                              '${top[i]['days_past_due']}',
+                              n(top[i]['share_pct']).toStringAsFixed(1),
+                            ),
                           ),
                       ],
                     ),

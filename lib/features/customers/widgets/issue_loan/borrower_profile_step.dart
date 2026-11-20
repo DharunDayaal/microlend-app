@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_progress_bar.dart';
@@ -149,7 +151,9 @@ class _IdentityCard extends StatelessWidget {
                 ),
               ),
               AppChip(
-                label: 'Cycle ${customer.creditHistory.totalLoans + 1}',
+                label: context.l10n.profileCycleN(
+                  customer.creditHistory.totalLoans + 1,
+                ),
                 radius: AppSizes.radiusSm,
                 backgroundColor:
                     AppColors.successContainer.withAlpha(AppAlphas.badgeFill),
@@ -158,7 +162,9 @@ class _IdentityCard extends StatelessWidget {
                 ),
               ),
               AppChip(
-                label: 'Since ${DateFormatter.date(customer.createdAt)}',
+                label: context.l10n.profileSince(
+                  DateFormatter.date(customer.createdAt),
+                ),
                 radius: AppSizes.radiusSm,
                 textStyle: text.labelSmall?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
@@ -166,7 +172,7 @@ class _IdentityCard extends StatelessWidget {
               ),
               if (onSwitch != null)
                 AppChip(
-                  label: 'Switch borrower',
+                  label: context.l10n.profileSwitchBorrower,
                   radius: AppSizes.radiusSm,
                   onTap: onSwitch,
                   leading: const Icon(
@@ -198,10 +204,12 @@ class _RouteCard extends StatelessWidget {
       fallback: '',
     );
     final day = c.preferredPaymentDay.isEmpty
-        ? 'Not set'
-        : 'Every ${TextFormatter.enumLabel(c.preferredPaymentDay)}';
+        ? context.l10n.profileNotSet
+        : context.l10n.profileEveryDay(
+            weekdayLabel(context, c.preferredPaymentDay),
+          );
     final street = (c.streetName == null || c.streetName!.trim().isEmpty)
-        ? 'No street on file'
+        ? context.l10n.addressNoStreet
         : c.streetName!.trim();
     final area = [c.city, c.district]
         .where((s) => s.trim().isNotEmpty)
@@ -213,25 +221,25 @@ class _RouteCard extends StatelessWidget {
         context,
         icon: Icons.route_outlined,
         color: AppColors.stepCurrentLabel,
-        title: 'Collection route',
+        title: context.l10n.profileCollectionRoute,
       ),
       child: Column(
         children: [
           _InfoRow(
             icon: Icons.event_repeat_outlined,
-            label: 'Collection day',
+            label: context.l10n.profileCollectionDay,
             value: time.isEmpty ? day : '$day • $time',
           ),
           const _RowDivider(),
           _InfoRow(
             icon: Icons.home_outlined,
-            label: 'Street',
+            label: context.l10n.profileStreet,
             value: street,
           ),
           const _RowDivider(),
           _InfoRow(
             icon: Icons.location_on_outlined,
-            label: 'Town & district',
+            label: context.l10n.profileTownDistrict,
             value: area.isEmpty ? '--' : area,
           ),
         ],
@@ -312,21 +320,23 @@ class _CreditCard extends StatelessWidget {
     final onTimePct = total == 0 ? 0 : (h.onTimeCount / total * 100).round();
 
     final (standing, standingColor) = total == 0
-        ? ('NEW BORROWER', AppColors.darkOnSurfaceMuted)
+        ? (context.l10n.creditNewBorrower, AppColors.darkOnSurfaceMuted)
         : h.defaultCount > 0
-            ? ('AT RISK', AppColors.progressDanger)
+            ? (context.l10n.creditAtRisk, AppColors.progressDanger)
             : onTimePct >= 70
-                ? ('GOOD STANDING', AppColors.success)
-                : ('FAIR', AppColors.warning);
+                ? (context.l10n.creditGoodStanding, AppColors.success)
+                : (context.l10n.creditFair, AppColors.warning);
 
     return _ProfileCard(
       header: _cardHeader(
         context,
         icon: Icons.credit_score_outlined,
         color: AppColors.success,
-        title: 'Credit history',
+        title: context.l10n.profileCreditHistory,
         trailing: Text(
           standing,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: text.labelMedium?.copyWith(color: standingColor),
         ),
       ),
@@ -338,21 +348,21 @@ class _CreditCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatBox(
-                  label: 'ON-TIME',
+                  label: context.l10n.creditOnTime,
                   value: '${h.onTimeCount}',
                   color: AppColors.success,
                 ),
               ),
               Expanded(
                 child: _StatBox(
-                  label: 'DELAYED',
+                  label: context.l10n.creditDelayed,
                   value: '${h.delayedCount}',
                   color: AppColors.warning,
                 ),
               ),
               Expanded(
                 child: _StatBox(
-                  label: 'DEFAULT',
+                  label: context.l10n.creditDefault,
                   value: '${h.defaultCount}',
                   color: AppColors.progressDanger,
                 ),
@@ -371,7 +381,7 @@ class _CreditCard extends StatelessWidget {
                 const SizedBox(width: AppSizes.sm),
                 Expanded(
                   child: Text(
-                    'First loan for this borrower. There is no repayment history yet.',
+                    context.l10n.profileFirstLoan,
                     style: text.labelMedium?.copyWith(
                       color: AppColors.darkOnSurfaceMuted,
                     ),
@@ -395,7 +405,7 @@ class _CreditCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.sm),
             Text(
-              '$onTimePct% repaid on time across $total ${total == 1 ? 'loan' : 'loans'}',
+              context.l10n.profileOnTimeAcross(onTimePct, total),
               style: text.labelMedium?.copyWith(
                 color: AppColors.darkOnSurfaceMuted,
               ),
@@ -426,7 +436,12 @@ class _StatBox extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: text.labelMedium?.copyWith(color: color)),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: text.labelMedium?.copyWith(color: color),
+          ),
           const SizedBox(height: 2),
           Text(
             value,
@@ -457,7 +472,7 @@ class _ReferralCard extends StatelessWidget {
         context,
         icon: Icons.hub_outlined,
         color: AppColors.warning,
-        title: 'Referral network',
+        title: context.l10n.profileReferralNetwork,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -491,7 +506,9 @@ class _ReferralCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        hasReferrer ? 'Referred by' : 'Source',
+                        hasReferrer
+                            ? context.l10n.profileReferredBy
+                            : context.l10n.profileSource,
                         style: text.labelMedium?.copyWith(
                           color: AppColors.darkOnSurfaceMuted,
                         ),
@@ -499,7 +516,7 @@ class _ReferralCard extends StatelessWidget {
                       Text(
                         hasReferrer
                             ? TextFormatter.titleCase(c.referredByName!)
-                            : 'Direct walk-in',
+                            : context.l10n.profileDirectWalkIn,
                         style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -531,21 +548,21 @@ class _ReferralCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatBox(
-                  label: 'REFERRED',
+                  label: context.l10n.profileReferred,
                   value: '${stats.totalReferred}',
                   color: AppColors.stepCurrentLabel,
                 ),
               ),
               Expanded(
                 child: _StatBox(
-                  label: 'ACTIVE',
+                  label: context.l10n.profileActive,
                   value: '${stats.activeReferred}',
                   color: AppColors.success,
                 ),
               ),
               Expanded(
                 child: _StatBox(
-                  label: 'PAIRED',
+                  label: context.l10n.profilePaired,
                   value: '${stats.pairedPercentage.round()}%',
                   color: AppColors.warning,
                 ),

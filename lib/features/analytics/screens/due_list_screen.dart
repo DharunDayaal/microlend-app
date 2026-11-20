@@ -3,6 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -112,7 +114,7 @@ class _DueListScreenState extends State<DueListScreen> {
     } catch (e, st) {
       AppLogger.error('Due list failed', tag: 'Analytics', error: e, stack: st);
       if (mounted && id == _req) {
-        setState(() => _error = 'Something went wrong. Please try again.');
+        setState(() => _error = context.l10n.commonSomethingWrong);
       }
     } finally {
       if (mounted && id == _req) setState(() => _loading = false);
@@ -166,7 +168,7 @@ class _DueListScreenState extends State<DueListScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text('Due list'),
+        title: Text(context.l10n.dueListTitle),
       ),
       body: SafeArea(
         child: Column(
@@ -180,7 +182,7 @@ class _DueListScreenState extends State<DueListScreen> {
               ),
               child: _Header(
                 date: widget.date,
-                weekday: _weekday,
+                weekday: weekdayLabel(context, _weekday),
                 target: widget.target,
                 collected: widget.collected,
                 summary: _summary,
@@ -192,9 +194,9 @@ class _DueListScreenState extends State<DueListScreen> {
                 controller: _search,
                 onChanged: _onSearch,
                 textInputAction: TextInputAction.search,
-                decoration: const InputDecoration(
-                  hintText: 'Search by name or phone',
-                  prefixIcon: Icon(Icons.search),
+                decoration: InputDecoration(
+                  hintText: context.l10n.commonSearchNamePhone,
+                  prefixIcon: const Icon(Icons.search),
                 ),
               ),
             ),
@@ -247,8 +249,8 @@ class _DueListScreenState extends State<DueListScreen> {
           EmptyView(
             icon: Icons.event_available_outlined,
             message: _query.isEmpty
-                ? 'No loans are scheduled for $_weekday.'
-                : 'No loans match "$_query".',
+                ? context.l10n.dueNoneScheduled(weekdayLabel(context, _weekday))
+                : context.l10n.dueNoMatch(_query),
           ),
         ],
       );
@@ -275,7 +277,9 @@ class _DueListScreenState extends State<DueListScreen> {
           );
         }
         if (!_hasNext) {
-          return Center(child: Text('No more loans', style: text.bodySmall));
+          return Center(
+            child: Text(context.l10n.loansNoMore, style: text.bodySmall),
+          );
         }
         return const SizedBox.shrink();
       },
@@ -331,26 +335,31 @@ class _Header extends StatelessWidget {
             AppProgressBar(
               value: t <= 0 ? 0 : (c / t).clamp(0, 1).toDouble(),
               height: 8,
-              semanticsLabel: 'Collected against target for the day',
+              semanticsLabel: context.l10n.dueCollectedVsTarget,
             ),
             AppGap.h8,
             Text(
-              '${Money.compact(c)} collected of ${Money.compact(t)} target',
+              context.l10n.dueCollectedOfTarget(
+                Money.compact(c),
+                Money.compact(t),
+              ),
               style: text.bodyMedium,
             ),
           ],
           AppGap.h8,
           Text(
             summary == null
-                ? 'Loans scheduled for $weekday'
-                : '${summary!.totalCustomers} customers • ${summary!.totalActiveLoans} active • '
-                      '${summary!.totalOverdueLoans} overdue',
+                ? context.l10n.dueScheduledFor(weekday)
+                : context.l10n.dueSummaryLine(
+                    summary!.totalCustomers,
+                    summary!.totalActiveLoans,
+                    summary!.totalOverdueLoans,
+                  ),
             style: muted,
           ),
           const SizedBox(height: 2),
           Text(
-            'The list shows loans scheduled for $weekday as they stand now, '
-            'not who paid on this date.',
+            context.l10n.dueListNote(weekday),
             style: text.labelSmall?.copyWith(
               color: AppColors.darkOnSurfaceMuted,
             ),
@@ -387,7 +396,7 @@ class _DueTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name.isEmpty ? 'Unknown' : name,
+                  name.isEmpty ? context.l10n.commonUnknown : name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -396,7 +405,11 @@ class _DueTile extends StatelessWidget {
                   Text(PhoneFormatter.display(phone), style: text.labelMedium),
                 const SizedBox(height: 4),
                 Text(
-                  'Outstanding ${Money.compact(loan.outstandingAmount)}',
+                  context.l10n.dueOutstanding(
+                    Money.compact(loan.outstandingAmount),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -413,14 +426,16 @@ class _DueTile extends StatelessWidget {
                 style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
-                'due',
+                context.l10n.dueLabel,
                 style: text.labelSmall?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                 ),
               ),
               const SizedBox(height: 4),
               Pill(
-                overdue ? 'OVERDUE' : 'ON SCHEDULE',
+                overdue
+                    ? context.l10n.statusOverdue
+                    : context.l10n.dueOnSchedule,
                 overdue ? AppColors.progressDanger : AppColors.success,
               ),
             ],

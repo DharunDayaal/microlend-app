@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -24,9 +25,11 @@ class IssueLoanBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final text = theme.textTheme;
-    final name = customerName.trim().isEmpty
-        ? ''
-        : ' TO ${TextFormatter.firstName(customerName).toUpperCase()}';
+    final buttonLabel = customerName.trim().isEmpty
+        ? context.l10n.issueBarIssueLoan
+        : context.l10n.issueBarIssueLoanTo(
+            TextFormatter.firstName(customerName).toUpperCase(),
+          );
 
     return Container(
       decoration: BoxDecoration(
@@ -50,37 +53,42 @@ class IssueLoanBar extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.verified_user_outlined,
-                        size: AppSizes.iconSm,
-                        color: AppColors.success,
-                      ),
-                      const SizedBox(width: AppSizes.sm),
-                      Text(
-                        'One active loan per borrower',
-                        style: text.labelMedium,
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.verified_user_outlined,
+                          size: AppSizes.iconSm,
+                          color: AppColors.success,
+                        ),
+                        const SizedBox(width: AppSizes.sm),
+                        Flexible(
+                          child: Text(
+                            context.l10n.issueBarOnePerBorrower,
+                            style: text.labelMedium,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                  const SizedBox(width: AppSizes.sm),
                   Text(
-                    'Cycle $cycleNo',
+                    context.l10n.issueBarCycle(cycleNo),
                     style: text.labelMedium?.copyWith(color: AppColors.warning),
                   ),
                 ],
               ),
               const SizedBox(height: AppSizes.sm),
               AppButton(
-                label: 'ISSUE LOAN$name',
+                label: buttonLabel,
                 prefixIcon: Icons.add_circle_outline,
                 onPressed: canIssue ? onPressed : null,
               ),
               const SizedBox(height: AppSizes.sm),
               Text(
-                canIssue
-                    ? 'Check credit limits & calculate custom repayment schedule'
-                    : (blockedMessage ?? ''),
+                canIssue ? context.l10n.issueBarHint : (blockedMessage ?? ''),
                 textAlign: TextAlign.center,
                 style: text.labelMedium,
               ),

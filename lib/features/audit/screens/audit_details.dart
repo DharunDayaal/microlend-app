@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -92,9 +93,9 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
   Widget build(BuildContext context) {
     if (!CurrentUser.instance.hasRole(UserRole.admin)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Audit log')),
-        body: const Center(
-          child: Text("You don't have access to the audit log."),
+        appBar: AppBar(title: Text(context.l10n.menuAuditLog)),
+        body: Center(
+          child: Text(context.l10n.auditNoAccess, textAlign: TextAlign.center),
         ),
       );
     }
@@ -105,7 +106,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text('Audit entry'),
+        title: Text(context.l10n.auditEntry),
       ),
       body: SafeArea(child: _body()),
     );
@@ -139,10 +140,10 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('This record is no longer available.'),
+                Text(context.l10n.auditRecordGone, textAlign: TextAlign.center),
                 AppGap.h16,
                 AppButton(
-                  label: 'Back',
+                  label: context.l10n.commonBack,
                   outlined: true,
                   fitContent: true,
                   radius: AppSizes.md,
@@ -154,12 +155,12 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
         );
       }
       if (_kind == AuditErrorKind.forbidden) {
-        return const Center(
-          child: Text("You don't have access to the audit log."),
+        return Center(
+          child: Text(context.l10n.auditNoAccess, textAlign: TextAlign.center),
         );
       }
       return ErrorView(
-        message: _error ?? 'Could not load this entry.',
+        message: _error ?? context.l10n.auditLoadEntryFailed,
         onRetry: _load,
       );
     }
@@ -181,7 +182,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
         GestureDetector(
           onLongPress: () {
             Clipboard.setData(ClipboardData(text: log.id));
-            AppSnackbar.info(context, 'Log id copied');
+            AppSnackbar.info(context, context.l10n.auditLogIdCopied);
           },
           child: Material(
             color: AppColors.darkSurface,
@@ -232,7 +233,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      'Attention',
+                                      context.l10n.auditAttention,
                                       style: text.labelMedium?.copyWith(
                                         color: AppColors.progressDanger,
                                         fontWeight: FontWeight.w700,
@@ -273,7 +274,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
                 icon: a?.isSystem == true
                     ? Icons.settings_rounded
                     : Icons.person_outline,
-                label: 'Who',
+                label: context.l10n.auditWho,
                 value: actorText(log),
                 trailing: a?.id == null
                     ? null
@@ -285,14 +286,14 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
                   onTap: _canOpen(log) ? () => _openEntity(log) : null,
                   child: InfoRow(
                     icon: Icons.label_outline,
-                    label: 'On',
+                    label: context.l10n.auditOn,
                     value: subjectText(log),
                     trailing: _canOpen(log)
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                'Open',
+                                context.l10n.auditOpen,
                                 style: text.labelMedium?.copyWith(
                                   color: AppColors.stepCurrentLabel,
                                 ),
@@ -313,7 +314,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
             if (a?.id != null)
               Expanded(
                 child: AppButton(
-                  label: 'More from this actor',
+                  label: context.l10n.auditMoreFromActor,
                   outlined: true,
                   radius: AppSizes.md,
                   height: 44,
@@ -326,7 +327,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
             if (log.entityId != null)
               Expanded(
                 child: AppButton(
-                  label: 'More on this record',
+                  label: context.l10n.auditMoreOnRecord,
                   outlined: true,
                   radius: AppSizes.md,
                   height: 44,
@@ -346,9 +347,15 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
         if (isSuper) ...[
           SegmentedButton<bool>(
             showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(value: false, label: Text('Changes')),
-              ButtonSegment(value: true, label: Text('Raw JSON')),
+            segments: [
+              ButtonSegment(
+                value: false,
+                label: Text(context.l10n.auditChanges),
+              ),
+              ButtonSegment(
+                value: true,
+                label: Text(context.l10n.auditRawJson),
+              ),
             ],
             selected: {_raw},
             onSelectionChanged: (v) => setState(() => _raw = v.first),
@@ -357,9 +364,9 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
         ],
         if (_raw && isSuper)
           AnalyticsFrame(
-            title: 'Raw JSON',
+            title: context.l10n.auditRawJson,
             trailing: IconButton(
-              tooltip: 'Copy',
+              tooltip: context.l10n.commonCopy,
               icon: const Icon(Icons.copy_rounded, size: 18),
               onPressed: () {
                 Clipboard.setData(
@@ -367,7 +374,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
                     text: const JsonEncoder.withIndent('  ').convert(log.raw),
                   ),
                 );
-                AppSnackbar.info(context, 'JSON copied');
+                AppSnackbar.info(context, context.l10n.auditJsonCopied);
               },
             ),
             child: SelectableText(
@@ -377,16 +384,16 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
           )
         else if (rows.isNotEmpty)
           AnalyticsFrame(
-            title: created ? 'Created with' : 'Changes (${rows.length})',
+            title: created
+                ? context.l10n.auditCreatedWith
+                : context.l10n.auditChangesCount(rows.length),
             child: DiffView(rows: rows, created: created),
           )
         else
           AnalyticsFrame(
-            title: 'Details',
+            title: context.l10n.auditDetails,
             child: meta.isEmpty
-                ? const EmptyNote(
-                    'No field changes were recorded for this entry.',
-                  )
+                ? EmptyNote(context.l10n.auditNoFieldChanges)
                 : Column(
                     children: [
                       for (final (label, value) in meta)
@@ -407,7 +414,7 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
               title: Text(
-                'Request details',
+                context.l10n.auditRequestDetails,
                 style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               childrenPadding: const EdgeInsets.fromLTRB(
@@ -418,10 +425,16 @@ class _AuditDetailScreenState extends State<AuditDetailScreen> {
               ),
               expandedCrossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _kv('IP', '${log.meta['ip'] ?? '-'}'),
-                _kv('Device', '${log.meta['user_agent'] ?? '-'}'),
-                _kv('Request', '${log.meta['request_id'] ?? '-'}'),
-                _kv('Log id', log.id),
+                _kv(context.l10n.auditIp, '${log.meta['ip'] ?? '-'}'),
+                _kv(
+                  context.l10n.auditDevice,
+                  '${log.meta['user_agent'] ?? '-'}',
+                ),
+                _kv(
+                  context.l10n.auditRequest,
+                  '${log.meta['request_id'] ?? '-'}',
+                ),
+                _kv(context.l10n.auditLogId, log.id),
               ],
             ),
           ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/data/models/profile_model.dart';
@@ -67,10 +69,10 @@ class AnalyticsFilterBar extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     Widget viewing(String label, VoidCallback onClear) => InputChip(
-      label: Text('Viewing: $label'),
+      label: Text(context.l10n.anViewing(label)),
       labelStyle: text.labelMedium,
       onDeleted: onClear,
-      deleteButtonTooltipMessage: 'Clear',
+      deleteButtonTooltipMessage: context.l10n.commonClear,
     );
 
     return SizedBox(
@@ -82,7 +84,7 @@ class AnalyticsFilterBar extends StatelessWidget {
           Center(
             child: _Pill(
               icon: Icons.date_range_outlined,
-              label: f.rangeLabel,
+              label: rangePresetLabel(context, f.preset) ?? f.rangeLabel,
               onTap: () => showModalBottomSheet<void>(
                 context: context,
                 isScrollControlled: true,
@@ -100,7 +102,7 @@ class AnalyticsFilterBar extends StatelessWidget {
             Center(
               child: _Pill(
                 icon: Icons.admin_panel_settings_outlined,
-                label: f.adminName ?? 'All admins',
+                label: f.adminName ?? context.l10n.anAllAdmins,
                 onTap: () => _pickPerson(context, admins: true),
               ),
             ),
@@ -110,7 +112,7 @@ class AnalyticsFilterBar extends StatelessWidget {
             Center(
               child: _Pill(
                 icon: Icons.person_outline,
-                label: f.employeeName ?? 'All employees',
+                label: f.employeeName ?? context.l10n.anAllEmployees,
                 onTap: () => _pickPerson(context, admins: false),
               ),
             ),
@@ -161,14 +163,7 @@ class _RangeSheet extends StatefulWidget {
 }
 
 class _RangeSheetState extends State<_RangeSheet> {
-  static const _presets = [
-    ('7d', 'Last 7 days'),
-    ('30d', 'Last 30 days'),
-    ('90d', 'Last 90 days'),
-    ('this', 'This month'),
-    ('last', 'Last month'),
-    ('custom', 'Custom'),
-  ];
+  static const _presets = ['7d', '30d', '90d', 'this', 'last', 'custom'];
 
   late String _preset = widget.f.preset;
   late DateTime _from = widget.f.from;
@@ -196,7 +191,7 @@ class _RangeSheetState extends State<_RangeSheet> {
     if (r.duration.inDays + 1 > AnalyticsFilters.maxDays) {
       AppSnackbar.warning(
         context,
-        'Pick a range of at most ${AnalyticsFilters.maxDays} days.',
+        context.l10n.anMaxRange(AnalyticsFilters.maxDays),
       );
       return;
     }
@@ -218,7 +213,7 @@ class _RangeSheetState extends State<_RangeSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date range', style: text.headlineSmall),
+            Text(context.l10n.anDateRange, style: text.headlineSmall),
             AppGap.h16,
             Wrap(
               spacing: AppSizes.sm,
@@ -226,15 +221,17 @@ class _RangeSheetState extends State<_RangeSheet> {
               children: [
                 for (final p in _presets)
                   ChoiceChip(
-                    label: Text(p.$2),
-                    selected: _preset == p.$1,
-                    onSelected: (_) => _choose(p.$1),
+                    label: Text(
+                      rangePresetLabel(context, p) ?? context.l10n.rangeCustom,
+                    ),
+                    selected: _preset == p,
+                    onSelected: (_) => _choose(p),
                   ),
               ],
             ),
             AppGap.h16,
             AppButton(
-              label: 'Apply',
+              label: context.l10n.commonApply,
               radius: AppSizes.md,
               onPressed: () {
                 widget.f.apply(_preset, _from, _to);
@@ -304,15 +301,17 @@ class _PersonSheetState extends State<_PersonSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.admins ? 'Choose an admin' : 'Choose an employee',
+                widget.admins
+                    ? context.l10n.anChooseAdmin
+                    : context.l10n.anChooseEmployee,
                 style: text.headlineSmall,
               ),
               AppGap.h12,
               TextField(
                 onChanged: (v) => setState(() => _q = v),
-                decoration: const InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: Icon(Icons.search),
+                decoration: InputDecoration(
+                  hintText: context.l10n.commonSearch,
+                  prefixIcon: const Icon(Icons.search),
                 ),
               ),
               AppGap.h8,
@@ -320,7 +319,10 @@ class _PersonSheetState extends State<_PersonSheet> {
                 Row(
                   children: [
                     Expanded(child: Text(_error!)),
-                    TextButton(onPressed: _load, child: const Text('Retry')),
+                    TextButton(
+                      onPressed: _load,
+                      child: Text(context.l10n.commonRetry),
+                    ),
                   ],
                 )
               else if (_all == null)
@@ -336,7 +338,9 @@ class _PersonSheetState extends State<_PersonSheet> {
                       ListTile(
                         leading: const Icon(Icons.groups_outlined),
                         title: Text(
-                          widget.admins ? 'All admins' : 'All employees',
+                          widget.admins
+                              ? context.l10n.anAllAdmins
+                              : context.l10n.anAllEmployees,
                         ),
                         onTap: () => Navigator.of(context).pop((null, null)),
                       ),
@@ -347,9 +351,9 @@ class _PersonSheetState extends State<_PersonSheet> {
                           onTap: () => Navigator.of(context).pop((e.$1, e.$2)),
                         ),
                       if (list.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.all(AppSizes.md),
-                          child: Text('Nobody matches.'),
+                        Padding(
+                          padding: const EdgeInsets.all(AppSizes.md),
+                          child: Text(context.l10n.anNobodyMatches),
                         ),
                     ],
                   ),

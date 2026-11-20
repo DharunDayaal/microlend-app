@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 
 /// A number field with - and + buttons. Steps by [step], stays inside
@@ -48,7 +49,7 @@ class AppStepField extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 4),
           child: IconButton.filledTonal(
-            tooltip: 'Decrease $label',
+            tooltip: context.l10n.stepDecrease(label),
             onPressed: enabled ? () => _bump(-step) : null,
             icon: const Icon(Icons.remove),
           ),
@@ -76,7 +77,7 @@ class AppStepField extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 4),
           child: IconButton.filledTonal(
-            tooltip: 'Increase $label',
+            tooltip: context.l10n.stepIncrease(label),
             onPressed: enabled ? () => _bump(step) : null,
             icon: const Icon(Icons.add),
           ),

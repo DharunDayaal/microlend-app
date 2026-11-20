@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/data/models/export_model.dart';
@@ -26,7 +28,6 @@ const _days = [
   'SATURDAY',
   'SUNDAY',
 ];
-String _short(String d) => '${d[0]}${d.substring(1, 3).toLowerCase()}';
 DateTime _dayOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 DateTime _today() => _dayOnly(istToday());
 
@@ -107,7 +108,7 @@ class ExportMenuButton extends StatelessWidget {
 
         final active = ExportsTracker.instance.activeCount;
         return PopupMenuButton<Object>(
-          tooltip: 'Export',
+          tooltip: context.l10n.expExport,
           icon: Badge(
             isLabelVisible: active > 0,
             label: Text('$active'),
@@ -132,7 +133,7 @@ class ExportMenuButton extends StatelessWidget {
                   children: [
                     Icon(t.spec.icon, size: 20),
                     const SizedBox(width: AppSizes.md),
-                    Expanded(child: Text(t.spec.label)),
+                    Expanded(child: Text(t.l10nLabel(context))),
                   ],
                 ),
               ),
@@ -145,7 +146,9 @@ class ExportMenuButton extends StatelessWidget {
                   const SizedBox(width: AppSizes.md),
                   Expanded(
                     child: Text(
-                      active > 0 ? 'Downloads ($active building)' : 'Downloads',
+                      active > 0
+                          ? context.l10n.expDownloadsBuilding(active)
+                          : context.l10n.menuDownloads,
                     ),
                   ),
                 ],
@@ -215,19 +218,23 @@ class _ExportSheetState extends State<ExportSheet> {
     final t = _today();
     final monday = t.subtract(Duration(days: t.weekday - 1));
     final all = <(String, String, (DateTime, DateTime))>[
-      ('today', 'Today', (t, t)),
+      ('today', context.l10n.rangeToday, (t, t)),
       (
         'week',
-        'This week',
+        context.l10n.expThisWeek,
         spec.futureOk
             ? (monday, monday.add(const Duration(days: 6)))
             : (monday, t),
       ),
       if (spec.futureOk)
-        ('next7', 'Next 7 days', (t, t.add(const Duration(days: 6)))),
-      ('7d', 'Last 7 days', (t.subtract(const Duration(days: 6)), t)),
-      ('30d', 'Last 30 days', (t.subtract(const Duration(days: 29)), t)),
-      ('month', 'This month', (DateTime(t.year, t.month, 1), t)),
+        ('next7', context.l10n.expNext7, (t, t.add(const Duration(days: 6)))),
+      ('7d', context.l10n.rangeLast7, (t.subtract(const Duration(days: 6)), t)),
+      (
+        '30d',
+        context.l10n.rangeLast30,
+        (t.subtract(const Duration(days: 29)), t),
+      ),
+      ('month', context.l10n.rangeThisMonth, (DateTime(t.year, t.month, 1), t)),
     ];
     return [
       for (final o in all)
@@ -291,7 +298,7 @@ class _ExportSheetState extends State<ExportSheet> {
     if (r == null || !mounted) return;
     if (spec.maxDays > 0 &&
         r.end.difference(r.start).inDays + 1 > spec.maxDays) {
-      AppSnackbar.warning(context, 'Pick at most ${spec.maxDays} days.');
+      AppSnackbar.warning(context, context.l10n.expPickAtMost(spec.maxDays));
       return;
     }
     setState(() {
@@ -325,7 +332,7 @@ class _ExportSheetState extends State<ExportSheet> {
   Future<void> _pickEmployee() async {
     final r = await showPersonPicker(
       context,
-      title: 'Customers added by',
+      title: context.l10n.expCustomersAddedBy,
       admins: false,
       adminId: _isSuper ? _adminId : null,
     );
@@ -340,7 +347,11 @@ class _ExportSheetState extends State<ExportSheet> {
   }
 
   Future<void> _pickAdmin() async {
-    final r = await showPersonPicker(context, title: 'Team', admins: true);
+    final r = await showPersonPicker(
+      context,
+      title: context.l10n.auditTeam,
+      admins: true,
+    );
     if (r == null) return;
     final adminId = r.$1;
     final adminName = r.$2;
@@ -355,17 +366,17 @@ class _ExportSheetState extends State<ExportSheet> {
   // ---------- request ----------
 
   String? _validate() {
-    if (spec.weekday && _weekday.isEmpty) return 'Choose a weekday.';
+    if (spec.weekday && _weekday.isEmpty) return context.l10n.expChooseWeekday;
     if (spec.range && spec.rangeRequired && (_from == null || _to == null)) {
-      return 'Choose a date range.';
+      return context.l10n.expChooseRange;
     }
     if (spec.range && _from != null && _to != null) {
       if (_from!.isAfter(_to!)) {
-        return 'The start date must be on or before the end date.';
+        return context.l10n.expStartBeforeEnd;
       }
       if (spec.maxDays > 0 &&
           _to!.difference(_from!).inDays + 1 > spec.maxDays) {
-        return 'Pick at most ${spec.maxDays} days.';
+        return context.l10n.expPickAtMost(spec.maxDays);
       }
     }
     return null;
@@ -413,9 +424,7 @@ class _ExportSheetState extends State<ExportSheet> {
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.isNetworkError
-            ? 'No answer from the server. Open Downloads to see whether it was created, then try again.'
-            : e.message; // 400 row limits, 403, 429 all carry a readable message
+        _error = e.isNetworkError ? context.l10n.expNoServerAnswer : e.message; // 400 row limits, 403, 429 all carry a readable message
       });
     } finally {
       if (mounted) setState(() => _creating = false);
@@ -428,7 +437,7 @@ class _ExportSheetState extends State<ExportSheet> {
     } on ApiException catch (e) {
       if (mounted) AppSnackbar.error(context, e.message);
     } catch (_) {
-      if (mounted) AppSnackbar.error(context, 'Could not open the file.');
+      if (mounted) AppSnackbar.error(context, context.l10n.expCouldNotOpen);
     }
   }
 
@@ -436,20 +445,20 @@ class _ExportSheetState extends State<ExportSheet> {
 
   String get _scopeNote {
     final u = CurrentUser.instance;
-    if (u.isSuperAdmin) return 'Covers every team unless you pick one.';
-    if (u.isAdmin) return 'Covers your team only.';
-    return 'Covers only the customers you created.';
+    if (u.isSuperAdmin) return context.l10n.expScopeSuper;
+    if (u.isAdmin) return context.l10n.expScopeAdmin;
+    return context.l10n.expScopeUser;
   }
 
   String get _formatHint => switch (_format) {
-    ExportFormat.xlsx => 'Best for Excel. Up to 100,000 rows.',
-    ExportFormat.csv => 'Plain text that opens anywhere. Up to 300,000 rows.',
+    ExportFormat.xlsx => context.l10n.expHintXlsx,
+    ExportFormat.csv => context.l10n.expHintCsv,
     ExportFormat.pdf =>
       widget.type == ExportType.weekdaySheet
-          ? 'One block per customer, ready to print for the route. Up to 1,000 loans.'
+          ? context.l10n.expHintPdfWeekday
           : widget.type == ExportType.auditLog
-          ? 'For printing. Up to 1,000 rows, and long values are shortened. Use Excel or CSV for full values.'
-          : 'For printing. Up to 1,000 rows.',
+          ? context.l10n.expHintPdfAudit
+          : context.l10n.expHintPdf,
   };
 
   @override
@@ -491,10 +500,10 @@ class _ExportSheetState extends State<ExportSheet> {
   Widget _gone(BuildContext context) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      const Text('This export is no longer available.'),
+      Text(context.l10n.expGone, textAlign: TextAlign.center),
       AppGap.h12,
       AppButton(
-        label: 'Start again',
+        label: context.l10n.expStartAgain,
         outlined: true,
         fitContent: true,
         radius: AppSizes.md,
@@ -520,6 +529,8 @@ class _ExportSheetState extends State<ExportSheet> {
         if (trailing != null)
           Text(
             trailing,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.labelSmall
                 ?.copyWith(color: AppColors.darkOnSurfaceMuted),
           ),
@@ -551,19 +562,24 @@ class _ExportSheetState extends State<ExportSheet> {
               child: Icon(spec.icon, color: AppColors.stepCurrentLabel),
             ),
             AppGap.w12,
-            Expanded(child: Text(spec.label, style: text.headlineSmall)),
+            Expanded(
+              child: Text(
+                widget.type.l10nLabel(context),
+                style: text.headlineSmall,
+              ),
+            ),
             IconButton(
-              tooltip: 'Close',
+              tooltip: context.l10n.commonClose,
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.close),
             ),
           ],
         ),
         AppGap.h8,
-        Text(spec.blurb, style: muted),
+        Text(widget.type.l10nBlurb(context), style: muted),
 
         // ----- format -----
-        _label('Format'),
+        _label(context.l10n.expFormat),
         SegmentedButton<ExportFormat>(
           showSelectedIcon: false,
           segments: [
@@ -585,14 +601,14 @@ class _ExportSheetState extends State<ExportSheet> {
 
         // ----- weekday -----
         if (spec.weekday) ...[
-          _label('Weekday'),
+          _label(context.l10n.expWeekday),
           Wrap(
             spacing: AppSizes.sm,
             runSpacing: AppSizes.sm,
             children: [
               for (final d in _days)
                 ChoiceChip(
-                  label: Text(_short(d)),
+                  label: Text(weekdayAbbr(context, d)),
                   selected: _weekday == d,
                   onSelected: (_) => setState(() {
                     _weekday = d;
@@ -605,19 +621,22 @@ class _ExportSheetState extends State<ExportSheet> {
 
         // ----- payment day -----
         if (spec.paymentDay) ...[
-          _label('Payment day', trailing: 'Optional'),
+          _label(
+            context.l10n.expPaymentDay,
+            trailing: context.l10n.expOptional,
+          ),
           Wrap(
             spacing: AppSizes.sm,
             runSpacing: AppSizes.sm,
             children: [
               ChoiceChip(
-                label: const Text('Any'),
+                label: Text(context.l10n.expAny),
                 selected: _paymentDay == null,
                 onSelected: (_) => setState(() => _paymentDay = null),
               ),
               for (final d in _days)
                 ChoiceChip(
-                  label: Text(_short(d)),
+                  label: Text(weekdayAbbr(context, d)),
                   selected: _paymentDay == d,
                   onSelected: (_) => setState(() => _paymentDay = d),
                 ),
@@ -628,10 +647,12 @@ class _ExportSheetState extends State<ExportSheet> {
         // ----- date range -----
         if (spec.range) ...[
           _label(
-            'Date range',
+            context.l10n.anDateRange,
             trailing: !spec.rangeRequired
-                ? 'Optional'
-                : (spec.maxDays > 0 ? 'Up to ${spec.maxDays} days' : null),
+                ? context.l10n.expOptional
+                : (spec.maxDays > 0
+                      ? context.l10n.expUpToDays(spec.maxDays)
+                      : null),
           ),
           Wrap(
             spacing: AppSizes.sm,
@@ -639,7 +660,7 @@ class _ExportSheetState extends State<ExportSheet> {
             children: [
               if (!spec.rangeRequired)
                 ChoiceChip(
-                  label: const Text('All time'),
+                  label: Text(context.l10n.expAllTime),
                   selected: _rangeKey == 'all',
                   onSelected: (_) => setState(() => _applyKey('all')),
                 ),
@@ -657,7 +678,7 @@ class _ExportSheetState extends State<ExportSheet> {
                 label: Text(
                   _rangeKey == 'custom' && _from != null && _to != null
                       ? '${DateFormatter.dayMonth(_from)} - ${DateFormatter.dayMonth(_to)}'
-                      : 'Custom',
+                      : context.l10n.rangeCustom,
                 ),
                 selected: _rangeKey == 'custom',
                 onSelected: (_) => _pickCustom(),
@@ -668,12 +689,15 @@ class _ExportSheetState extends State<ExportSheet> {
 
         // ----- loans register: issue dates -----
         if (spec.issuedRange) ...[
-          _label('Issued between', trailing: 'Optional'),
+          _label(
+            context.l10n.expIssuedBetween,
+            trailing: context.l10n.expOptional,
+          ),
           Wrap(
             spacing: AppSizes.sm,
             children: [
               ChoiceChip(
-                label: const Text('Any date'),
+                label: Text(context.l10n.expAnyDate),
                 selected: _issuedFrom == null,
                 onSelected: (_) =>
                     setState(() => _issuedFrom = _issuedTo = null),
@@ -683,7 +707,7 @@ class _ExportSheetState extends State<ExportSheet> {
                 label: Text(
                   _issuedFrom != null && _issuedTo != null
                       ? '${DateFormatter.dayMonth(_issuedFrom)} - ${DateFormatter.dayMonth(_issuedTo)}'
-                      : 'Pick dates',
+                      : context.l10n.expPickDates,
                 ),
                 selected: _issuedFrom != null,
                 onSelected: (_) => _pickIssued(),
@@ -694,26 +718,34 @@ class _ExportSheetState extends State<ExportSheet> {
 
         // ----- status -----
         if (spec.statuses.isNotEmpty) ...[
-          _label('Status', trailing: 'Optional'),
+          _label(context.l10n.commonStatus, trailing: context.l10n.expOptional),
           Wrap(
             spacing: AppSizes.sm,
             runSpacing: AppSizes.sm,
             children: [
               ChoiceChip(
-                label: const Text('All'),
+                label: Text(context.l10n.loansFilterAll),
                 selected: _status == null,
                 onSelected: (_) => setState(() => _status = null),
               ),
               for (final s in spec.statuses)
                 ChoiceChip(
                   label: Text(
-                    s
-                        .replaceAll('_', ' ')
-                        .toLowerCase()
-                        .replaceFirstMapped(
-                          RegExp(r'^.'),
-                          (m) => m[0]!.toUpperCase(),
-                        ),
+                    switch (s) {
+                          'ACTIVE' => context.l10n.loansFilterActive,
+                          'OVERDUE' => context.l10n.loansFilterOverdue,
+                          'PAID_OFF' => context.l10n.loansFilterPaidOff,
+                          'DEFAULTED' => context.l10n.loansFilterDefaulted,
+                          'CLOSED' => context.l10n.loansFilterClosed,
+                          _ => null,
+                        } ??
+                        s
+                            .replaceAll('_', ' ')
+                            .toLowerCase()
+                            .replaceFirstMapped(
+                              RegExp(r'^.'),
+                              (m) => m[0]!.toUpperCase(),
+                            ),
                   ),
                   selected: _status == s,
                   onSelected: (_) => setState(() => _status = s),
@@ -725,19 +757,19 @@ class _ExportSheetState extends State<ExportSheet> {
         // ----- who -----
         if ((spec.admin && _isSuper) ||
             (spec.employee && CurrentUser.instance.isAdmin)) ...[
-          _label('Scope'),
+          _label(context.l10n.expScope),
           if (spec.admin && _isSuper)
             InfoRow(
               icon: Icons.admin_panel_settings_outlined,
-              label: 'Team',
-              value: _adminName ?? 'All teams',
+              label: context.l10n.auditTeam,
+              value: _adminName ?? context.l10n.auditAllTeams,
               trailing: _adminId == null
                   ? IconButton(
                       onPressed: _pickAdmin,
                       icon: const Icon(Icons.chevron_right_rounded),
                     )
                   : IconButton(
-                      tooltip: 'Clear',
+                      tooltip: context.l10n.commonClear,
                       onPressed: () =>
                           setState(() => _adminId = _adminName = null),
                       icon: const Icon(Icons.close_rounded),
@@ -746,15 +778,15 @@ class _ExportSheetState extends State<ExportSheet> {
           if (spec.employee && CurrentUser.instance.isAdmin)
             InfoRow(
               icon: Icons.person_outline,
-              label: 'Customers added by',
-              value: _employeeName ?? 'All employees',
+              label: context.l10n.expCustomersAddedBy,
+              value: _employeeName ?? context.l10n.anAllEmployees,
               trailing: _employeeId == null
                   ? IconButton(
                       onPressed: _pickEmployee,
                       icon: const Icon(Icons.chevron_right_rounded),
                     )
                   : IconButton(
-                      tooltip: 'Clear',
+                      tooltip: context.l10n.commonClear,
                       onPressed: () =>
                           setState(() => _employeeId = _employeeName = null),
                       icon: const Icon(Icons.close_rounded),
@@ -764,10 +796,7 @@ class _ExportSheetState extends State<ExportSheet> {
 
         if (spec.auditFilters && p.auditNote != null) ...[
           AppGap.h8,
-          Text(
-            'Also uses the audit screen filters: ${p.auditNote}.',
-            style: muted,
-          ),
+          Text(context.l10n.expAuditNote(p.auditNote!), style: muted),
         ],
 
         AppGap.h12,
@@ -801,7 +830,7 @@ class _ExportSheetState extends State<ExportSheet> {
                     _format = ExportFormat.csv;
                     _error = null;
                   }),
-                  child: const Text('Switch to CSV'),
+                  child: Text(context.l10n.expSwitchCsv),
                 ),
               if (_error!.contains('Excel') && _format == ExportFormat.pdf)
                 TextButton(
@@ -809,14 +838,14 @@ class _ExportSheetState extends State<ExportSheet> {
                     _format = ExportFormat.xlsx;
                     _error = null;
                   }),
-                  child: const Text('Switch to Excel'),
+                  child: Text(context.l10n.expSwitchExcel),
                 ),
             ],
           ),
         ],
         AppGap.h16,
         AppButton(
-          label: 'Create ${_format.label}',
+          label: context.l10n.expCreateFormat(_format.label),
           prefixIcon: Icons.file_download_outlined,
           radius: AppSizes.md,
           isLoading: _creating,
@@ -865,8 +894,8 @@ class _Progress extends StatelessWidget {
         children: [
           Text(
             job.status == ExportStatus.queued
-                ? 'Waiting in line...'
-                : 'Building your file...',
+                ? context.l10n.expWaiting
+                : context.l10n.expBuildingFile,
             style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           AppGap.h8,
@@ -882,11 +911,11 @@ class _Progress extends StatelessWidget {
           Text(
             job.totalRows == null
                 ? (already
-                      ? 'This export is already in progress.'
-                      : 'Counting rows...')
-                : '${job.processedRows} of ${job.totalRows} rows'
+                      ? context.l10n.expAlreadyInProgress
+                      : context.l10n.expCountingRows)
+                : '${context.l10n.expRowsProgress(job.processedRows, job.totalRows!)}'
                       '${job.progress == null ? '' : ' • ${(job.progress! * 100).round()}%'}'
-                      '${already ? ' • already in progress' : ''}',
+                      '${already ? context.l10n.expAlreadyInProgressSuffix : ''}',
             style: muted,
           ),
         ],
@@ -901,7 +930,7 @@ class _Progress extends StatelessWidget {
               AppGap.w8,
               Expanded(
                 child: Text(
-                  'Ready${job.fileSize == null ? '' : ' • ${fmtBytes(job.fileSize)}'}',
+                  '${context.l10n.expReadyLabel}${job.fileSize == null ? '' : ' • ${fmtBytes(job.fileSize)}'}',
                   style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -927,13 +956,13 @@ class _Progress extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text('Downloading...', style: muted),
+            Text(context.l10n.expDownloading, style: muted),
           ] else
             Row(
               children: [
                 Expanded(
                   child: AppButton(
-                    label: 'Open',
+                    label: context.l10n.expOpen,
                     prefixIcon: Icons.open_in_new_rounded,
                     radius: AppSizes.md,
                     onPressed: onOpen,
@@ -942,7 +971,7 @@ class _Progress extends StatelessWidget {
                 AppGap.w12,
                 Expanded(
                   child: AppButton(
-                    label: 'Share',
+                    label: context.l10n.expShare,
                     outlined: true,
                     prefixIcon: Icons.ios_share_rounded,
                     radius: AppSizes.md,
@@ -963,7 +992,7 @@ class _Progress extends StatelessWidget {
               AppGap.w8,
               Expanded(
                 child: Text(
-                  'Could not build the file',
+                  context.l10n.expBuildFailed,
                   style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -975,7 +1004,7 @@ class _Progress extends StatelessWidget {
           ],
           AppGap.h12,
           AppButton(
-            label: 'Try again',
+            label: context.l10n.expTryAgain,
             outlined: true,
             radius: AppSizes.md,
             onPressed: onAgain,
@@ -987,17 +1016,14 @@ class _Progress extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'This file has expired.',
+            context.l10n.expFileExpired,
             style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 4),
-          Text(
-            'Files are kept for 24 hours. Create it again to get a new one.',
-            style: muted,
-          ),
+          Text(context.l10n.expKeptExpired, style: muted),
           AppGap.h12,
           AppButton(
-            label: 'Create again',
+            label: context.l10n.expCreateAgain,
             outlined: true,
             radius: AppSizes.md,
             onPressed: onAgain,
@@ -1029,7 +1055,7 @@ class _Progress extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(job.title, style: text.headlineSmall),
+                  Text(job.l10nTitle(context), style: text.headlineSmall),
                   Text(
                     '${job.format.label} • ${job.filterSummary}',
                     style: muted,
@@ -1040,7 +1066,7 @@ class _Progress extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'Close',
+              tooltip: context.l10n.commonClose,
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.close),
             ),
@@ -1054,12 +1080,15 @@ class _Progress extends StatelessWidget {
             Expanded(
               child: Text(
                 job.isActive
-                    ? 'You can close this. It keeps building and appears in Downloads.'
-                    : 'Files are kept for 24 hours.',
+                    ? context.l10n.expCanClose
+                    : context.l10n.expKept24,
                 style: muted,
               ),
             ),
-            TextButton(onPressed: onDownloads, child: const Text('Downloads')),
+            TextButton(
+              onPressed: onDownloads,
+              child: Text(context.l10n.menuDownloads),
+            ),
           ],
         ),
       ],

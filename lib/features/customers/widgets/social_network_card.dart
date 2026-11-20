@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_section_cards.dart';
 import 'package:micro_lending_app/data/models/customer_model.dart';
@@ -28,7 +29,7 @@ class SocialNetworkCard extends StatelessWidget {
     return AppSectionCard(
       icon: Icons.groups_outlined,
       iconColor: AppColors.success,
-      title: 'Social Network & Guarantees',
+      title: context.l10n.socialTitle,
       margin: EdgeInsets.only(top: AppSizes.xl),
       child: Column(
         children: [
@@ -42,7 +43,12 @@ class SocialNetworkCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Referred By Guarantor', style: text.labelMedium),
+                        Text(
+                          context.l10n.socialReferredBy,
+                          style: text.labelMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         Text(
                           TextFormatter.titleCase(referrerName),
                           style: text.bodyLarge,
@@ -68,7 +74,10 @@ class SocialNetworkCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Borrowers Referred', style: text.labelMedium),
+                  Text(
+                    context.l10n.socialBorrowersReferred,
+                    style: text.labelMedium,
+                  ),
                   const SizedBox(height: AppSizes.sm),
                   ...referrals.indexed.map(
                     (entry) => Padding(

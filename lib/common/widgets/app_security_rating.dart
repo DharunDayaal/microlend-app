@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
 import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
@@ -8,7 +9,7 @@ import 'package:micro_lending_app/utils/formatters/text_formatter.dart';
 class AppSecurityRating extends StatelessWidget {
   final int level;
   final int segments;
-  final String title;
+  final String? title;
   final bool showLevelLabel;
   final List<String>? levelLabels;
   final bool showCard;
@@ -26,7 +27,7 @@ class AppSecurityRating extends StatelessWidget {
     super.key,
     required this.level,
     this.segments = 4,
-    this.title = 'Security rating',
+    this.title,
     this.showLevelLabel = false,
     this.levelLabels,
     this.showCard = true,
@@ -41,8 +42,6 @@ class AppSecurityRating extends StatelessWidget {
        assert(levelColors == null || levelColors.length == segments),
        assert(levelLabels == null || levelLabels.length == segments);
 
-  static const _defaultLabels = ['Weak', 'Fair', 'Good', 'Strong'];
-
   Color _colorFor(int lvl) {
     if (levelColors != null) return levelColors![lvl - 1];
     final ratio = lvl / segments;
@@ -51,9 +50,16 @@ class AppSecurityRating extends StatelessWidget {
     return AppColors.progressSuccess;
   }
 
-  String? _labelFor(int lvl) {
+  String? _labelFor(BuildContext context, int lvl) {
     if (lvl <= 0) return null;
-    final labels = levelLabels ?? (segments == 4 ? _defaultLabels : null);
+    final l = context.l10n;
+    final defaults = [
+      l.securityWeak,
+      l.securityFair,
+      l.securityGood,
+      l.securityStrong,
+    ];
+    final labels = levelLabels ?? (segments == 4 ? defaults : null);
     return labels?[lvl - 1];
   }
 
@@ -65,7 +71,9 @@ class AppSecurityRating extends StatelessWidget {
     final lvl = level.clamp(0, segments);
     final active = lvl == 0 ? scheme.outlineVariant : _colorFor(lvl);
     final empty = emptyColor ?? scheme.outlineVariant;
-    final label = showLevelLabel ? _labelFor(lvl) : null;
+    final label = showLevelLabel ? _labelFor(context, lvl) : null;
+    final title = this.title ?? context.l10n.securityRating;
+    final levelOf = context.l10n.securityLevelOf(lvl, segments);
 
     final bars = Row(
       children: [
@@ -86,12 +94,12 @@ class AppSecurityRating extends StatelessWidget {
     );
 
     if (!showCard) {
-      return Semantics(label: title, value: '$lvl of $segments', child: bars);
+      return Semantics(label: title, value: levelOf, child: bars);
     }
 
     return Semantics(
       label: title,
-      value: label ?? '$lvl of $segments',
+      value: label ?? levelOf,
       child: Container(
         width: double.infinity,
         padding: padding,

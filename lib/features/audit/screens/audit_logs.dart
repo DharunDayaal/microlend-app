@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -91,13 +93,17 @@ class _AuditListScreenState extends State<AuditListScreen> {
   }
 
   Future<void> _pickAdmin() async {
-    final r = await showPersonPicker(context, title: 'Team', admins: true);
+    final r = await showPersonPicker(
+      context,
+      title: context.l10n.auditTeam,
+      admins: true,
+    );
     if (r != null) _f.setAdmin(r.$1, r.$2);
   }
 
   void _copy(AuditLog l) {
     Clipboard.setData(ClipboardData(text: l.id));
-    AppSnackbar.info(context, 'Log id copied');
+    AppSnackbar.info(context, context.l10n.auditLogIdCopied);
   }
 
   void _open(AuditLog l) =>
@@ -107,9 +113,9 @@ class _AuditListScreenState extends State<AuditListScreen> {
   Widget build(BuildContext context) {
     if (!CurrentUser.instance.hasRole(UserRole.admin)) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Audit log')),
-        body: const Center(
-          child: Text("You don't have access to the audit log."),
+        appBar: AppBar(title: Text(context.l10n.menuAuditLog)),
+        body: Center(
+          child: Text(context.l10n.auditNoAccess, textAlign: TextAlign.center),
         ),
       );
     }
@@ -120,7 +126,11 @@ class _AuditListScreenState extends State<AuditListScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: Text(widget.scope != null ? 'History' : 'Audit log'),
+        title: Text(
+          widget.scope != null
+              ? context.l10n.commonHistory
+              : context.l10n.menuAuditLog,
+        ),
         actions: [
           ExportMenuButton(
             types: const [ExportType.auditLog],
@@ -131,7 +141,7 @@ class _AuditListScreenState extends State<AuditListScreen> {
               adminName: _f.adminName,
               audit: _f.exportAudit,
               auditNote: _f.hasFilters
-                  ? '${_f.activeCount} filters applied'
+                  ? context.l10n.auditFiltersApplied(_f.activeCount)
                   : null,
             ),
           ),
@@ -146,7 +156,7 @@ class _AuditListScreenState extends State<AuditListScreen> {
                   label: Text('${_f.activeCount}'),
                   child: const Icon(Icons.tune_rounded),
                 ),
-                label: const Text('Filters'),
+                label: Text(context.l10n.auditFilters),
               ),
             ),
           ),
@@ -206,7 +216,7 @@ class _AuditListScreenState extends State<AuditListScreen> {
         label: Text(label),
         labelStyle: text.labelMedium,
         onDeleted: onClear,
-        deleteButtonTooltipMessage: 'Clear',
+        deleteButtonTooltipMessage: context.l10n.commonClear,
       ),
     );
 
@@ -216,33 +226,45 @@ class _AuditListScreenState extends State<AuditListScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
         children: [
-          pill(Icons.date_range_outlined, _f.rangeLabel, _pickRange),
+          pill(
+            Icons.date_range_outlined,
+            rangePresetLabel(context, _f.preset) ?? _f.rangeLabel,
+            _pickRange,
+          ),
           if (_isSuper) ...[
             AppGap.w8,
             pill(
               Icons.admin_panel_settings_outlined,
-              _f.adminName ?? 'All teams',
+              _f.adminName ?? context.l10n.auditAllTeams,
               _pickAdmin,
             ),
           ],
           if (_f.entityId != null) ...[
             AppGap.w8,
             scope(
-              'Viewing: ${_f.entityChipLabel}',
+              context.l10n.anViewing(_f.entityChipLabel),
               () => _f.setEntity(null, null),
             ),
           ],
           if (_f.targetId != null) ...[
             AppGap.w8,
             scope(
-              'About: ${_f.targetName ?? widget.scope?.label ?? 'this user'}',
+              context.l10n.auditAbout(
+                _f.targetName ??
+                    widget.scope?.label ??
+                    context.l10n.auditThisUser,
+              ),
               () => _f.setTarget(null, null),
             ),
           ],
           if (_f.actorId != null) ...[
             AppGap.w8,
             scope(
-              'By: ${_f.actorName ?? widget.scope?.label ?? 'this person'}',
+              context.l10n.auditBy(
+                _f.actorName ??
+                    widget.scope?.label ??
+                    context.l10n.auditThisPerson,
+              ),
               () => _f.setActor(null, null),
             ),
           ],
@@ -251,7 +273,7 @@ class _AuditListScreenState extends State<AuditListScreen> {
             Center(
               child: TextButton(
                 onPressed: _f.clearAll,
-                child: const Text('Clear all'),
+                child: Text(context.l10n.auditClearAll),
               ),
             ),
           ],
@@ -307,13 +329,10 @@ class _AuditListScreenState extends State<AuditListScreen> {
     const physics = AlwaysScrollableScrollPhysics();
 
     if (_c.forbidden) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(AppSizes.lg),
-          child: Text(
-            "You don't have access to the audit log.",
-            textAlign: TextAlign.center,
-          ),
+          padding: const EdgeInsets.all(AppSizes.lg),
+          child: Text(context.l10n.auditNoAccess, textAlign: TextAlign.center),
         ),
       );
     }
@@ -352,15 +371,17 @@ class _AuditListScreenState extends State<AuditListScreen> {
             ),
             AppGap.h12,
             Text(
-              filtered ? 'Nothing matches these filters' : 'No activity yet',
+              filtered
+                  ? context.l10n.auditNothingMatches
+                  : context.l10n.auditNoActivity,
               textAlign: TextAlign.center,
               style: text.headlineSmall,
             ),
             AppGap.h8,
             Text(
               filtered
-                  ? 'Try a wider date range or fewer filters.'
-                  : 'Changes made in the app will appear here.',
+                  ? context.l10n.auditTryWider
+                  : context.l10n.auditChangesAppear,
               textAlign: TextAlign.center,
               style: text.bodyMedium?.copyWith(
                 color: AppColors.darkOnSurfaceMuted,
@@ -370,7 +391,7 @@ class _AuditListScreenState extends State<AuditListScreen> {
               AppGap.h16,
               Center(
                 child: AppButton(
-                  label: 'Clear filters',
+                  label: context.l10n.auditClearFilters,
                   outlined: true,
                   fitContent: true,
                   radius: AppSizes.md,
@@ -430,7 +451,7 @@ class _AuditListScreenState extends State<AuditListScreen> {
           Text(_c.moreError!, textAlign: TextAlign.center),
           TextButton(
             onPressed: _c.retryMore,
-            child: const Text('Tap to retry'),
+            child: Text(context.l10n.commonTapToRetry),
           ),
         ],
       );
@@ -439,7 +460,9 @@ class _AuditListScreenState extends State<AuditListScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
       child: Center(
         child: Text(
-          _c.hasNext ? '' : '${_c.items.length} of ${_c.total} entries',
+          _c.hasNext
+              ? ''
+              : context.l10n.auditEntriesCount(_c.items.length, _c.total),
           style: text.bodySmall?.copyWith(color: AppColors.darkOnSurfaceMuted),
         ),
       ),
@@ -458,12 +481,7 @@ class _RangeSheet extends StatefulWidget {
 }
 
 class _RangeSheetState extends State<_RangeSheet> {
-  static const _presets = [
-    ('today', 'Today'),
-    ('7d', 'Last 7 days'),
-    ('30d', 'Last 30 days'),
-    ('custom', 'Custom'),
-  ];
+  static const _presets = ['today', '7d', '30d', 'custom'];
 
   late String _preset = widget.f.preset;
   late DateTime _from = widget.f.from;
@@ -494,7 +512,7 @@ class _RangeSheetState extends State<_RangeSheet> {
     if (r.duration.inDays + 1 > AuditFilters.maxDays) {
       AppSnackbar.warning(
         context,
-        'Pick a range of at most ${AuditFilters.maxDays} days.',
+        context.l10n.anMaxRange(AuditFilters.maxDays),
       );
       return;
     }
@@ -515,7 +533,7 @@ class _RangeSheetState extends State<_RangeSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Date range',
+              context.l10n.anDateRange,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             AppGap.h16,
@@ -525,15 +543,17 @@ class _RangeSheetState extends State<_RangeSheet> {
               children: [
                 for (final p in _presets)
                   ChoiceChip(
-                    label: Text(p.$2),
-                    selected: _preset == p.$1,
-                    onSelected: (_) => _choose(p.$1),
+                    label: Text(
+                      rangePresetLabel(context, p) ?? context.l10n.rangeCustom,
+                    ),
+                    selected: _preset == p,
+                    onSelected: (_) => _choose(p),
                   ),
               ],
             ),
             AppGap.h16,
             AppButton(
-              label: 'Apply',
+              label: context.l10n.commonApply,
               radius: AppSizes.md,
               onPressed: () {
                 widget.f.setRange(_preset, _from, _to);

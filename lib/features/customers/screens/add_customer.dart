@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_chip_select.dart';
@@ -117,7 +119,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
     if (!(_formKey.currentState?.validate() ?? false)) {
       DeviceUtils.error();
-      AppSnackbar.warning(context, 'Please fill the highlighted fields.');
+      AppSnackbar.warning(context, context.l10n.custFillHighlighted);
       return;
     }
 
@@ -138,17 +140,14 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           DeviceUtils.error();
           AppSnackbar.error(
             context,
-            _msg(
-              otp.message,
-              "Couldn't send the verification code. Try again.",
-            ),
+            _msg(otp.message, context.l10n.custOtpSendFailed),
           );
           return;
         }
 
         AppSnackbar.info(
           context,
-          'Verification code sent to ${PhoneFormatter.masked(phone)}.',
+          context.l10n.custOtpSentTo(PhoneFormatter.masked(phone)),
         );
 
         setState(() => _loader = false); // no spinner behind the sheet
@@ -160,10 +159,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         if (!mounted) return;
 
         if (!verified) {
-          AppSnackbar.warning(
-            context,
-            'Verify the phone number to add this borrower.',
-          );
+          AppSnackbar.warning(context, context.l10n.custVerifyToAdd);
           return;
         }
 
@@ -171,7 +167,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           _verifiedPhone = phone;
           _loader = true;
         });
-        AppSnackbar.success(context, 'Phone number verified.');
+        AppSnackbar.success(context, context.l10n.custPhoneVerified);
       }
 
       final response = await CustomerService.addCustomer(
@@ -188,16 +184,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
       DeviceUtils.success();
       AppSnackbar.success(
         context,
-        '${response.customerName} was added successfully.',
+        context.l10n.custAddedSuccess(response.customerName),
       );
       context.go(AppRoutes.customerDetail(response.id));
     } on ApiException catch (e) {
       DeviceUtils.error();
       if (mounted) {
-        AppSnackbar.error(
-          context,
-          _msg(e.message, "Couldn't add the borrower. Please try again."),
-        );
+        AppSnackbar.error(context, _msg(e.message, context.l10n.custAddFailed));
       }
     } catch (e, st) {
       AppLogger.error(
@@ -208,7 +201,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
       );
       DeviceUtils.error();
       if (mounted) {
-        AppSnackbar.error(context, 'Something went wrong. Please try again.');
+        AppSnackbar.error(context, context.l10n.commonSomethingWrong);
       }
     } finally {
       if (mounted) setState(() => _loader = false);
@@ -260,7 +253,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AppButton(
-                  label: "Save & Add Borrower",
+                  label: context.l10n.custSaveAdd,
                   onPressed: _addBorrower,
                   prefixIcon: Icons.person_add_outlined,
                   radius: AppSizes.radiusLg,
@@ -272,7 +265,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     context.pop();
                   },
                   child: Text(
-                    "Cancel & Discard",
+                    context.l10n.custCancelDiscard,
                     style: textTheme.labelLarge?.copyWith(
                       color: AppColors.darkHint,
                     ),
@@ -309,8 +302,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 ),
               ),
               AppGap.w12,
-              Text("Identity Credentials", style: textTheme.bodyLarge),
-              SizedBox(width: AppSizes.xl + 2),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  context.l10n.custIdentityCredentials,
+                  style: textTheme.bodyLarge,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              AppGap.w8,
               Expanded(
                 child: _WidgetContainer(
                   padding: EdgeInsets.all(AppSizes.sm - 4),
@@ -322,7 +323,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     Radius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
-                    "Required",
+                    context.l10n.custRequiredBadge,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: textTheme.labelMedium?.copyWith(
                       color: AppColors.warning,
                     ),
@@ -338,8 +341,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           Column(
             children: [
               AppTextField(
-                label: "Full Name",
-                hint: "Enter full name",
+                label: context.l10n.custFullName,
+                hint: context.l10n.custEnterFullName,
                 controller: _nameController,
                 prefixIcon: Icons.person_outline,
                 textInputAction: TextInputAction.next,
@@ -347,8 +350,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               ),
               AppGap.h16,
               AppTextField(
-                label: "Mobile number",
-                hint: "Enter mobile number",
+                label: context.l10n.custMobileNumber,
+                hint: context.l10n.custEnterMobile,
                 controller: _phoneNumberController,
                 prefixIcon: Icons.call_outlined,
                 prefixText: "+91",
@@ -366,11 +369,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Preferred Day Batch",
+                          context.l10n.custPreferredDayBatch,
                           style: textTheme.labelLarge,
                         ),
                         Text(
-                          "Assigned to weekly field collection route",
+                          context.l10n.custAssignedRoute,
                           style: textTheme.labelMedium?.copyWith(
                             color: AppColors.darkHint,
                             fontWeight: FontWeight.normal,
@@ -390,7 +393,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     ),
                     containerRadius: BorderRadius.circular(AppSizes.radiusFull),
                     child: Text(
-                      "${TextFormatter.titleCase(_weekday)} Batch",
+                      context.l10n.custDayBatch(
+                        weekdayLabel(context, _weekday),
+                      ),
                       style: textTheme.labelMedium,
                     ),
                   ),
@@ -409,7 +414,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                   for (final option in _weekdayOptions)
                     ChipOption(
                       value: option["value"]!,
-                      label: option["label"]!,
+                      label: weekdayLabel(
+                        context,
+                        option["value"]!,
+                        short: true,
+                      ),
                     ),
                 ],
               ),
@@ -443,8 +452,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 ),
               ),
               AppGap.w12,
-              Text("Address & Location", style: textTheme.bodyLarge),
-              SizedBox(width: AppSizes.xl + 2),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  context.l10n.custAddressLocation,
+                  style: textTheme.bodyLarge,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              AppGap.w8,
               Expanded(
                 child: _WidgetContainer(
                   padding: EdgeInsets.all(AppSizes.sm - 4),
@@ -455,7 +472,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     Radius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
-                    "Verification",
+                    context.l10n.custVerification,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: textTheme.labelMedium?.copyWith(
                       color: AppColors.lightHint,
                     ),
@@ -472,8 +491,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppTextField(
-                label: "Street Name / House No.",
-                hint: "Street name or number",
+                label: context.l10n.custStreet,
+                hint: context.l10n.custStreetHint,
                 controller: _streetNameController,
                 prefixIcon: Icons.home_outlined,
                 textInputAction: TextInputAction.next,
@@ -484,8 +503,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 children: [
                   Expanded(
                     child: AppTextField(
-                      label: "City / Town",
-                      hint: "Enter city",
+                      label: context.l10n.custCity,
+                      hint: context.l10n.custEnterCity,
                       controller: _cityController,
                       prefixIcon: Icons.location_city_outlined,
                       textInputAction: TextInputAction.next,
@@ -495,8 +514,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                   AppGap.w8,
                   Expanded(
                     child: AppTextField(
-                      label: "District",
-                      hint: "Enter district",
+                      label: context.l10n.custDistrict,
+                      hint: context.l10n.custEnterDistrict,
                       controller: _ditrictController,
                       prefixIcon: Icons.map_outlined,
                       textInputAction: TextInputAction.done,
@@ -535,8 +554,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 ),
               ),
               AppGap.w12,
-              Text("Referred By Borrower", style: textTheme.bodyLarge),
-              SizedBox(width: AppSizes.xl + 2),
+              Expanded(
+                flex: 2,
+                child: Text(
+                  context.l10n.custReferredBy,
+                  style: textTheme.bodyLarge,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              AppGap.w8,
               Expanded(
                 child: _WidgetContainer(
                   padding: EdgeInsets.all(AppSizes.sm - 4),
@@ -547,7 +574,9 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                     Radius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
-                    "Optional",
+                    context.l10n.custOptional,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: textTheme.labelMedium?.copyWith(
                       color: AppColors.lightHint,
                     ),
@@ -560,7 +589,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           AppGap.h24,
           if (_selected?.id == null) ...[
             AppButton(
-              label: "Select Referrer Borrower",
+              label: context.l10n.custSelectReferrer,
               radius: AppSizes.radiusXl,
               onPressed: _selectReferrer,
               outlined: true,
@@ -602,9 +631,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         Text(
                           _selected!.customerName,
                           style: textTheme.bodyLarge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          "ID ${TextFormatter.dummyId(_selected!.id, "USR")} • 2 Fully Repaid Loans",
+                          context.l10n.custReferrerIdLine(
+                            TextFormatter.dummyId(_selected!.id, "USR"),
+                          ),
                           style: textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.normal,
                             color: AppColors.lightHint,
@@ -619,7 +652,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                       height: 20,
                       width: 12,
                       padding: EdgeInsets.all(AppSizes.sm),
-                      label: "Change",
+                      label: context.l10n.custChange,
                       radius: AppSizes.radiusFull,
                       suffixIcon: Icons.keyboard_arrow_down_rounded,
                       onPressed: _selectReferrer,

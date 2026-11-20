@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/auth_app_bar.dart';
 import 'package:micro_lending_app/utils/constants/alphas.dart';
@@ -19,13 +20,10 @@ class ApprovalPendingScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        AppSnackbar.info(
-          context,
-          "Account verification is required to proceed further",
-        );
+        AppSnackbar.info(context, context.l10n.approvalVerificationRequired);
       },
       child: Scaffold(
-        appBar: AuthAppBar(title: "Approval Pending"),
+        appBar: AuthAppBar(title: context.l10n.approvalPendingTitle),
         body: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -136,7 +134,7 @@ class ApprovalPendingScreen extends StatelessWidget {
                                           ),
                                         ),
                                         child: Text(
-                                          "APPLICATION UNDER REVIEW • PENDING ADMIN APPROVAL",
+                                          context.l10n.approvalUnderReviewBadge,
                                           style: textTheme.labelLarge?.copyWith(
                                             color: AppColors.warning,
                                             fontWeight: FontWeight.bold,
@@ -145,11 +143,12 @@ class ApprovalPendingScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        "Approval in Progress",
+                                        context.l10n.approvalInProgress,
                                         style: textTheme.headlineLarge,
+                                        textAlign: TextAlign.center,
                                       ),
                                       Text(
-                                        "Your profile and lending parameters have been submitted. An administrator will review and approve your account soon.",
+                                        context.l10n.approvalSubmittedBody,
                                         textAlign: TextAlign.center,
                                       ),
                                     ],
@@ -196,12 +195,12 @@ class ApprovalPendingScreen extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "What to expect next",
+                                        context.l10n.approvalWhatNext,
                                         style: textTheme.headlineMedium,
                                       ),
                                       AppGap.w8,
                                       Text(
-                                        "Your profile is currently under review by the administrator. You will be notified once your account has been approved and activated.",
+                                        context.l10n.approvalWhatNextBody,
                                         style: textTheme.labelLarge?.copyWith(
                                           color: const Color(0xFF94A3B8),
                                         ),
@@ -234,11 +233,15 @@ class ApprovalPendingScreen extends StatelessWidget {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    "REVIEW TIMEFRAME",
+                                                    context
+                                                        .l10n
+                                                        .approvalReviewTimeframe,
                                                     style: textTheme.labelLarge,
                                                   ),
                                                   Text(
-                                                    "Typical reiview time: 24-48 business hours",
+                                                    context
+                                                        .l10n
+                                                        .approvalTypicalTime,
                                                     style: textTheme.labelMedium
                                                         ?.copyWith(
                                                           color: AppColors

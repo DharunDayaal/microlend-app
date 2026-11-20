@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -24,7 +26,6 @@ const double _captionH = 20;
 const double _tileH = 88;
 const double _headerH = 40;
 
-String _plural(int n, String word) => '$n ${n == 1 ? word : '${word}s'}';
 String _num(double v) =>
     v == v.truncateToDouble() ? v.toInt().toString() : v.toString();
 
@@ -135,41 +136,49 @@ class LoanStatusBanner extends StatelessWidget {
       LoanStage.overdue => (
         AppColors.progressDanger,
         Icons.error_outline,
-        'Overdue • ${_plural(s.daysLate, 'day')} late',
-        '${money(s.overdueAmount)} across ${_plural(s.pastDueRows.length, 'week')} '
-            'is past due.'
-            '${s.pastDueRows.any((r) => r.isExtension) ? ' The ${loan.totalWeeks}-week term has ended.' : ''}',
+        context.l10n.bannerOverdueTitle(s.daysLate),
+        context.l10n.bannerOverdueBody(
+              money(s.overdueAmount),
+              s.pastDueRows.length,
+            ) +
+            (s.pastDueRows.any((r) => r.isExtension)
+                ? context.l10n.bannerTermEnded(loan.totalWeeks)
+                : ''),
       ),
       LoanStage.paidOff => (
         AppColors.success,
         Icons.verified_outlined,
-        'Fully repaid',
-        'All ${loan.totalWeeks} weekly installments are collected. '
-            '${money(loan.totalCollected)} received in total.',
+        context.l10n.bannerFullyRepaid,
+        context.l10n.bannerPaidOffBody(
+          loan.totalWeeks,
+          money(loan.totalCollected),
+        ),
       ),
       LoanStage.closed => (
         AppColors.darkOnSurfaceMuted,
         Icons.lock_outline,
-        'Loan closed',
+        context.l10n.bannerLoanClosed,
         [
               if (loan.closedAt != null)
-                'Closed on ${DateFormatter.date(loan.closedAt)}.',
+                context.l10n.bannerClosedOn(DateFormatter.date(loan.closedAt)),
               if (loan.outstandingAmount > 0)
-                '${money(loan.outstandingAmount)} was left unpaid.',
+                context.l10n.bannerLeftUnpaid(money(loan.outstandingAmount)),
             ].join(' ').trim().isEmpty
-            ? 'This loan is closed.'
+            ? context.l10n.bannerThisLoanClosed
             : [
                 if (loan.closedAt != null)
-                  'Closed on ${DateFormatter.date(loan.closedAt)}.',
+                  context.l10n.bannerClosedOn(
+                    DateFormatter.date(loan.closedAt),
+                  ),
                 if (loan.outstandingAmount > 0)
-                  '${money(loan.outstandingAmount)} was left unpaid.',
+                  context.l10n.bannerLeftUnpaid(money(loan.outstandingAmount)),
               ].join(' '),
       ),
       LoanStage.defaulted => (
         AppColors.progressDanger,
         Icons.cancel_outlined,
-        'Marked as defaulted',
-        '${money(loan.outstandingAmount)} is still outstanding.',
+        context.l10n.bannerMarkedDefaulted,
+        context.l10n.bannerStillOutstanding(money(loan.outstandingAmount)),
       ),
       _ => (AppColors.darkOnSurfaceMuted, Icons.info_outline, '', ''),
     };
@@ -228,7 +237,9 @@ class LoanBorrowerStrip extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final route = customer.preferredPaymentDay.isEmpty
         ? null
-        : '${TextFormatter.enumLabel(customer.preferredPaymentDay)} route';
+        : context.l10n.sectionDayRoute(
+            weekdayLabel(context, customer.preferredPaymentDay),
+          );
 
     return DetailCard(
       onTap: onTap,
@@ -280,7 +291,7 @@ class LoanBorrowerStrip extends StatelessWidget {
                 ),
                 if (cycle != null)
                   AppChip(
-                    label: 'Cycle $cycle',
+                    label: context.l10n.profileCycleN(cycle!),
                     radius: AppSizes.radiusSm,
                     backgroundColor: AppColors.successContainer.withAlpha(
                       AppAlphas.badgeFill,
@@ -328,7 +339,7 @@ class LoanBorrowerError extends StatelessWidget {
           Expanded(
             child: Text(message, style: Theme.of(context).textTheme.bodyMedium),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Retry')),
+          TextButton(onPressed: onRetry, child: Text(context.l10n.commonRetry)),
         ],
       ),
     );
@@ -393,51 +404,52 @@ class LoanBalanceCard extends StatelessWidget {
   final LoanSnapshot s;
   const LoanBalanceCard({super.key, required this.s});
 
-  (String, String, String, Color) _third() {
+  (String, String, String, Color) _third(BuildContext context) {
     final loan = s.loan;
+    final l = context.l10n;
     switch (s.stage) {
       case LoanStage.overdue:
         return (
-          'OVERDUE',
+          l.statusOverdue,
           CurrencyFormatter.format(s.overdueAmount),
-          '${_plural(s.pastDueRows.length, 'week')} past due',
+          l.balanceWeeksPastDue(s.pastDueRows.length),
           AppColors.progressDanger,
         );
       case LoanStage.active:
         final n = s.nextUpcoming;
         if (n == null) {
           return (
-            'NEXT INSTALLMENT',
+            l.balanceNextInstallment,
             '--',
-            'Nothing scheduled',
+            l.balanceNothingScheduled,
             AppColors.darkOnSurfaceMuted,
           );
         }
         return (
-          'NEXT INSTALLMENT',
+          l.balanceNextInstallment,
           CurrencyFormatter.format(n.remaining),
-          'Due ${DateFormatter.weekdayDate(n.due)}',
+          l.trackDueOn(DateFormatter.weekdayDate(n.due)),
           AppColors.warning,
         );
       case LoanStage.paidOff:
         return (
-          'SETTLED',
+          l.balanceSettled,
           CurrencyFormatter.format(0),
-          'No balance left',
+          l.balanceNoBalance,
           AppColors.success,
         );
       default:
         return loan.outstandingAmount > 0
             ? (
-                'UNPAID AT CLOSE',
+                l.balanceUnpaidAtClose,
                 CurrencyFormatter.format(loan.outstandingAmount),
-                'Not collected',
+                l.trackNotCollected,
                 AppColors.progressDanger,
               )
             : (
-                'SETTLED',
+                l.balanceSettled,
                 CurrencyFormatter.format(0),
-                'No balance left',
+                l.balanceNoBalance,
                 AppColors.success,
               );
     }
@@ -462,7 +474,7 @@ class LoanBalanceCard extends StatelessWidget {
         : s.stage == LoanStage.overdue
         ? AppColors.progressDanger
         : AppColors.progressWarning;
-    final (thirdLabel, thirdValue, thirdCaption, thirdColor) = _third();
+    final (thirdLabel, thirdValue, thirdCaption, thirdColor) = _third(context);
 
     return DetailCard(
       child: Column(
@@ -477,7 +489,12 @@ class LoanBalanceCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('OUTSTANDING', style: muted),
+                      Text(
+                        context.l10n.loanOutstanding,
+                        style: muted,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
@@ -493,17 +510,24 @@ class LoanBalanceCard extends StatelessWidget {
                   ),
                 ),
                 AppGap.w8,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('TOTAL REPAYABLE', style: muted),
-                    Text(
-                      CurrencyFormatter.format(loan.totalPayableAmount),
-                      style: text.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        context.l10n.disburseTotalRepayable,
+                        style: muted,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
+                      Text(
+                        CurrencyFormatter.format(loan.totalPayableAmount),
+                        style: text.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -511,7 +535,7 @@ class LoanBalanceCard extends StatelessWidget {
           const SizedBox(height: AppSizes.sm),
           AppProgressBar.segmented(
             height: 8,
-            semanticsLabel: 'Loan repayment progress',
+            semanticsLabel: context.l10n.balanceRepaymentProgress,
             segments: [
               ProgressSegment(value: progress.collectedFraction),
               if (s.overdueAmount > 0)
@@ -526,17 +550,31 @@ class LoanBalanceCard extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: _captionH),
             child: Row(
               children: [
-                Text(
-                  '${progress.completedPercent}% repaid',
-                  style: text.labelMedium?.copyWith(color: AppColors.success),
+                Flexible(
+                  child: Text(
+                    context.l10n.balanceRepaidPercent(
+                      '${progress.completedPercent}',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.labelMedium?.copyWith(color: AppColors.success),
+                  ),
                 ),
                 const Spacer(),
                 if (s.overdueAmount > 0)
-                  Text(
-                    '${progress.overduePercent}% overdue • '
-                    '${CurrencyFormatter.format(s.overdueAmount)}',
-                    style: text.labelMedium?.copyWith(
-                      color: AppColors.progressWarning,
+                  Flexible(
+                    flex: 2,
+                    child: Text(
+                      context.l10n.recoveryOverdueLine(
+                        '${progress.overduePercent}',
+                        CurrencyFormatter.format(s.overdueAmount),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: text.labelMedium?.copyWith(
+                        color: AppColors.progressWarning,
+                      ),
                     ),
                   ),
               ],
@@ -548,9 +586,12 @@ class LoanBalanceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniTile(
-                  label: 'COLLECTED',
+                  label: context.l10n.trackerCollected,
                   value: CurrencyFormatter.format(loan.totalCollected),
-                  caption: '${s.paidWeeks} of ${loan.totalWeeks} weeks paid',
+                  caption: context.l10n.balanceWeeksPaid(
+                    s.paidWeeks,
+                    loan.totalWeeks,
+                  ),
                   color: AppColors.success,
                 ),
               ),
@@ -831,7 +872,10 @@ class RecentPaymentsSection extends StatelessWidget {
             ),
             AppGap.w12,
             Expanded(child: Text(error!, style: text.bodyMedium)),
-            TextButton(onPressed: onRetry, child: const Text('Retry')),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(context.l10n.commonRetry),
+            ),
           ],
         ),
       );
@@ -845,7 +889,10 @@ class RecentPaymentsSection extends StatelessWidget {
             ),
             AppGap.w12,
             Expanded(
-              child: Text('No payments recorded yet.', style: text.bodyMedium),
+              child: Text(
+                context.l10n.recentNoPayments,
+                style: text.bodyMedium,
+              ),
             ),
           ],
         ),
@@ -861,8 +908,8 @@ class RecentPaymentsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DetailSectionHeader(
-          title: 'Recent payments',
-          actionLabel: 'View all',
+          title: context.l10n.recentPayments,
+          actionLabel: context.l10n.commonViewAll,
           onAction: onViewAll,
         ),
         AppGap.h8,
@@ -910,8 +957,10 @@ class RecentPaymentRow extends StatelessWidget {
                   style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  'Week ${payment.weekNumber} • '
-                  '${DateFormatter.dateTime(payment.paidAt, fallback: '--')}',
+                  context.l10n.payWeekDate(
+                    payment.weekNumber,
+                    DateFormatter.dateTime(payment.paidAt, fallback: '--'),
+                  ),
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -983,21 +1032,25 @@ class _LoanContractCardState extends State<LoanContractCard> {
         : 0.0;
     final interest = loan.totalPayableAmount - loan.nominalAmount;
 
+    final l = context.l10n;
     final rows = <(String, String)>[
-      ('Sanctioned principal', money(loan.nominalAmount)),
+      (l.contractPrincipal, money(loan.nominalAmount)),
       (
-        'Upfront fee (${_num(double.parse(feePct.toStringAsFixed(1)))}%)',
+        l.contractUpfrontFee(_num(double.parse(feePct.toStringAsFixed(1)))),
         '-${money(loan.upfrontFee)}',
       ),
-      ('Net disbursed', money(loan.disbursedAmount)),
-      ('Flat interest', money(interest)),
-      ('Total repayable', money(loan.totalPayableAmount)),
-      ('Weekly installment', money(loan.weeklyPayableAmount)),
-      ('Term', '${loan.totalWeeks} weeks (${_num(loan.totalMonths)} months)'),
-      ('Disbursed on', DateFormatter.date(loan.issuedAt)),
-      ('Matures on', DateFormatter.date(widget.s.maturityDate)),
+      (l.contractNetDisbursed, money(loan.disbursedAmount)),
+      (l.contractFlatInterest, money(interest)),
+      (l.contractTotalRepayable, money(loan.totalPayableAmount)),
+      (l.contractWeeklyInstallment, money(loan.weeklyPayableAmount)),
+      (
+        l.contractTerm,
+        l.contractTermValue(loan.totalWeeks, _num(loan.totalMonths)),
+      ),
+      (l.contractDisbursedOn, DateFormatter.date(loan.issuedAt)),
+      (l.contractMaturesOn, DateFormatter.date(widget.s.maturityDate)),
       if (loan.closedAt != null)
-        ('Closed on', DateFormatter.date(loan.closedAt)),
+        (l.contractClosedOn, DateFormatter.date(loan.closedAt)),
     ];
 
     return DetailCard(
@@ -1011,7 +1064,7 @@ class _LoanContractCardState extends State<LoanContractCard> {
               AppGap.w8,
               Expanded(
                 child: Text(
-                  'Contract details',
+                  context.l10n.contractDetails,
                   style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),

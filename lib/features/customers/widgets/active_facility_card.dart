@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_progress_bar.dart';
@@ -25,10 +26,11 @@ class ActiveFacilityCard extends StatelessWidget {
 
   bool get _overdue => loan.isOverdue || loan.status.toUpperCase() == 'OVERDUE';
 
-  String _nextLabel(DateTime? date) {
-    if (_overdue) return 'Payment overdue';
-    if (date == null) return 'All installments paid';
-    return 'Due ${DateFormatter.weekdayDate(date)}';
+  String _nextLabel(BuildContext context, DateTime? date) {
+    final l = context.l10n;
+    if (_overdue) return l.facilityPaymentOverdue;
+    if (date == null) return l.facilityAllPaid;
+    return l.trackDueOn(DateFormatter.weekdayDate(date));
   }
 
   @override
@@ -43,12 +45,15 @@ class ActiveFacilityCard extends StatelessWidget {
 
     return AppSectionCard(
       icon: Icons.account_balance_wallet_outlined,
-      title: 'Active Facility',
+      title: context.l10n.facilityTitle,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (_overdue) ...[
-            const StatusChip(label: 'OVERDUE', type: ChipType.overdue),
+            StatusChip(
+              label: context.l10n.statusOverdue,
+              type: ChipType.overdue,
+            ),
             const SizedBox(width: AppSizes.sm),
           ],
           AppChip(
@@ -71,14 +76,21 @@ class ActiveFacilityCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Remaining Balance', style: text.labelMedium),
+                        Text(
+                          context.l10n.facilityRemaining,
+                          style: text.labelMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: AppSizes.xs),
                         Text(
                           CurrencyFormatter.format(loan.outstandingAmount),
                           style: text.headlineMedium,
                         ),
                         Text(
-                          'of ${CurrencyFormatter.format(loan.totalPayableAmount)} Total',
+                          context.l10n.facilityOfTotal(
+                            CurrencyFormatter.format(loan.totalPayableAmount),
+                          ),
                           style: text.labelMedium,
                         ),
                       ],
@@ -91,7 +103,12 @@ class ActiveFacilityCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Next Installment', style: text.labelMedium),
+                        Text(
+                          context.l10n.facilityNextInstallment,
+                          style: text.labelMedium,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: AppSizes.xs),
                         Text(
                           CurrencyFormatter.format(
@@ -103,7 +120,7 @@ class ActiveFacilityCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          _nextLabel(nextPay),
+                          _nextLabel(context, nextPay),
                           style: text.labelMedium?.copyWith(
                             color: _overdue
                                 ? AppColors.danger
@@ -121,13 +138,25 @@ class ActiveFacilityCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Repaid: ${(progress * 100).round()}%',
-                style: text.labelLarge,
+              Flexible(
+                child: Text(
+                  context.l10n.facilityRepaidPercent((progress * 100).round()),
+                  style: text.labelLarge,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Text(
-                '${CurrencyFormatter.format(loan.totalCollected)} Paid',
-                style: text.labelLarge,
+              AppGap.w8,
+              Flexible(
+                child: Text(
+                  context.l10n.facilityPaidAmount(
+                    CurrencyFormatter.format(loan.totalCollected),
+                  ),
+                  style: text.labelLarge,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                ),
               ),
             ],
           ),
@@ -138,7 +167,7 @@ class ActiveFacilityCard extends StatelessWidget {
             children: [
               Expanded(
                 child: AppButton(
-                  label: "View Tracks",
+                  label: context.l10n.facilityViewTracks,
                   onPressed: () => context.push(AppRoutes.loanTrack(loan.id)),
                   backgroundColor: AppColors.darkRim,
                   prefixIcon: Icons.history,
@@ -148,7 +177,7 @@ class ActiveFacilityCard extends StatelessWidget {
               AppGap.w12,
               Expanded(
                 child: AppButton(
-                  label: "View payments",
+                  label: context.l10n.facilityViewPayments,
                   onPressed: () => context.push(AppRoutes.loanPayment(loan.id)),
                   prefixIcon: Icons.layers,
                   radius: AppSizes.radiusLg,

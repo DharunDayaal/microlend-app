@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
@@ -218,7 +219,7 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => context.pop(),
         ),
-        title: const Text("Payments"),
+        title: Text(context.l10n.loanPayments),
       ),
       body: SafeArea(
         child: Column(
@@ -258,7 +259,7 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
     if (loan == null) {
       return _WidgetContainer(
         child: ErrorView(
-          message: _loanError ?? 'Could not load the loan details.',
+          message: _loanError ?? context.l10n.loanLoadDetailsFailed,
           onRetry: _getLoanDetails,
         ),
       );
@@ -275,11 +276,11 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
     final status = loan.status.toUpperCase();
     final overdue = loan.isOverdue || status == 'OVERDUE';
     final (statusLabel, statusColor) = overdue
-        ? ('OVERDUE', AppColors.progressDanger)
+        ? (context.l10n.statusOverdue, AppColors.progressDanger)
         : status == 'ACTIVE'
-        ? ('ACTIVE', AppColors.success)
+        ? (context.l10n.loanStageActive, AppColors.success)
         : status == 'PAID_OFF'
-        ? ('PAID OFF', AppColors.success)
+        ? (context.l10n.loanStagePaidOff, AppColors.success)
         : (status.replaceAll('_', ' '), AppColors.darkOnSurfaceMuted);
 
     return _WidgetContainer(
@@ -351,7 +352,9 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "TOTAL COLLECTED",
+                            context.l10n.loanTotalCollected,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: textTheme.labelMedium?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -376,7 +379,9 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            "OUTSTANDING",
+                            context.l10n.loanOutstanding,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: textTheme.labelMedium?.copyWith(
                               color: AppColors.darkOnSurfaceMuted,
                             ),
@@ -402,15 +407,26 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
                 AppGap.h8,
                 Row(
                   children: [
-                    Text(
-                      "Target: ${CurrencyFormatter.format(payable)}",
-                      style: textTheme.labelLarge,
+                    Expanded(
+                      child: Text(
+                        context.l10n.loanTarget(
+                          CurrencyFormatter.format(payable),
+                        ),
+                        style: textTheme.labelLarge,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const Spacer(),
-                    Text(
-                      "$percent% Cleared",
-                      style: textTheme.labelLarge?.copyWith(
-                        color: AppColors.success,
+                    AppGap.w8,
+                    Flexible(
+                      child: Text(
+                        context.l10n.loanPercentCleared(percent),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: AppColors.success,
+                        ),
                       ),
                     ),
                   ],
@@ -434,19 +450,19 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
       children: [
         Expanded(
           child: _StatCard(
-            title: "TOTAL PAID",
+            title: context.l10n.loanTotalPaid,
             content: CurrencyFormatter.format(loan.totalCollected),
           ),
         ),
         Expanded(
           child: _StatCard(
-            title: "COVERAGE",
-            content: "${loan.totalWeeks} Weeks",
+            title: context.l10n.loanCoverage,
+            content: context.l10n.loanWeeksCount(loan.totalWeeks),
           ),
         ),
         Expanded(
           child: _StatCard(
-            title: "LAST LOG",
+            title: context.l10n.loanLastLog,
             content: DateFormatter.dayMonth(lastPaid, fallback: "--"),
           ),
         ),
@@ -490,10 +506,10 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
       return ListView(
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           EmptyView(
             icon: Icons.receipt_long_outlined,
-            message: 'No payments found',
+            message: context.l10n.loanNoPayments,
           ),
         ],
       );
@@ -529,7 +545,14 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
               ),
             ),
             const SizedBox(width: AppSizes.md),
-            Text("Loading older payments...", style: text.bodyMedium),
+            Flexible(
+              child: Text(
+                context.l10n.loanLoadingOlder,
+                style: text.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       );
@@ -541,14 +564,16 @@ class _LoanPaymentsScreenState extends State<LoanPaymentsScreen> {
           Text(_loadMoreError!, textAlign: TextAlign.center),
           TextButton(
             onPressed: _retryLoadMore,
-            child: const Text('Tap to retry'),
+            child: Text(context.l10n.commonTapToRetry),
           ),
         ],
       );
     }
 
     if (!_hasMore) {
-      return Center(child: Text('No more payments', style: text.bodySmall));
+      return Center(
+        child: Text(context.l10n.loanNoMorePayments, style: text.bodySmall),
+      );
     }
 
     return const SizedBox.shrink();
@@ -592,6 +617,9 @@ class _StatCard extends StatelessWidget {
         children: [
           Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: textTheme.labelMedium?.copyWith(
               color: AppColors.darkOnSurfaceMuted,
             ),

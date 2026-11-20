@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
@@ -94,7 +96,7 @@ class ProfileMenuSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.userName ?? 'Signed out',
+                        user?.userName ?? context.l10n.menuSignedOut,
                         style: text.headlineSmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -115,7 +117,7 @@ class ProfileMenuSheet extends StatelessWidget {
                 ),
                 AppGap.w8,
                 AppChip(
-                  label: me.role.label.toUpperCase(),
+                  label: me.role.l10nLabel(context).toUpperCase(),
                   radius: AppSizes.radiusSm,
                   backgroundColor: me.isSuperAdmin
                       ? AppColors.warning.withAlpha(AppAlphas.badgeFill)
@@ -150,17 +152,17 @@ class ProfileMenuSheet extends StatelessWidget {
             _MenuTile(
               item: ProfileMenuItem(
                 icon: Icons.logout_rounded,
-                title: 'Log out',
-                subtitle: 'You will need to sign in again.',
+                title: context.l10n.menuLogOut,
+                subtitle: context.l10n.menuLogOutSub,
                 onTap: () {},
               ),
               danger: true,
               onTap: () async {
                 final ok = await DialogHelper.confirm(
                   context,
-                  title: 'Log out?',
-                  message: 'You will need to sign in again.',
-                  confirmText: 'Log out',
+                  title: context.l10n.menuLogOutConfirm,
+                  message: context.l10n.menuLogOutSub,
+                  confirmText: context.l10n.menuLogOut,
                 );
                 if (!ok || !context.mounted) return;
                 Navigator.of(context).pop();

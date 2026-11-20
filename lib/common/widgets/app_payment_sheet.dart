@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -99,7 +100,7 @@ class PaymentSheet extends StatefulWidget {
         .firstOrNull;
 
     if (track != null && track.status == 'PAID') {
-      AppSnackbar.error(context, 'Week $weekNumber is already paid in full');
+      AppSnackbar.error(context, context.l10n.payWeekAlreadyPaid(weekNumber));
       return Future.value(null);
     }
 
@@ -184,18 +185,25 @@ class _PaymentSheetState extends State<PaymentSheet> {
   };
 
   String get _statusHeadline => switch (widget.status) {
-    PaymentStatus.newPayment => _isDueToday ? 'Due today' : 'Scheduled ahead',
-    PaymentStatus.partial => 'Partial payment on file',
-    PaymentStatus.unpaid => 'Overdue — not yet collected',
+    PaymentStatus.newPayment =>
+      _isDueToday ? context.l10n.payDueToday : context.l10n.payScheduledAhead,
+    PaymentStatus.partial => context.l10n.payPartialOnFile,
+    PaymentStatus.unpaid => context.l10n.payOverdueNotCollected,
   };
 
   String get _statusDetail => switch (widget.status) {
-    PaymentStatus.newPayment =>
-      'Week ${widget.weekNumber} • ${DateFormatter.date(_dueDate)}',
-    PaymentStatus.partial =>
-      '${CurrencyFormatter.format(_remainingForWeek)} still owed for Week ${widget.weekNumber}',
-    PaymentStatus.unpaid =>
-      'Week ${widget.weekNumber} was due ${DateFormatter.date(_dueDate)}',
+    PaymentStatus.newPayment => context.l10n.payWeekDate(
+      widget.weekNumber,
+      DateFormatter.date(_dueDate),
+    ),
+    PaymentStatus.partial => context.l10n.payStillOwedForWeek(
+      CurrencyFormatter.format(_remainingForWeek),
+      widget.weekNumber,
+    ),
+    PaymentStatus.unpaid => context.l10n.payWeekWasDue(
+      widget.weekNumber,
+      DateFormatter.date(_dueDate),
+    ),
   };
 
   @override
@@ -225,7 +233,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
   Future<void> collectPayment() async {
     final amount = _amount;
     if (amount <= 0) {
-      AppSnackbar.error(context, 'Enter a valid payment amount');
+      AppSnackbar.error(context, context.l10n.payEnterValidAmount);
       return;
     }
 
@@ -283,12 +291,12 @@ class _PaymentSheetState extends State<PaymentSheet> {
                           tabs: [
                             SegmentTab(
                               value: _PaymentMethod.cash,
-                              label: "Cash",
+                              label: context.l10n.payCash,
                               icon: Icons.money_outlined,
                             ),
                             SegmentTab(
                               value: _PaymentMethod.upi,
-                              label: "UPI",
+                              label: context.l10n.payUpi,
                               icon: Icons.qr_code,
                             ),
                           ],
@@ -373,7 +381,9 @@ class _PaymentSheetState extends State<PaymentSheet> {
       children: [
         Expanded(
           child: Text(
-            'Collect Payment',
+            context.l10n.payCollectPayment,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: text.headlineMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
@@ -405,7 +415,9 @@ class _PaymentSheetState extends State<PaymentSheet> {
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                '${TextFormatter.dummyId(widget.customerId, "USR")} • Week ${widget.weekNumber} of ${widget.totalWeeks}',
+                '${TextFormatter.dummyId(widget.customerId, "USR")} • ${context.l10n.payWeekOfTotal(widget.weekNumber, widget.totalWeeks)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: text.bodySmall?.copyWith(
                   color: AppColors.darkOnSurfaceMuted,
                 ),
@@ -441,7 +453,8 @@ class _PaymentSheetState extends State<PaymentSheet> {
       child: Column(
         children: [
           Text(
-            'AMOUNT TO COLLECT',
+            context.l10n.payAmountToCollect,
+            textAlign: TextAlign.center,
             style: text.labelSmall?.copyWith(
               letterSpacing: 1.0,
               color: AppColors.darkOnSurfaceMuted,
@@ -482,7 +495,10 @@ class _PaymentSheetState extends State<PaymentSheet> {
           ),
           AppGap.h8,
           Text(
-            'Up to ${CurrencyFormatter.format(_maxCollectable)} collectable on this loan',
+            context.l10n.payUpToCollectable(
+              CurrencyFormatter.format(_maxCollectable),
+            ),
+            textAlign: TextAlign.center,
             style: text.labelSmall?.copyWith(
               color: AppColors.darkOnSurfaceMuted,
             ),
@@ -522,7 +538,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
           children: [
             Expanded(
               child: _chip(
-                'Clear Week ${widget.weekNumber}',
+                context.l10n.payClearWeek(widget.weekNumber),
                 CurrencyFormatter.format(clearWeek),
                 clearWeek,
                 text,
@@ -532,7 +548,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
             if (twoWeeksAhead > clearWeek && twoWeeksAhead < fullLoan)
               Expanded(
                 child: _chip(
-                  'Pay 2 Weeks',
+                  context.l10n.payTwoWeeks,
                   CurrencyFormatter.format(twoWeeksAhead),
                   twoWeeksAhead,
                   text,
@@ -577,7 +593,11 @@ class _PaymentSheetState extends State<PaymentSheet> {
                 AppGap.w8,
                 Expanded(
                   child: Text(
-                    'Settle full loan — ${CurrencyFormatter.format(fullLoan)}',
+                    context.l10n.paySettleFullLoan(
+                      CurrencyFormatter.format(fullLoan),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: text.labelMedium?.copyWith(
                       color: _clearsLoanEntirely
                           ? Colors.white
@@ -623,6 +643,9 @@ class _PaymentSheetState extends State<PaymentSheet> {
           children: [
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
               style: text.labelSmall?.copyWith(
                 color: selected
                     ? AppColors.darkPrimary
@@ -660,7 +683,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
       child: Column(
         children: [
           _impactRow(
-            'This week',
+            context.l10n.payThisWeek,
             _remainingForWeek,
             weekAfter,
             text,
@@ -670,7 +693,7 @@ class _PaymentSheetState extends State<PaymentSheet> {
           const Divider(height: 1),
           AppGap.h8,
           _impactRow(
-            'Entire loan',
+            context.l10n.payEntireLoan,
             widget.loanOutstandingAmount,
             loanAfter,
             text,
@@ -692,10 +715,17 @@ class _PaymentSheetState extends State<PaymentSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label.toUpperCase(),
-          style: text.labelSmall?.copyWith(color: AppColors.darkOnSurfaceMuted),
+        Flexible(
+          child: Text(
+            label.toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: text.labelSmall?.copyWith(
+              color: AppColors.darkOnSurfaceMuted,
+            ),
+          ),
         ),
+        AppGap.w8,
         Text.rich(
           TextSpan(
             children: [
@@ -712,7 +742,9 @@ class _PaymentSheetState extends State<PaymentSheet> {
                 ),
               ),
               TextSpan(
-                text: highlight ? 'Cleared ✓' : CurrencyFormatter.format(after),
+                text: highlight
+                    ? context.l10n.payCleared
+                    : CurrencyFormatter.format(after),
                 style: text.bodySmall?.copyWith(
                   color: color,
                   fontWeight: FontWeight.w700,
@@ -745,8 +777,10 @@ class _PaymentSheetState extends State<PaymentSheet> {
         width: double.infinity,
         child: AppButton(
           label: _clearsLoanEntirely
-              ? 'CONFIRM & CLOSE LOAN — ${CurrencyFormatter.format(_amount)}'
-              : 'CONFIRM & RECORD ${CurrencyFormatter.format(_amount)}',
+              ? context.l10n.payConfirmClose(CurrencyFormatter.format(_amount))
+              : context.l10n.payConfirmRecord(
+                  CurrencyFormatter.format(_amount),
+                ),
           onPressed: collectPayment,
           isLoading: _isSubmitting,
           prefixIcon: _clearsLoanEntirely

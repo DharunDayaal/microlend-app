@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_section_cards.dart';
 import 'package:micro_lending_app/common/widgets/status_chip.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
@@ -47,19 +48,21 @@ class CreditHistoryCard extends StatelessWidget {
     final ratio = cycles.isEmpty ? 0 : (onTime / cycles.length * 100).round();
 
     final (standing, standingColor) = cycles.isEmpty
-        ? ('NEW BORROWER', theme.colorScheme.onSurfaceVariant)
+        ? (context.l10n.creditNewBorrower, theme.colorScheme.onSurfaceVariant)
         : defaulted > 0
-        ? ('AT RISK', AppColors.danger)
+        ? (context.l10n.creditAtRisk, AppColors.danger)
         : ratio >= 70
-        ? ('GOOD STANDING', AppColors.success)
-        : ('FAIR', AppColors.warning);
+        ? (context.l10n.creditGoodStanding, AppColors.success)
+        : (context.l10n.creditFair, AppColors.warning);
 
     return AppSectionCard(
       icon: Icons.credit_score_outlined,
       iconColor: AppColors.success,
-      title: 'Field Credit History',
+      title: context.l10n.creditTitle,
       trailing: Text(
         standing,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: text.labelMedium?.copyWith(color: standingColor),
       ),
       child: Column(
@@ -69,27 +72,29 @@ class CreditHistoryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatBox(
-                  label: 'ON-TIME',
+                  label: context.l10n.creditOnTime,
                   value: onTime,
-                  caption: '$ratio% Ratio',
+                  caption: context.l10n.creditRatio(ratio),
                   labelColor: AppColors.success,
                 ),
               ),
               const SizedBox(width: AppSizes.sm),
               Expanded(
                 child: _StatBox(
-                  label: 'DELAYED',
+                  label: context.l10n.creditDelayed,
                   value: delayed,
-                  caption: 'Repaid late',
+                  caption: context.l10n.creditRepaidLate,
                   labelColor: AppColors.warning,
                 ),
               ),
               const SizedBox(width: AppSizes.sm),
               Expanded(
                 child: _StatBox(
-                  label: 'DEFAULT',
+                  label: context.l10n.creditDefault,
                   value: defaulted,
-                  caption: defaulted == 0 ? 'Clean Sheet' : 'Needs review',
+                  caption: defaulted == 0
+                      ? context.l10n.creditCleanSheet
+                      : context.l10n.creditNeedsReview,
                   labelColor: AppColors.danger,
                   captionColor: defaulted == 0
                       ? AppColors.success
@@ -99,12 +104,12 @@ class CreditHistoryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSizes.lg),
-          Text('COMPLETED CYCLES', style: text.labelMedium),
+          Text(context.l10n.creditCompletedCycles, style: text.labelMedium),
           const SizedBox(height: AppSizes.sm),
           if (cycles.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
-              child: Text('No completed cycles yet', style: text.bodyMedium),
+              child: Text(context.l10n.creditNoCycles, style: text.bodyMedium),
             )
           else
             for (final c in cycles) ...[
@@ -144,7 +149,13 @@ class _StatBox extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: text.labelMedium?.copyWith(color: labelColor)),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: text.labelMedium?.copyWith(color: labelColor),
+          ),
           Text('$value', style: text.headlineLarge),
           Text(
             caption,
@@ -169,25 +180,25 @@ class _CycleRow extends StatelessWidget {
       CycleOutcome.paid => (
         Icons.check_circle_outline,
         AppColors.success,
-        'PAID',
+        context.l10n.statusPaid,
         ChipType.paid,
       ),
       CycleOutcome.delayed => (
         Icons.schedule,
         AppColors.warning,
-        'DELAY REPAID',
+        context.l10n.creditDelayRepaid,
         ChipType.pending,
       ),
       CycleOutcome.defaulted => (
         Icons.cancel_outlined,
         AppColors.danger,
-        'DEFAULT',
+        context.l10n.creditDefault,
         ChipType.overdue,
       ),
       CycleOutcome.closed => (
         Icons.lock_outline,
         AppColors.darkHint,
-        'CLOSED',
+        context.l10n.statusClosed,
         ChipType.neutral,
       ),
     };
@@ -204,14 +215,23 @@ class _CycleRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Cycle #${cycle.cycleNo} • ${TextFormatter.dummyId(cycle.loanId, "#LN")}',
+                    context.l10n.creditCycleLine(
+                      cycle.cycleNo,
+                      TextFormatter.dummyId(cycle.loanId, "#LN"),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: text.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   Text(
-                    'Closed ${DateFormatter.date(cycle.closedAt)} • '
-                    '${CurrencyFormatter.format(cycle.amount)}',
+                    context.l10n.creditClosedLine(
+                      DateFormatter.date(cycle.closedAt),
+                      CurrencyFormatter.format(cycle.amount),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: text.labelMedium,
                   ),
                 ],

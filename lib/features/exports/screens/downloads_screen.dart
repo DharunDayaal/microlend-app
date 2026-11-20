@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
@@ -39,7 +41,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     } on ApiException catch (e) {
       if (mounted) AppSnackbar.error(context, e.message);
     } catch (_) {
-      if (mounted) AppSnackbar.error(context, 'Could not open the file.');
+      if (mounted) AppSnackbar.error(context, context.l10n.expCouldNotOpen);
     }
   }
 
@@ -56,8 +58,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         AppSnackbar.info(
           context,
           c.alreadyRunning
-              ? 'That export is already in progress.'
-              : 'Export started.',
+              ? context.l10n.expAlreadyInProgress
+              : context.l10n.expStarted,
         );
       }
     } on ApiException catch (e) {
@@ -73,7 +75,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           icon: Icons.arrow_back_ios,
           onPressed: () => Navigator.of(context).maybePop(),
         ),
-        title: const Text('Downloads'),
+        title: Text(context.l10n.menuDownloads),
       ),
       body: SafeArea(
         child: ListenableBuilder(listenable: _t, builder: (_, _) => _body()),
@@ -115,10 +117,10 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         child: ListView(
           physics: physics,
           padding: pad,
-          children: const [
+          children: [
             EmptyView(
               icon: Icons.download_done_rounded,
-              message: 'No downloads yet. Reports you export appear here for 24 hours.',
+              message: context.l10n.expNoDownloads,
             ),
           ],
         ),
@@ -148,14 +150,15 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
   }
 }
 
-(String, Color) _look(ExportJob j) {
-  if (j.isExpired) return ('EXPIRED', AppColors.darkOnSurfaceMuted);
+(String, Color) _look(BuildContext context, ExportJob j) {
+  final l = context.l10n;
+  if (j.isExpired) return (l.expExpired, AppColors.darkOnSurfaceMuted);
   return switch (j.status) {
-    ExportStatus.queued => ('QUEUED', AppColors.warning),
-    ExportStatus.running => ('BUILDING', AppColors.stepCurrentLabel),
-    ExportStatus.done => ('READY', AppColors.success),
-    ExportStatus.failed => ('FAILED', AppColors.progressDanger),
-    ExportStatus.expired => ('EXPIRED', AppColors.darkOnSurfaceMuted),
+    ExportStatus.queued => (l.expQueued, AppColors.warning),
+    ExportStatus.running => (l.expBuilding, AppColors.stepCurrentLabel),
+    ExportStatus.done => (l.expReady, AppColors.success),
+    ExportStatus.failed => (l.expFailed, AppColors.progressDanger),
+    ExportStatus.expired => (l.expExpired, AppColors.darkOnSurfaceMuted),
   };
 }
 
@@ -188,7 +191,7 @@ class _JobTile extends StatelessWidget {
     final muted = text.labelMedium?.copyWith(
       color: AppColors.darkOnSurfaceMuted,
     );
-    final (label, color) = _look(job);
+    final (label, color) = _look(context, job);
     final fc = _formatColor(job.format);
 
     return ProfileFrame(
@@ -212,7 +215,7 @@ class _JobTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      job.title,
+                      job.l10nTitle(context),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: text.bodyLarge?.copyWith(
@@ -254,8 +257,11 @@ class _JobTile extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               job.totalRows == null
-                  ? 'Preparing...'
-                  : '${job.processedRows} of ${job.totalRows} rows',
+                  ? context.l10n.expPreparing
+                  : context.l10n.expRowsProgress(
+                      job.processedRows,
+                      job.totalRows!,
+                    ),
               style: muted,
             ),
           ],
@@ -285,16 +291,23 @@ class _JobTile extends StatelessWidget {
                   TextButton.icon(
                     onPressed: onOpen,
                     icon: const Icon(Icons.open_in_new_rounded, size: 18),
-                    label: const Text('Open'),
+                    label: Text(context.l10n.expOpen),
                   ),
                   TextButton.icon(
                     onPressed: onShare,
                     icon: const Icon(Icons.ios_share_rounded, size: 18),
-                    label: const Text('Share'),
+                    label: Text(context.l10n.expShare),
                   ),
                   const Spacer(),
                   if (job.expiresAt != null)
-                    Text('Until ${istTime(job.expiresAt!)}', style: muted),
+                    Flexible(
+                      child: Text(
+                        context.l10n.expUntil(istTime(job.expiresAt!)),
+                        style: muted,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                 ],
               ),
           ],
@@ -305,7 +318,7 @@ class _JobTile extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: onAgain,
                 icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Create again'),
+                label: Text(context.l10n.expCreateAgain),
               ),
             ),
         ],

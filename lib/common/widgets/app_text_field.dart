@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 import 'package:micro_lending_app/utils/constants/sizes.dart';
@@ -138,14 +139,18 @@ class _AppTextFieldState extends State<AppTextField> {
                   ),
                   AppGap.w8,
                 ],
-                Text(
-                  TextFormatter.titleCase(widget.label),
-                  style: text.labelLarge,
+                Flexible(
+                  child: Text(
+                    TextFormatter.titleCase(widget.label),
+                    style: text.labelLarge,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 if (widget.isRequired != null && widget.isRequired!) ...[
                   const Spacer(),
                   Text(
-                    "*Required",
+                    context.l10n.commonRequired,
                     style: text.labelMedium?.copyWith(
                       color: AppColors.progressWarning,
                       fontWeight: FontWeight.normal,

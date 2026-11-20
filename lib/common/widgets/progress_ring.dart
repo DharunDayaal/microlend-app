@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/utils/constants/colors.dart';
 
 /// A ring that fills to [value] (0 to 1) with the percentage in the centre.
@@ -22,7 +23,7 @@ class ProgressRing extends StatelessWidget {
     final instant = MediaQuery.disableAnimationsOf(context);
 
     return Semantics(
-      label: '${(v * 100).round()} percent collected',
+      label: context.l10n.ringPercentCollected((v * 100).round()),
       child: TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: v),
         duration: instant ? Duration.zero : const Duration(milliseconds: 700),

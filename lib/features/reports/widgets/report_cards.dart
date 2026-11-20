@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
 import 'package:micro_lending_app/data/models/report_model.dart';
@@ -17,7 +18,7 @@ TextStyle? _hero(BuildContext c) => Theme.of(c).textTheme.headlineMedium
     );
 
 Widget _asOf(BuildContext c) => Text(
-  'As of today',
+  c.l10n.repAsOfToday,
   style: Theme.of(c).textTheme.labelSmall
       ?.copyWith(color: AppColors.darkOnSurfaceMuted),
 );
@@ -69,30 +70,31 @@ class CashOutstandingCard extends StatelessWidget {
 
     return AsyncCard<CashOutstanding>(
       cacheKey: 'rep-cash|$tick',
-      title: 'Cash outstanding',
+      title: context.l10n.repCashOutstanding,
       skeletonHeight: 200,
       load: ReportsService.cashOutstanding,
       builder: (context, d) {
         if (d.activeLoans == 0 && d.payable == 0) {
-          return const AnalyticsFrame(
-            title: 'Cash outstanding',
-            child: EmptyNote('No loans in the book yet.'),
+          return AnalyticsFrame(
+            title: context.l10n.repCashOutstanding,
+            child: EmptyNote(context.l10n.repNoLoansInBook),
           );
         }
         final pct = (d.collectedShare * 100).round();
 
         return AnalyticsFrame(
-          title: 'Cash outstanding',
+          title: context.l10n.repCashOutstanding,
           trailing: _asOf(context),
           child: Semantics(
-            label:
-                'Outstanding receivable ${CurrencyFormatter.format(d.outstanding)}, '
-                '$pct percent of the payable amount collected',
+            label: context.l10n.repOutstandingSemantics(
+              CurrencyFormatter.format(d.outstanding),
+              pct,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Outstanding receivable',
+                  context.l10n.repOutstandingReceivable,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -119,7 +121,7 @@ class CashOutstandingCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '$pct% of payable collected',
+                  context.l10n.repPayableCollected(pct),
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -127,14 +129,14 @@ class CashOutstandingCard extends StatelessWidget {
                 AppGap.h12,
                 Row(
                   children: [
-                    _Stat('Disbursed', d.disbursed),
-                    _Stat('Payable', d.payable),
-                    _Stat('Collected', d.collected),
+                    _Stat(context.l10n.repDisbursed, d.disbursed),
+                    _Stat(context.l10n.repPayable, d.payable),
+                    _Stat(context.l10n.repCollected, d.collected),
                   ],
                 ),
                 AppGap.h12,
                 Text(
-                  '${d.activeLoans} loans in the book',
+                  context.l10n.repLoansInBook(d.activeLoans),
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -160,26 +162,28 @@ class ReportEarningsCard extends StatelessWidget {
 
     return AsyncCard<EarningsReport>(
       cacheKey: 'rep-earn|$tick',
-      title: 'Earnings',
+      title: context.l10n.anEarnings,
       skeletonHeight: 150,
       load: ReportsService.earnings,
       builder: (context, d) {
         if (d.total == 0 && d.expected == 0) {
-          return const AnalyticsFrame(
-            title: 'Earnings',
-            child: EmptyNote('Earnings appear once loans are issued.'),
+          return AnalyticsFrame(
+            title: context.l10n.anEarnings,
+            child: EmptyNote(context.l10n.repEarningsEmpty),
           );
         }
         return AnalyticsFrame(
-          title: 'Earnings',
+          title: context.l10n.anEarnings,
           trailing: _asOf(context),
           child: Semantics(
-            label: 'Total earned ${CurrencyFormatter.format(d.total)}',
+            label: context.l10n.repTotalEarnedSemantics(
+              CurrencyFormatter.format(d.total),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Total earned',
+                  context.l10n.repTotalEarned,
                   style: text.labelMedium?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -197,15 +201,14 @@ class ReportEarningsCard extends StatelessWidget {
                 AppGap.h12,
                 Row(
                   children: [
-                    _Stat('Fees', d.fees),
-                    _Stat('Interest', d.interest),
-                    _Stat('Expected interest', d.expected),
+                    _Stat(context.l10n.anFees, d.fees),
+                    _Stat(context.l10n.anInterest, d.interest),
+                    _Stat(context.l10n.repExpectedInterest, d.expected),
                   ],
                 ),
                 AppGap.h8,
                 Text(
-                  'Interest counts only what was collected above the principal, '
-                  'so it trails the expected figure until loans are repaid.',
+                  context.l10n.repInterestNote,
                   style: text.labelSmall?.copyWith(
                     color: AppColors.darkOnSurfaceMuted,
                   ),
@@ -235,9 +238,11 @@ class _OverdueTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label:
-          '${r.customerName}, ${CurrencyFormatter.format(r.outstanding)} outstanding, '
-          '${r.daysPastDue} days late',
+      label: context.l10n.repOverdueSemantics(
+        r.customerName,
+        CurrencyFormatter.format(r.outstanding),
+        r.daysPastDue,
+      ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -262,7 +267,11 @@ class _OverdueTile extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${CurrencyFormatter.format(r.outstanding)} outstanding',
+                          context.l10n.repAmountOutstanding(
+                            CurrencyFormatter.format(r.outstanding),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: text.labelMedium?.copyWith(
                             color: AppColors.darkOnSurfaceMuted,
                           ),
@@ -280,7 +289,7 @@ class _OverdueTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                     ),
                     child: Text(
-                      '${r.daysPastDue} days late',
+                      context.l10n.daysLate(r.daysPastDue),
                       style: text.labelSmall?.copyWith(
                         color: color,
                         fontWeight: FontWeight.w600,
@@ -309,25 +318,25 @@ class OverdueCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AsyncCard<OverduePage>(
       cacheKey: 'rep-overdue|$tick',
-      title: 'Overdue loans',
+      title: context.l10n.repOverdueLoans,
       skeletonHeight: 240,
       load: () => ReportsService.overdue(page: 1, limit: 20),
       builder: (context, p) {
         if (p.rows.isEmpty) {
-          return const AnalyticsFrame(
-            title: 'Overdue loans',
-            child: EmptyNote('No overdue loans. Everything is on schedule.'),
+          return AnalyticsFrame(
+            title: context.l10n.repOverdueLoans,
+            child: EmptyNote(context.l10n.repNoOverdue),
           );
         }
         final shown = p.rows.take(5).toList();
         final more = p.hasNext || p.rows.length > shown.length;
 
         return AnalyticsFrame(
-          title: 'Overdue loans',
+          title: context.l10n.repOverdueLoans,
           trailing: more
               ? TextButton(
                   onPressed: () => showOverdueSheet(context),
-                  child: const Text('See all'),
+                  child: Text(context.l10n.repSeeAll),
                 )
               : _asOf(context),
           child: Column(
@@ -437,7 +446,10 @@ class _OverdueSheetState extends State<_OverdueSheet> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text('Overdue loans', style: text.headlineSmall),
+                  child: Text(
+                    context.l10n.repOverdueLoans,
+                    style: text.headlineSmall,
+                  ),
                 ),
                 _asOf(context),
               ],
@@ -471,13 +483,13 @@ class _OverdueSheetState extends State<_OverdueSheet> {
                         Text(_error!),
                         TextButton(
                           onPressed: _load,
-                          child: const Text('Retry'),
+                          child: Text(context.l10n.commonRetry),
                         ),
                       ],
                     ),
                   )
                 : first
-                ? const Center(child: Text('No overdue loans.'))
+                ? Center(child: Text(context.l10n.repNoOverdueShort))
                 : ListView.builder(
                     controller: _scroll,
                     padding: const EdgeInsets.fromLTRB(
@@ -501,7 +513,7 @@ class _OverdueSheetState extends State<_OverdueSheet> {
                             Expanded(child: Text(_error!)),
                             TextButton(
                               onPressed: _load,
-                              child: const Text('Retry'),
+                              child: Text(context.l10n.commonRetry),
                             ),
                           ],
                         );

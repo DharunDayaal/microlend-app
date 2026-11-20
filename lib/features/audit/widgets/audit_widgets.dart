@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_skeleton.dart';
 import 'package:micro_lending_app/data/models/audit_model.dart';
@@ -34,7 +35,7 @@ class ModuleChipRow extends StatelessWidget {
         padding: padding,
         children: [
           _ModChip(
-            label: 'All',
+            label: context.l10n.auditAll,
             icon: Icons.apps_rounded,
             color: AppColors.stepCurrentLabel,
             selected: selected == null,
@@ -77,7 +78,7 @@ class _ModChip extends StatelessWidget {
         child: Semantics(
           button: true,
           selected: selected,
-          label: '$label module',
+          label: context.l10n.auditModuleSemantics(label),
           child: Material(
             color: selected ? color.withAlpha(46) : AppColors.darkSurface,
             shape: StadiumBorder(
@@ -165,7 +166,7 @@ class AuditRow extends StatelessWidget {
       button: true,
       label:
           '${m.label}. ${actionLabel(log.action)}. '
-          '${attention ? 'Needs attention. ' : ''}${istTime(log.createdAt)}. '
+          '${attention ? context.l10n.auditNeedsAttention : ''}${istTime(log.createdAt)}. '
           '${actorText(log)}. ${subjectText(log)}',
       child: Material(
         color: AppColors.darkSurface,
@@ -420,7 +421,8 @@ class DiffView extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     return Semantics(
-      label: '${removed ? 'Before' : 'After'}: ${f.text}',
+      label:
+          '${removed ? context.l10n.auditBefore : context.l10n.auditAfter}: ${f.text}',
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -454,7 +456,7 @@ class DiffView extends StatelessWidget {
             if (f.isLong)
               TextButton(
                 onPressed: () => showValueSheet(context, r.label, f.raw),
-                child: const Text('View'),
+                child: Text(context.l10n.auditView),
               ),
           ],
         ),
@@ -480,7 +482,7 @@ class DiffView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'BEFORE',
+                        context.l10n.auditBeforeUpper,
                         style: text.labelSmall?.copyWith(
                           color: AppColors.progressDanger,
                           letterSpacing: 0.8,
@@ -490,7 +492,7 @@ class DiffView extends StatelessWidget {
                     const SizedBox(width: AppSizes.sm),
                     Expanded(
                       child: Text(
-                        'AFTER',
+                        context.l10n.auditAfterUpper,
                         style: text.labelSmall?.copyWith(
                           color: AppColors.success,
                           letterSpacing: 0.8,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/common/styles/spacing_style.dart';
 import 'package:micro_lending_app/common/widgets/app_button.dart';
 import 'package:micro_lending_app/common/widgets/app_icon_button.dart';
@@ -116,7 +118,7 @@ class _BorrowerScreenState extends State<BorrowerScreen> {
         stack: st,
       );
       if (mounted && id == _requestId) {
-        setState(() => _listError = 'Something went wrong. Please try again.');
+        setState(() => _listError = context.l10n.commonSomethingWrong);
       }
     } finally {
       if (mounted && id == _requestId) {
@@ -207,25 +209,25 @@ class _BorrowerScreenState extends State<BorrowerScreen> {
       children: [
         Expanded(
           child: _StatCard(
-            title: 'Total',
+            title: context.l10n.borrowersTotal,
             icon: Icons.group,
             value: '${_summary?.totalCustomers ?? 0}',
           ),
         ),
         Expanded(
           child: _StatCard(
-            title: 'Active',
+            title: context.l10n.borrowersActive,
             icon: Icons.verified_outlined,
             value: '${_summary?.totalActiveLoans ?? 0}',
-            subText: 'dues',
+            subText: context.l10n.borrowersDues,
           ),
         ),
         Expanded(
           child: _StatCard(
-            title: 'Referrals',
+            title: context.l10n.borrowersReferrals,
             icon: Icons.hub_outlined,
             value: '${_summary?.totalReferredCustomers ?? 0}',
-            subText: 'net',
+            subText: context.l10n.borrowersNet,
           ),
         ),
       ],
@@ -265,10 +267,10 @@ class _BorrowerScreenState extends State<BorrowerScreen> {
       return ListView(
         physics: physics,
         padding: padding,
-        children: const [
+        children: [
           EmptyView(
             icon: Icons.receipt_long_outlined,
-            message: 'No loans found',
+            message: context.l10n.loansNoneFound,
           ),
         ],
       );
@@ -330,7 +332,7 @@ class _BorrowerScreenState extends State<BorrowerScreen> {
           Text(_loadMoreError!, textAlign: TextAlign.center),
           TextButton(
             onPressed: _retryLoadMore,
-            child: const Text('Tap to retry'),
+            child: Text(context.l10n.commonTapToRetry),
           ),
         ],
       );
@@ -339,7 +341,7 @@ class _BorrowerScreenState extends State<BorrowerScreen> {
     if (!_hasNext) {
       return Center(
         child: Text(
-          'No more loans',
+          context.l10n.loansNoMore,
           style: Theme.of(context).textTheme.bodySmall,
         ),
       );
@@ -481,9 +483,15 @@ class BorrowerTile extends StatelessWidget {
 
     final (stateLabel, stateColor) = switch (borrowerLoan.status
         .toLowerCase()) {
-      'active' => ('Active Loan', AppColors.stepCurrentLabel),
-      'overdue' => ('Overdue Loan', AppColors.progressDanger),
-      _ => ('No Active Loans', AppColors.success),
+      'active' => (
+        context.l10n.borrowersActiveLoan,
+        AppColors.stepCurrentLabel,
+      ),
+      'overdue' => (
+        context.l10n.borrowersOverdueLoan,
+        AppColors.progressDanger,
+      ),
+      _ => (context.l10n.borrowersNoActiveLoans, AppColors.success),
     };
 
     return Card(
@@ -572,15 +580,20 @@ class BorrowerTile extends StatelessWidget {
               AppGap.h8,
               Row(
                 children: [
-                  _IconTag(
-                    icon: Icons.calendar_month_outlined,
-                    label:
-                        '${TextFormatter.enumLabel(borrowerLoan.preferredPaymentDay)} Batch',
-                    color: AppColors.darkOnSurface,
-                    background: AppColors.darkBorder,
+                  Flexible(
+                    child: _IconTag(
+                      icon: Icons.calendar_month_outlined,
+                      label: context.l10n.custDayBatch(
+                        weekdayLabel(context, borrowerLoan.preferredPaymentDay),
+                      ),
+                      color: AppColors.darkOnSurface,
+                      background: AppColors.darkBorder,
+                    ),
                   ),
                   AppGap.w8,
-                  _DotTag(label: stateLabel, color: stateColor),
+                  Flexible(
+                    child: _DotTag(label: stateLabel, color: stateColor),
+                  ),
                 ],
               ),
               AppGap.h12,
@@ -588,7 +601,7 @@ class BorrowerTile extends StatelessWidget {
                 children: [
                   Expanded(
                     child: AppButton(
-                      label: "View Tracks",
+                      label: context.l10n.facilityViewTracks,
                       onPressed: () => TracksModal.show(
                         context,
                         customerId: borrowerLoan.customerId,
@@ -611,7 +624,7 @@ class BorrowerTile extends StatelessWidget {
                   AppGap.w12,
                   Expanded(
                     child: AppButton(
-                      label: "Collect payment",
+                      label: context.l10n.borrowersCollectPayment,
                       onPressed: () async {
                         final payment = await PaymentSheet.show(
                           context,
@@ -671,10 +684,14 @@ class _IconTag extends StatelessWidget {
         children: [
           Icon(icon, size: AppSizes.iconSm, color: AppColors.warning),
           const SizedBox(width: AppSizes.xs + 2),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium
-                ?.copyWith(color: color),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium
+                  ?.copyWith(color: color),
+            ),
           ),
         ],
       ),
@@ -708,10 +725,14 @@ class _DotTag extends StatelessWidget {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: AppSizes.xs + 2),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium
-                ?.copyWith(color: color),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium
+                  ?.copyWith(color: color),
+            ),
           ),
         ],
       ),

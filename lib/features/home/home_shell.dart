@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/common/widgets/app_name_card.dart';
 import 'package:micro_lending_app/data/models/export_model.dart';
 import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
 import 'package:micro_lending_app/features/home/widgets/profile_menu_sheet.dart';
 import 'package:micro_lending_app/data/models/user_role_model.dart';
 import 'package:micro_lending_app/data/services/auth_service.dart';
-import 'package:micro_lending_app/l10n/app_localizations.dart';
 import 'package:micro_lending_app/l10n/language_sheet.dart';
 import 'package:micro_lending_app/routes/app_routes.dart';
 import 'package:micro_lending_app/utils/constants/assets.dart';
@@ -39,6 +39,12 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
+  /// Tab titles, in the same order as _tabs.
+  List<String> _tabLabels() {
+    final l = context.l10n;
+    return [l.tabField, l.tabLoans, l.tabBorrowers, l.tabReports];
+  }
+
   static const _tabs = [
     _Tab('Field', Icons.fact_check_outlined, Icons.fact_check),
     _Tab('Loans', Icons.account_balance_outlined, Icons.account_balance),
@@ -98,30 +104,30 @@ class _HomeShellState extends State<HomeShell> {
       items: [
         ProfileMenuItem(
           icon: Icons.person_outline,
-          title: 'My profile',
-          subtitle: 'Name, phone, email and loan defaults',
+          title: context.l10n.menuMyProfile,
+          subtitle: context.l10n.menuMyProfileSub,
           onTap: () {
             context.push(AppRoutes.profile);
           },
         ),
         ProfileMenuItem(
           icon: Icons.translate_rounded,
-          title: AppLocalizations.of(context).languageTitle,
-          subtitle: AppLocalizations.of(context).languageSubtitle,
+          title: context.l10n.languageTitle,
+          subtitle: context.l10n.languageSubtitle,
           onTap: () => showLanguageSheet(context),
         ),
         ProfileMenuItem(
           icon: Icons.person_add_alt_1_outlined,
-          title: 'Add borrower',
-          subtitle: 'Register a new customer',
+          title: context.l10n.menuAddBorrower,
+          subtitle: context.l10n.menuAddBorrowerSub,
           onTap: () {
             context.push(AppRoutes.addCustomer);
           },
         ),
         ProfileMenuItem(
           icon: Icons.manage_accounts_outlined,
-          title: 'Manage users',
-          subtitle: 'Add team members and set roles',
+          title: context.l10n.menuManageUsers,
+          subtitle: context.l10n.menuManageUsersSub,
           minimum: UserRole.admin,
           onTap: () {
             context.push(AppRoutes.manageUsers);
@@ -129,8 +135,8 @@ class _HomeShellState extends State<HomeShell> {
         ),
         ProfileMenuItem(
           icon: Icons.insights_outlined,
-          title: 'Advanced analytics',
-          subtitle: 'Recovery, overdue trends and collections',
+          title: context.l10n.menuAnalytics,
+          subtitle: context.l10n.menuAnalyticsSub,
           minimum: UserRole.admin,
           onTap: () {
             context.push(AppRoutes.analytics);
@@ -138,8 +144,8 @@ class _HomeShellState extends State<HomeShell> {
         ),
         ProfileMenuItem(
           icon: Icons.admin_panel_settings_outlined,
-          title: 'All admins',
-          subtitle: 'Approve and manage admin accounts',
+          title: context.l10n.menuAllAdmins,
+          subtitle: context.l10n.menuAllAdminsSub,
           minimum: UserRole.superAdmin,
           onTap: () {
             context.push(AppRoutes.manageAdmins);
@@ -147,15 +153,15 @@ class _HomeShellState extends State<HomeShell> {
         ),
         ProfileMenuItem(
           icon: Icons.history_rounded,
-          title: 'Audit log',
-          subtitle: 'Who changed what, and when',
+          title: context.l10n.menuAuditLog,
+          subtitle: context.l10n.menuAuditLogSub,
           minimum: UserRole.admin,
           onTap: () => context.push(AppRoutes.audit),
         ),
         ProfileMenuItem(
           icon: Icons.download_done_rounded,
-          title: 'Downloads',
-          subtitle: 'Sheets and reports you have exported',
+          title: context.l10n.menuDownloads,
+          subtitle: context.l10n.menuDownloadsSub,
           onTap: () => context.push(AppRoutes.downloads),
         ),
       ],
@@ -173,7 +179,9 @@ class _HomeShellState extends State<HomeShell> {
         if (!me.isSignedIn) return const Scaffold();
 
         final index = widget.shell.currentIndex;
-        final tab = _tabs[index.clamp(0, _tabs.length - 1)];
+        final tabIndex = index.clamp(0, _tabs.length - 1);
+        final tab = _tabs[tabIndex];
+        final labels = _tabLabels();
 
         if (!me.hasRole(tab.minimum)) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -189,7 +197,7 @@ class _HomeShellState extends State<HomeShell> {
 
         return Scaffold(
           appBar: _ShellAppBar(
-            title: tab.label,
+            title: labels[tabIndex],
             onProfileTap: _openMenu,
             actions: [
               ExportMenuButton(
@@ -222,7 +230,7 @@ class _HomeShellState extends State<HomeShell> {
                       destinations: [
                         for (final i in visible)
                           NavigationDestination(
-                            label: _tabs[i].label,
+                            label: labels[i],
                             icon: Icon(_tabs[i].icon),
                             selectedIcon: Icon(_tabs[i].selectedIcon),
                           ),
@@ -252,11 +260,12 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(_height);
 
-  String _greeting() {
+  String _greeting(BuildContext context) {
     final h = DateTime.now().hour;
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
+    final l = context.l10n;
+    if (h < 12) return l.greetMorning;
+    if (h < 17) return l.greetAfternoon;
+    return l.greetEvening;
   }
 
   @override
@@ -266,7 +275,9 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final firstName = (user?.userName ?? '').trim().split(RegExp(r'\s+')).first;
     final eyebrow =
-        (firstName.isEmpty ? 'Thavani' : '${_greeting()}, $firstName')
+        (firstName.isEmpty
+                ? context.l10n.appName
+                : '${_greeting(context)}, $firstName')
             .toUpperCase();
 
     return AppBar(
@@ -385,7 +396,7 @@ class _RingAvatar extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: 'Open profile menu',
+      label: context.l10n.menuOpenProfile,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
