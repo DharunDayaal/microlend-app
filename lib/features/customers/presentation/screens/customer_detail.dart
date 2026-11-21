@@ -1,0 +1,533 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
+import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
+import 'package:micro_lending_app/shared/widgets/app_button.dart';
+import 'package:micro_lending_app/shared/widgets/app_icon_button.dart';
+import 'package:micro_lending_app/shared/widgets/app_name_card.dart';
+import 'package:micro_lending_app/shared/widgets/app_skeleton.dart';
+import 'package:micro_lending_app/features/customers/domain/entities/customer.dart';
+import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
+import 'package:micro_lending_app/shared/session/models/user_role.dart';
+import 'package:micro_lending_app/features/customers/presentation/controllers/customer_detail_controller.dart';
+import 'package:micro_lending_app/app/router/app_routes.dart';
+import 'package:micro_lending_app/shared/design_system/constants/alphas.dart';
+import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
+import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
+import 'package:micro_lending_app/core/device/launcher_utils.dart';
+import 'package:micro_lending_app/core/utils/formatters/date_formatter.dart';
+import 'package:micro_lending_app/core/utils/formatters/text_formatter.dart';
+import 'package:micro_lending_app/shared/helpers/snackbar_helper.dart';
+import 'package:micro_lending_app/features/customers/presentation/widgets/active_facility_card.dart';
+import 'package:micro_lending_app/features/customers/presentation/widgets/address_card.dart';
+import 'package:micro_lending_app/features/customers/presentation/widgets/credit_history_card.dart';
+import 'package:micro_lending_app/features/customers/presentation/widgets/issue_loan_bar.dart';
+import 'package:micro_lending_app/features/customers/presentation/widgets/social_network_card.dart';
+import 'package:micro_lending_app/shared/session/session_controller.dart';
+
+class CustomerDetailScreen extends ConsumerStatefulWidget {
+  final String customerId;
+  const CustomerDetailScreen({super.key, required this.customerId});
+
+  @override
+  ConsumerState<CustomerDetailScreen> createState() =>
+      _CustomerDetailScreenState();
+}
+
+class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
+  // ---------- state lives in CustomerDetailController ----------
+
+  CustomerDetailState get _s =>
+      ref.read(customerDetailProvider(widget.customerId));
+
+  CustomerDetails? get _customerDetails => _s.details;
+  List<LoanItem> get _customerLoans => _s.loans;
+  LoanModel? get _activeOrOverdueLoanDetails => _s.openLoan;
+  List<ReferralItem> get _customerReferrals => _s.referrals;
+  bool get _isLoading => _s.isLoading;
+  bool get _hasOpenLoan => _s.hasOpenLoan;
+
+  @override
+  void initState() {
+    super.initState();
+    // After the first frame, so build() has subscribed to the provider.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDatas());
+  }
+
+  Future<void> _loadDatas() => ref
+      .read(customerDetailProvider(widget.customerId).notifier)
+      .load(
+        onError: (message) {
+          if (mounted) AppSnackbar.error(context, message);
+        },
+      );
+
+  /// Finished loans, newest first. Cycle numbers count from the first loan ever.
+  List<CycleSummary> get _completedCycles {
+    final all = [..._customerLoans]
+      ..sort((a, b) => a.issuedAt.compareTo(b.issuedAt)); // field assumed
+
+    final cycles = <CycleSummary>[];
+    for (var i = 0; i < all.length; i++) {
+      final l = all[i];
+      final s = l.status.toUpperCase();
+      if (s == 'ACTIVE' || s == 'OVERDUE') continue;
+
+      cycles.add(
+        CycleSummary(
+          cycleNo: i + 1,
+          loanId: l.id,
+          amount: l.nominalAmount.toDouble(), // field assumed
+          closedAt: l.closedAt, // field assumed
+          outcome: switch (s) {
+            'PAID_OFF' =>
+              CycleOutcome.paid, // needs a backend flag to be "delayed"
+            'DEFAULTED' => CycleOutcome.defaulted,
+            _ => CycleOutcome.closed,
+          },
+        ),
+      );
+    }
+    return cycles.reversed.toList();
+  }
+
+  Future<void> _issueLoan() async {
+    final issued = await context.push(AppRoutes.issueLoan(widget.customerId));
+    if (issued == true && mounted) _loadDatas();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(customerDetailProvider(widget.customerId));
+    final textTheme = Theme.of(context).textTheme;
+    final loan = _activeOrOverdueLoanDetails;
+    return Scaffold(
+      appBar: AppBar(
+        leading: AppIconButton(
+          icon: Icons.arrow_back_ios,
+          onPressed: () => context.pop(),
+        ),
+        title: Text(context.l10n.commonBack, style: textTheme.bodyLarge),
+        titleSpacing: 2,
+        actions: [
+          if (ref.watch(sessionProvider).hasRole(UserRole.admin) &&
+              _customerDetails != null)
+            IconButton(
+              tooltip: context.l10n.commonHistory,
+              icon: const Icon(Icons.history_rounded),
+              onPressed: () => context.push(
+                AppRoutes.auditFor(
+                  entityType: 'CUSTOMER',
+                  entityId: widget.customerId,
+                  label: _customerDetails!.customerName,
+                ),
+              ),
+            ),
+        ],
+      ),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: ((context, constraints) {
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.all(AppSizes.lg),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _WidgetContainer(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _isLoading
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const AppShimmer(
+                                      child: SkeletonBox(
+                                        width: 45,
+                                        height: 45,
+                                        radius: AppSizes.radiusMd,
+                                      ),
+                                    ),
+                                    AppGap.w16,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const AppShimmer(
+                                            child: SkeletonBox(
+                                              width: 140,
+                                              height: 24,
+                                            ),
+                                          ),
+                                          AppGap.h8,
+                                          const AppShimmer(
+                                            child: SkeletonBox(
+                                              width: 190,
+                                              height: 16,
+                                            ),
+                                          ),
+                                          AppGap.h8,
+                                          Row(
+                                            spacing: AppSizes.sm,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: const [
+                                              AppShimmer(
+                                                child: SkeletonBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                ),
+                                              ),
+                                              AppShimmer(
+                                                child: SkeletonBox(
+                                                  width: 100,
+                                                  height: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    AppNameCard(
+                                      width: 54,
+                                      height: 54,
+                                      textColor: AppColors.stepCurrentLabel,
+                                      name:
+                                          _customerDetails?.customerName ?? '',
+                                    ),
+                                    AppGap.w16,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            TextFormatter.titleCase(
+                                              _customerDetails?.customerName ??
+                                                  '',
+                                            ),
+                                            style: textTheme.headlineMedium,
+                                          ),
+                                          Text.rich(
+                                            TextSpan(
+                                              style: textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                    color: AppColors
+                                                        .stepCurrentLabel,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      "#${TextFormatter.dummyId(_customerDetails?.id ?? '', "USR")} ",
+                                                ),
+                                                TextSpan(
+                                                  style: textTheme.labelLarge,
+                                                  text: context.l10n.custRegOn(
+                                                    DateFormatter.dateTime(
+                                                      _customerDetails
+                                                          ?.createdAt,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          if (_customerDetails
+                                                  ?.creditHistory
+                                                  .totalLoans !=
+                                              0) ...[
+                                            AppGap.h4,
+                                            Row(
+                                              spacing: AppSizes.sm,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.stars_outlined,
+                                                  color: AppColors.warning,
+                                                  size: 20,
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    context.l10n
+                                                        .custCycleEligible(
+                                                          _customerDetails
+                                                                  ?.creditHistory
+                                                                  .totalLoans
+                                                                  .toString() ??
+                                                              '0',
+                                                        ),
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: textTheme.labelMedium
+                                                        ?.copyWith(
+                                                          color:
+                                                              AppColors.warning,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                          AppGap.h16,
+                          _isLoading
+                              ? _WidgetContainer(
+                                  bgColor: AppColors.darkBackground.withAlpha(
+                                    AppAlphas.badgeFill,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const AppShimmer(
+                                        child: SkeletonBox(
+                                          width: 40,
+                                          height: 40,
+                                          radius: AppSizes.radiusMd,
+                                        ),
+                                      ),
+                                      AppGap.w16,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const AppShimmer(
+                                              child: SkeletonBox(
+                                                width: 110,
+                                                height: 16,
+                                              ),
+                                            ),
+                                            AppGap.h8,
+                                            const AppShimmer(
+                                              child: SkeletonBox(
+                                                width: 90,
+                                                height: 14,
+                                              ),
+                                            ),
+                                            AppGap.h8,
+                                          ],
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      AppShimmer(
+                                        child: SkeletonBox(
+                                          width: 90,
+                                          height: 22,
+                                          radius: AppSizes.radiusFull,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : _WidgetContainer(
+                                  bgColor: AppColors.darkBackground.withAlpha(
+                                    AppAlphas.badgeFill,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      _WidgetContainer(
+                                        width: 40,
+                                        height: 40,
+                                        padding: EdgeInsets.all(AppSizes.sm),
+                                        child: Icon(Icons.fire_truck_outlined),
+                                      ),
+                                      AppGap.w16,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              context
+                                                  .l10n
+                                                  .custAssignedRouteLabel,
+                                              style: textTheme.labelLarge
+                                                  ?.copyWith(
+                                                    color: AppColors.lightHint,
+                                                  ),
+                                            ),
+                                            Text(
+                                              context.l10n.custDayRoute(
+                                                weekdayLabel(
+                                                  context,
+                                                  _customerDetails
+                                                          ?.preferredPaymentDay ??
+                                                      '',
+                                                ),
+                                              ),
+                                              style: textTheme.headlineSmall,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      _WidgetContainer(
+                                        width: 85,
+                                        padding: EdgeInsets.all(
+                                          AppSizes.sm - 4,
+                                        ),
+                                        bgColor: AppColors.lightOnSurfaceMuted
+                                            .withAlpha(AppAlphas.badgeFill),
+                                        containerRadius: BorderRadius.all(
+                                          Radius.circular(AppSizes.radiusFull),
+                                        ),
+                                        child: Text(
+                                          DateFormatter.formatTimeString(
+                                            _customerDetails
+                                                    ?.preferredPaymentTime ??
+                                                '',
+                                          ),
+                                          style: textTheme.labelMedium
+                                              ?.copyWith(
+                                                color: AppColors.lightHint,
+                                              ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                          AppGap.h16,
+                          if (!_isLoading)
+                            AppButton(
+                              label: context.l10n.custCallBorrower,
+                              prefixIcon: Icons.call_outlined,
+                              outlined: true,
+                              iconColor: AppColors.success,
+                              onPressed: () async {
+                                final ok = await LauncherUtils.call(
+                                  _customerDetails?.phoneNumber ?? '',
+                                );
+                                if (!ok && context.mounted) {
+                                  AppSnackbar.error(
+                                    context,
+                                    context.l10n.commonUnableOpenDialer,
+                                  );
+                                }
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                    AppGap.h24,
+                    if (_isLoading) ...[
+                      const AppShimmer(
+                        child: SkeletonBox(
+                          height: 160,
+                          radius: AppSizes.radiusLg,
+                        ),
+                      ),
+                      AppGap.h24,
+                      const AppShimmer(
+                        child: SkeletonBox(
+                          height: 220,
+                          radius: AppSizes.radiusLg,
+                        ),
+                      ),
+                    ] else ...[
+                      if (loan != null) ...[
+                        ActiveFacilityCard(
+                          loan: loan,
+                          preferredDay: _customerDetails?.preferredPaymentDay,
+                          onLoanChanged: _loadDatas,
+                        ),
+                        AppGap.h24,
+                      ],
+                      CreditHistoryCard(cycles: _completedCycles),
+                      SocialNetworkCard(
+                        customerDetails: _customerDetails,
+                        referrals: _customerReferrals,
+                      ),
+                      AppGap.h24,
+                      AddressCard(
+                        street: _customerDetails?.streetName, // fields assumed
+                        city: _customerDetails?.city,
+                        district: _customerDetails?.district,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          }),
+        ),
+      ),
+      bottomNavigationBar: IssueLoanBar(
+        customerName: _customerDetails?.customerName ?? '',
+        cycleNo: _customerLoans.length + 1,
+        canIssue: !_isLoading && _customerDetails != null && !_hasOpenLoan,
+        blockedMessage: _hasOpenLoan ? context.l10n.custCloseActiveFirst : null,
+        onPressed: _issueLoan,
+      ),
+    );
+  }
+}
+
+class _WidgetContainer extends StatelessWidget {
+  final Widget child;
+  final double? width;
+  final double? height;
+  final Color? bgColor;
+  final BorderRadius? containerRadius;
+  final EdgeInsetsGeometry? padding;
+  final Color? borderColor;
+
+  const _WidgetContainer({
+    required this.child,
+    this.width = double.infinity,
+    this.height,
+    this.bgColor,
+    this.containerRadius,
+    this.padding,
+  }) : borderColor = null;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      padding: padding ?? const EdgeInsets.all(AppSizes.lg),
+      decoration: BoxDecoration(
+        color:
+            bgColor ??
+            AppColors.lightOnSurfaceMuted.withAlpha(AppAlphas.badgeFill),
+        borderRadius:
+            containerRadius ?? BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(
+          color:
+              borderColor ??
+              bgColor ??
+              AppColors.darkSurface.withAlpha(AppAlphas.badgeFill),
+        ),
+      ),
+      child: child,
+    );
+  }
+}

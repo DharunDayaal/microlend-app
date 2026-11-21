@@ -17,11 +17,3 @@ String istShort(DateTime t) =>
 String istFull(DateTime t) =>
     '${DateFormat('EEE d MMM yyyy, h:mm a').format(toIst(t))} IST';
 String ymd(DateTime d) => DateFormat('yyyy-MM-dd').format(d);
-
-String dayHeader(DateTime day) {
-  final diff = istToday().difference(day).inDays;
-  if (diff == 0) return 'Today';
-  if (diff == 1) return 'Yesterday';
-  final sameYear = day.year == istToday().year;
-  return DateFormat(sameYear ? 'EEE d MMM' : 'EEE d MMM yyyy').format(day);
-}

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/rendering.dart';
 import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
-import 'package:micro_lending_app/common/widgets/app_name_card.dart';
-import 'package:micro_lending_app/data/models/export_model.dart';
-import 'package:micro_lending_app/features/exports/widgets/export_sheet.dart';
+import 'package:micro_lending_app/shared/widgets/app_name_card.dart';
+import 'package:micro_lending_app/features/exports/domain/entities/export.dart';
+import 'package:micro_lending_app/features/exports/presentation/widgets/export_sheet.dart';
 import 'package:micro_lending_app/features/home/widgets/profile_menu_sheet.dart';
-import 'package:micro_lending_app/data/models/user_role_model.dart';
-import 'package:micro_lending_app/data/services/auth_service.dart';
+import 'package:micro_lending_app/shared/session/models/user_role.dart';
+import 'package:micro_lending_app/features/auth/presentation/controllers/auth_actions.dart';
 import 'package:micro_lending_app/l10n/language_sheet.dart';
-import 'package:micro_lending_app/routes/app_routes.dart';
-import 'package:micro_lending_app/utils/constants/assets.dart';
-import 'package:micro_lending_app/utils/constants/colors.dart';
-import 'package:micro_lending_app/utils/constants/sizes.dart';
-import 'package:micro_lending_app/utils/session/current_user.dart';
+import 'package:micro_lending_app/app/router/app_routes.dart';
+import 'package:micro_lending_app/shared/design_system/constants/assets.dart';
+import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
+import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
+import 'package:micro_lending_app/shared/session/session_controller.dart';
 
 class _Tab {
   final String label;
@@ -30,15 +31,15 @@ class _Tab {
   });
 }
 
-class HomeShell extends StatefulWidget {
+class HomeShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell shell;
   const HomeShell({super.key, required this.shell});
 
   @override
-  State<HomeShell> createState() => _HomeShellState();
+  ConsumerState<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class _HomeShellState extends ConsumerState<HomeShell> {
   /// Tab titles, in the same order as _tabs.
   List<String> _tabLabels() {
     final l = context.l10n;
@@ -100,7 +101,7 @@ class _HomeShellState extends State<HomeShell> {
   void _openMenu() {
     ProfileMenuSheet.show(
       context,
-      onLogout: () => AuthService.logout(),
+      onLogout: () => ref.read(authActionsProvider).logout(),
       items: [
         ProfileMenuItem(
           icon: Icons.person_outline,
@@ -171,12 +172,11 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     // Rebuild when the logged-in user or role changes.
-    return ListenableBuilder(
-      listenable: CurrentUser.instance,
-      builder: (context, _) {
-        final me = CurrentUser.instance;
+    return Consumer(
+      builder: (context, ref, _) {
+        final me = ref.watch(sessionProvider);
 
-        if (!me.isSignedIn) return const Scaffold();
+        if (!me.hasProfile) return const Scaffold();
 
         final index = widget.shell.currentIndex;
         final tabIndex = index.clamp(0, _tabs.length - 1);
@@ -244,7 +244,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
+class _ShellAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onProfileTap;
   final List<Widget> actions;
@@ -269,9 +269,10 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final text = Theme.of(context).textTheme;
-    final user = CurrentUser.instance.user;
+    final session = ref.watch(sessionProvider);
+    final user = session.user;
 
     final firstName = (user?.userName ?? '').trim().split(RegExp(r'\s+')).first;
     final eyebrow =
@@ -363,7 +364,7 @@ class _ShellAppBar extends StatelessWidget implements PreferredSizeWidget {
         ...actions,
         _RingAvatar(
           name: user?.userName ?? '',
-          role: CurrentUser.instance.role,
+          role: session.role,
           onTap: onProfileTap,
         ),
         const SizedBox(width: AppSizes.sm),

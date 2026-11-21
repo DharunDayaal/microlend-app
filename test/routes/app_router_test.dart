@@ -1,75 +1,50 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
-import 'package:micro_lending_app/routes/app_router.dart';
-import 'package:micro_lending_app/routes/app_routes.dart';
-import 'package:micro_lending_app/routes/auth_notifier.dart';
+import 'package:micro_lending_app/app/router/app_router.dart';
+import 'package:micro_lending_app/app/router/app_routes.dart';
+import 'package:micro_lending_app/shared/session/session_state.dart';
 
-class FakeBuildContext extends Fake implements BuildContext {}
-
-void setMockAuthStatus(AuthStatus status) {
-  AuthNotifier.instance.signedOut();
-  if (status == AuthStatus.signedIn) AuthNotifier.instance.signedIn();
-  if (status == AuthStatus.pendingApproval) {
-    AuthNotifier.instance.pendingApproval();
-  }
-}
-
-GoRouterState createMockState(String path) {
-  final uri = Uri.parse(path);
-  return GoRouterState(
-    AppRouter.router.configuration,
-    uri: uri,
-    path: path,
-    matchedLocation: path,
-    fullPath: path,
-    pathParameters: const {},
-    pageKey: ValueKey(path),
-  );
-}
+String? go(AuthStatus s, String to) => AppRouter.redirectFor(s, to);
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  group('AppRouter Redirect Logic Security Gates', () {
-    // Instantiate our dummy context to use across tests 👇
-    final dummyContext = FakeBuildContext();
-
-    test(
-      'Logged out users targeting dashboard are redirected to email login',
-      () {
-        setMockAuthStatus(AuthStatus.signedOut);
-
-        final state = createMockState(AppRoutes.customersList);
-
-        // Pass the dummy context instead of trying to look up the unrendered Navigator
-        final redirectResult = AppRouter.handleRedirect(dummyContext, state);
-        expect(redirectResult, equals(AppRoutes.loginWithEmail));
-      },
-    );
-
-    test('Logged out users targeting phone login or registration are allowed to stay', () {
-      setMockAuthStatus(AuthStatus.signedOut);
-      final state = createMockState(AppRoutes.register);
-
-      final redirectResult = AppRouter.handleRedirect(dummyContext, state);
-      expect(redirectResult, isNull);
+  group('AppRouter redirect rules', () {
+    test('signed-out users are sent to the login chooser', () {
+      expect(
+        go(AuthStatus.signedOut, AppRoutes.customersList),
+        AppRoutes.login,
+      );
+      expect(go(AuthStatus.signedOut, AppRoutes.loansList), AppRoutes.login);
     });
 
-    test('Logged in but unapproved users are instantly forced to the pending waiting room', () {
-      setMockAuthStatus(AuthStatus.pendingApproval);
-      final state = createMockState(AppRoutes.customersList);
-
-      final redirectResult = AppRouter.handleRedirect(dummyContext, state);
-      expect(redirectResult, equals(AppRoutes.approvalPending));
+    test('signed-out users may stay on any public auth page', () {
+      for (final page in [
+        AppRoutes.login,
+        AppRoutes.loginWithEmail,
+        AppRoutes.loginWithPhone,
+        AppRoutes.register,
+        AppRoutes.forgetPassword,
+      ]) {
+        expect(go(AuthStatus.signedOut, page), isNull, reason: page);
+      }
     });
 
-    test('Fully signed-in & approved users attempting to hit auth pages are bounced to home', () {
-      setMockAuthStatus(AuthStatus.signedIn);
-      final state = createMockState(AppRoutes.loginWithEmail);
+    test('unapproved users are held on the pending page', () {
+      expect(
+        go(AuthStatus.pendingApproval, AppRoutes.customersList),
+        AppRoutes.approvalPending,
+      );
+      expect(go(AuthStatus.pendingApproval, AppRoutes.approvalPending), isNull);
+    });
 
-      final redirectResult = AppRouter.handleRedirect(dummyContext, state);
-      expect(redirectResult, equals(AppRoutes.customersList));
+    test('signed-in users are bounced from auth pages to home', () {
+      expect(
+        go(AuthStatus.signedIn, AppRoutes.loginWithEmail),
+        AppRoutes.customersList,
+      );
+      expect(
+        go(AuthStatus.signedIn, AppRoutes.approvalPending),
+        AppRoutes.customersList,
+      );
+      expect(go(AuthStatus.signedIn, AppRoutes.loansList), isNull);
     });
   });
 }

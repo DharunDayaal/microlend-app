@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/l10n/l10n_labels.dart';
-import 'package:micro_lending_app/common/styles/spacing_style.dart';
-import 'package:micro_lending_app/common/widgets/app_name_card.dart';
-import 'package:micro_lending_app/common/widgets/app_status_chip.dart';
-import 'package:micro_lending_app/data/models/user_role_model.dart';
-import 'package:micro_lending_app/utils/constants/alphas.dart';
-import 'package:micro_lending_app/utils/constants/colors.dart';
-import 'package:micro_lending_app/utils/constants/sizes.dart';
-import 'package:micro_lending_app/utils/formatters/phone_formatter.dart';
-import 'package:micro_lending_app/utils/helpers/dialog_helper.dart';
-import 'package:micro_lending_app/utils/session/current_user.dart';
+import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
+import 'package:micro_lending_app/shared/widgets/app_name_card.dart';
+import 'package:micro_lending_app/shared/widgets/app_status_chip.dart';
+import 'package:micro_lending_app/shared/session/models/user_role.dart';
+import 'package:micro_lending_app/shared/design_system/constants/alphas.dart';
+import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
+import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
+import 'package:micro_lending_app/core/utils/formatters/phone_formatter.dart';
+import 'package:micro_lending_app/shared/helpers/dialog_helper.dart';
+import 'package:micro_lending_app/shared/session/session_controller.dart';
 
 /// One row of the profile menu. [minimum] hides it from lower roles.
 class ProfileMenuItem {
@@ -29,7 +30,7 @@ class ProfileMenuItem {
   });
 }
 
-class ProfileMenuSheet extends StatelessWidget {
+class ProfileMenuSheet extends ConsumerWidget {
   final List<ProfileMenuItem> items;
   final Future<void> Function() onLogout;
 
@@ -59,9 +60,9 @@ class ProfileMenuSheet extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final text = Theme.of(context).textTheme;
-    final me = CurrentUser.instance;
+    final me = ref.watch(sessionProvider);
     final user = me.user;
 
     // The role check lives here too, so a hidden item can't appear by mistake.
@@ -203,8 +204,9 @@ class _MenuTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: (danger ? AppColors.dangerContainer : AppColors.darkBorder)
-                    .withAlpha(AppAlphas.badgeFill),
+                color:
+                    (danger ? AppColors.dangerContainer : AppColors.darkBorder)
+                        .withAlpha(AppAlphas.badgeFill),
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
               child: Icon(item.icon, color: color, size: AppSizes.iconMd - 2),
@@ -233,8 +235,10 @@ class _MenuTile extends StatelessWidget {
               ),
             ),
             if (!danger)
-              const Icon(Icons.chevron_right_rounded,
-                  color: AppColors.darkOnSurfaceMuted),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.darkOnSurfaceMuted,
+              ),
           ],
         ),
       ),

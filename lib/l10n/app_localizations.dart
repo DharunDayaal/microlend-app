@@ -7281,6 +7281,738 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm'**
   String get commonConfirm;
+
+  /// No description provided for @profNoAnswerReloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'No answer from the server. Your profile was reloaded; check it and save again if needed.'**
+  String get profNoAnswerReloaded;
+
+  /// No description provided for @profNoApprovedTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no approved team to show yet.'**
+  String get profNoApprovedTeam;
+
+  /// No description provided for @expDownloadExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This file has expired. Create it again.'**
+  String get expDownloadExpired;
+
+  /// No description provided for @expDownloadNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'The file is not ready yet.'**
+  String get expDownloadNotReady;
+
+  /// No description provided for @expDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The download did not finish. Check your connection and try again.'**
+  String get expDownloadFailed;
+
+  /// No description provided for @expDownloadEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'The downloaded file is empty. Try again.'**
+  String get expDownloadEmpty;
+
+  /// No description provided for @valRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is required'**
+  String valRequired(String field);
+
+  /// No description provided for @valThisField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field'**
+  String get valThisField;
+
+  /// No description provided for @valValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get valValue;
+
+  /// No description provided for @valFieldCity.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get valFieldCity;
+
+  /// No description provided for @valFieldConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get valFieldConfirmPassword;
+
+  /// No description provided for @valNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get valNameRequired;
+
+  /// No description provided for @valNameShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is too short'**
+  String get valNameShort;
+
+  /// No description provided for @valNameChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Name can only contain letters, spaces, and certain punctuation'**
+  String get valNameChars;
+
+  /// No description provided for @valPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get valPhoneRequired;
+
+  /// No description provided for @valPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid 10-digit mobile number'**
+  String get valPhoneInvalid;
+
+  /// No description provided for @valOtpRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP is required'**
+  String get valOtpRequired;
+
+  /// No description provided for @valOtpLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the {length}-digit OTP'**
+  String valOtpLength(int length);
+
+  /// No description provided for @valEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get valEmailRequired;
+
+  /// No description provided for @valEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email'**
+  String get valEmailInvalid;
+
+  /// No description provided for @valPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get valPasswordRequired;
+
+  /// No description provided for @valPasswordMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing: {items}'**
+  String valPasswordMissing(String items);
+
+  /// No description provided for @valMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+ chars'**
+  String valMinChars(int count);
+
+  /// No description provided for @valUppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'uppercase'**
+  String get valUppercase;
+
+  /// No description provided for @valNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'number'**
+  String get valNumber;
+
+  /// No description provided for @valSpecialChar.
+  ///
+  /// In en, this message translates to:
+  /// **'special char'**
+  String get valSpecialChar;
+
+  /// No description provided for @valConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your password'**
+  String get valConfirmPassword;
+
+  /// No description provided for @valPasswordsMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get valPasswordsMismatch;
+
+  /// No description provided for @valAmountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is required'**
+  String get valAmountRequired;
+
+  /// No description provided for @valAmountPositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get valAmountPositive;
+
+  /// No description provided for @valAmountMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum is {amount}'**
+  String valAmountMin(String amount);
+
+  /// No description provided for @valAmountMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum is {amount}'**
+  String valAmountMax(String amount);
+
+  /// No description provided for @valPercentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage is required'**
+  String get valPercentRequired;
+
+  /// No description provided for @valNumberInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number'**
+  String get valNumberInvalid;
+
+  /// No description provided for @valPercentRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a value between 0 and {max}'**
+  String valPercentRange(int max);
+
+  /// No description provided for @valPositiveNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number greater than 0'**
+  String get valPositiveNumber;
+
+  /// No description provided for @audModAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Auth'**
+  String get audModAuth;
+
+  /// No description provided for @audModProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get audModProfile;
+
+  /// No description provided for @audModAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get audModAdmin;
+
+  /// No description provided for @audModEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee'**
+  String get audModEmployee;
+
+  /// No description provided for @audModCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get audModCustomer;
+
+  /// No description provided for @audModLoan.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan'**
+  String get audModLoan;
+
+  /// No description provided for @audModPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get audModPayment;
+
+  /// No description provided for @audModSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get audModSettings;
+
+  /// No description provided for @audModSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get audModSystem;
+
+  /// No description provided for @audModOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get audModOther;
+
+  /// No description provided for @audActAdminRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin registered'**
+  String get audActAdminRegistered;
+
+  /// No description provided for @audActLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get audActLoginFailed;
+
+  /// No description provided for @audActLoginBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Login blocked'**
+  String get audActLoginBlocked;
+
+  /// No description provided for @audActPasswordReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset'**
+  String get audActPasswordReset;
+
+  /// No description provided for @audActSessionsRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions signed out'**
+  String get audActSessionsRevoked;
+
+  /// No description provided for @audActProfileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get audActProfileUpdated;
+
+  /// No description provided for @audActPhoneChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number changed'**
+  String get audActPhoneChanged;
+
+  /// No description provided for @audActPasswordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed'**
+  String get audActPasswordChanged;
+
+  /// No description provided for @audActLoanDefaultsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan defaults updated'**
+  String get audActLoanDefaultsUpdated;
+
+  /// No description provided for @audActAdminVerificationChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin approval changed'**
+  String get audActAdminVerificationChanged;
+
+  /// No description provided for @audActAdminActiveChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin activated or deactivated'**
+  String get audActAdminActiveChanged;
+
+  /// No description provided for @audActAdminDefaultsChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin defaults changed'**
+  String get audActAdminDefaultsChanged;
+
+  /// No description provided for @audActEmployeeCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee created'**
+  String get audActEmployeeCreated;
+
+  /// No description provided for @audActEmployeeVerificationChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee approval changed'**
+  String get audActEmployeeVerificationChanged;
+
+  /// No description provided for @audActEmployeeActiveChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee activated or deactivated'**
+  String get audActEmployeeActiveChanged;
+
+  /// No description provided for @audActEmployeeReassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee moved to another admin'**
+  String get audActEmployeeReassigned;
+
+  /// No description provided for @audActEmployeeDefaultsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee defaults updated'**
+  String get audActEmployeeDefaultsUpdated;
+
+  /// No description provided for @audActEmployeeProfileEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee profile edited'**
+  String get audActEmployeeProfileEdited;
+
+  /// No description provided for @audActCustomerCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer created'**
+  String get audActCustomerCreated;
+
+  /// No description provided for @audActCustomerUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer updated'**
+  String get audActCustomerUpdated;
+
+  /// No description provided for @audActCustomerDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer deleted'**
+  String get audActCustomerDeleted;
+
+  /// No description provided for @audActCustomerReassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer reassigned'**
+  String get audActCustomerReassigned;
+
+  /// No description provided for @audActReferrerChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Referrer changed'**
+  String get audActReferrerChanged;
+
+  /// No description provided for @audActLoanCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan created'**
+  String get audActLoanCreated;
+
+  /// No description provided for @audActLoanStatusChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan status changed'**
+  String get audActLoanStatusChanged;
+
+  /// No description provided for @audActLoanTermsEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan terms edited'**
+  String get audActLoanTermsEdited;
+
+  /// No description provided for @audActLoanClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan closed'**
+  String get audActLoanClosed;
+
+  /// No description provided for @audActLoanWrittenOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan written off'**
+  String get audActLoanWrittenOff;
+
+  /// No description provided for @audActLoanDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan deleted'**
+  String get audActLoanDeleted;
+
+  /// No description provided for @audActPaymentRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment recorded'**
+  String get audActPaymentRecorded;
+
+  /// No description provided for @audActPaymentEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment edited'**
+  String get audActPaymentEdited;
+
+  /// No description provided for @audActPaymentReversed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reversed'**
+  String get audActPaymentReversed;
+
+  /// No description provided for @audActWeekStatusChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Week status changed'**
+  String get audActWeekStatusChanged;
+
+  /// No description provided for @audActBackdatedPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Backdated payment'**
+  String get audActBackdatedPayment;
+
+  /// No description provided for @audActLoanLimitsUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan limits updated'**
+  String get audActLoanLimitsUpdated;
+
+  /// No description provided for @audActSettingsChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings changed'**
+  String get audActSettingsChanged;
+
+  /// No description provided for @audActDataExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Data exported'**
+  String get audActDataExported;
+
+  /// No description provided for @audActBulkImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk import'**
+  String get audActBulkImport;
+
+  /// No description provided for @audEntUser.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get audEntUser;
+
+  /// No description provided for @audEntWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get audEntWeek;
+
+  /// No description provided for @audEntSetting.
+  ///
+  /// In en, this message translates to:
+  /// **'Setting'**
+  String get audEntSetting;
+
+  /// No description provided for @audFieldStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get audFieldStatus;
+
+  /// No description provided for @audFieldName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get audFieldName;
+
+  /// No description provided for @audFieldPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get audFieldPhone;
+
+  /// No description provided for @audFieldEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get audFieldEmail;
+
+  /// No description provided for @audFieldApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval'**
+  String get audFieldApproval;
+
+  /// No description provided for @audFieldActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get audFieldActive;
+
+  /// No description provided for @audFieldDefaultUpfrontFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Default upfront fee'**
+  String get audFieldDefaultUpfrontFee;
+
+  /// No description provided for @audFieldDefaultInterest.
+  ///
+  /// In en, this message translates to:
+  /// **'Default interest'**
+  String get audFieldDefaultInterest;
+
+  /// No description provided for @audFieldDefaultTerm.
+  ///
+  /// In en, this message translates to:
+  /// **'Default term'**
+  String get audFieldDefaultTerm;
+
+  /// No description provided for @audFieldDefaultTermWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Default term (weeks)'**
+  String get audFieldDefaultTermWeeks;
+
+  /// No description provided for @audFieldPrincipal.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal'**
+  String get audFieldPrincipal;
+
+  /// No description provided for @audFieldTotalPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'Total payable'**
+  String get audFieldTotalPayable;
+
+  /// No description provided for @audFieldWeeklyInstallment.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly installment'**
+  String get audFieldWeeklyInstallment;
+
+  /// No description provided for @audFieldUpfrontFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Upfront fee'**
+  String get audFieldUpfrontFee;
+
+  /// No description provided for @audFieldMinPrincipal.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum principal'**
+  String get audFieldMinPrincipal;
+
+  /// No description provided for @audFieldMaxPrincipal.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum principal'**
+  String get audFieldMaxPrincipal;
+
+  /// No description provided for @audFieldMinTerm.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum term'**
+  String get audFieldMinTerm;
+
+  /// No description provided for @audFieldMaxTerm.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum term'**
+  String get audFieldMaxTerm;
+
+  /// No description provided for @audFieldMaxFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum fee'**
+  String get audFieldMaxFee;
+
+  /// No description provided for @audFieldMaxInterest.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum interest'**
+  String get audFieldMaxInterest;
+
+  /// No description provided for @audFieldAmountPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount paid'**
+  String get audFieldAmountPaid;
+
+  /// No description provided for @audFieldCustomerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer name'**
+  String get audFieldCustomerName;
+
+  /// No description provided for @audFieldCollectionDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection day'**
+  String get audFieldCollectionDay;
+
+  /// No description provided for @audFieldReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get audFieldReason;
+
+  /// No description provided for @audFieldSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get audFieldSource;
+
+  /// No description provided for @audValEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'empty'**
+  String get audValEmpty;
+
+  /// No description provided for @audValVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get audValVerified;
+
+  /// No description provided for @audValNotVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Not verified'**
+  String get audValNotVerified;
+
+  /// No description provided for @audValInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get audValInactive;
+
+  /// No description provided for @audValYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get audValYes;
+
+  /// No description provided for @audValNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get audValNo;
+
+  /// No description provided for @audValMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} months'**
+  String audValMonths(String n);
+
+  /// No description provided for @audValWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{n} weeks'**
+  String audValWeeks(String n);
+
+  /// No description provided for @audMoreCount.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more'**
+  String audMoreCount(int count);
+
+  /// No description provided for @audYesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get audYesterday;
 }
 
 class _AppLocalizationsDelegate

@@ -4249,4 +4249,405 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get commonConfirm => 'உறுதிசெய்';
+
+  @override
+  String get profNoAnswerReloaded =>
+      'சேவையகத்திலிருந்து பதில் இல்லை. உங்கள் சுயவிவரம் மீண்டும் ஏற்றப்பட்டது; சரிபார்த்து தேவைப்பட்டால் மீண்டும் சேமிக்கவும்.';
+
+  @override
+  String get profNoApprovedTeam => 'காட்ட அங்கீகரிக்கப்பட்ட குழு இதுவரை இல்லை.';
+
+  @override
+  String get expDownloadExpired =>
+      'இந்தக் கோப்பு காலாவதியானது. மீண்டும் உருவாக்கவும்.';
+
+  @override
+  String get expDownloadNotReady => 'கோப்பு இன்னும் தயாராகவில்லை.';
+
+  @override
+  String get expDownloadFailed =>
+      'பதிவிறக்கம் முடியவில்லை. இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get expDownloadEmpty =>
+      'பதிவிறக்கிய கோப்பு காலியாக உள்ளது. மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String valRequired(String field) {
+    return '$field தேவை';
+  }
+
+  @override
+  String get valThisField => 'இந்த புலம்';
+
+  @override
+  String get valValue => 'மதிப்பு';
+
+  @override
+  String get valFieldCity => 'நகரம்';
+
+  @override
+  String get valFieldConfirmPassword => 'கடவுச்சொல்லை உறுதிப்படுத்து';
+
+  @override
+  String get valNameRequired => 'பெயர் தேவை';
+
+  @override
+  String get valNameShort => 'பெயர் மிகவும் சிறியது';
+
+  @override
+  String get valNameChars =>
+      'பெயரில் எழுத்துகள், இடைவெளிகள் மற்றும் சில நிறுத்தக்குறிகள் மட்டுமே இருக்கலாம்';
+
+  @override
+  String get valPhoneRequired => 'தொலைபேசி எண் தேவை';
+
+  @override
+  String get valPhoneInvalid => 'சரியான 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்';
+
+  @override
+  String get valOtpRequired => 'OTP தேவை';
+
+  @override
+  String valOtpLength(int length) {
+    return '$length இலக்க OTP-ஐ உள்ளிடவும்';
+  }
+
+  @override
+  String get valEmailRequired => 'மின்னஞ்சல் தேவை';
+
+  @override
+  String get valEmailInvalid => 'சரியான மின்னஞ்சலை உள்ளிடவும்';
+
+  @override
+  String get valPasswordRequired => 'கடவுச்சொல் தேவை';
+
+  @override
+  String valPasswordMissing(String items) {
+    return 'இல்லாதவை: $items';
+  }
+
+  @override
+  String valMinChars(int count) {
+    return '$count+ எழுத்துகள்';
+  }
+
+  @override
+  String get valUppercase => 'பெரிய எழுத்து';
+
+  @override
+  String get valNumber => 'எண்';
+
+  @override
+  String get valSpecialChar => 'சிறப்பு எழுத்து';
+
+  @override
+  String get valConfirmPassword => 'உங்கள் கடவுச்சொல்லை உறுதிப்படுத்தவும்';
+
+  @override
+  String get valPasswordsMismatch => 'கடவுச்சொற்கள் பொருந்தவில்லை';
+
+  @override
+  String get valAmountRequired => 'தொகை தேவை';
+
+  @override
+  String get valAmountPositive => '0-ஐ விட அதிகமான தொகையை உள்ளிடவும்';
+
+  @override
+  String valAmountMin(String amount) {
+    return 'குறைந்தபட்சம் $amount';
+  }
+
+  @override
+  String valAmountMax(String amount) {
+    return 'அதிகபட்சம் $amount';
+  }
+
+  @override
+  String get valPercentRequired => 'சதவீதம் தேவை';
+
+  @override
+  String get valNumberInvalid => 'சரியான எண்ணை உள்ளிடவும்';
+
+  @override
+  String valPercentRange(int max) {
+    return '0 முதல் $max வரையிலான மதிப்பை உள்ளிடவும்';
+  }
+
+  @override
+  String get valPositiveNumber => '0-ஐ விட அதிகமான சரியான எண்ணை உள்ளிடவும்';
+
+  @override
+  String get audModAuth => 'அங்கீகாரம்';
+
+  @override
+  String get audModProfile => 'சுயவிவரம்';
+
+  @override
+  String get audModAdmin => 'நிர்வாகி';
+
+  @override
+  String get audModEmployee => 'பணியாளர்';
+
+  @override
+  String get audModCustomer => 'வாடிக்கையாளர்';
+
+  @override
+  String get audModLoan => 'கடன்';
+
+  @override
+  String get audModPayment => 'கட்டணம்';
+
+  @override
+  String get audModSettings => 'அமைப்புகள்';
+
+  @override
+  String get audModSystem => 'அமைப்பு';
+
+  @override
+  String get audModOther => 'மற்றவை';
+
+  @override
+  String get audActAdminRegistered => 'நிர்வாகி பதிவு செய்யப்பட்டார்';
+
+  @override
+  String get audActLoginFailed => 'உள்நுழைவு தோல்வி';
+
+  @override
+  String get audActLoginBlocked => 'உள்நுழைவு தடுக்கப்பட்டது';
+
+  @override
+  String get audActPasswordReset => 'கடவுச்சொல் மீட்டமைக்கப்பட்டது';
+
+  @override
+  String get audActSessionsRevoked => 'அமர்வுகள் வெளியேற்றப்பட்டன';
+
+  @override
+  String get audActProfileUpdated => 'சுயவிவரம் புதுப்பிக்கப்பட்டது';
+
+  @override
+  String get audActPhoneChanged => 'தொலைபேசி எண் மாற்றப்பட்டது';
+
+  @override
+  String get audActPasswordChanged => 'கடவுச்சொல் மாற்றப்பட்டது';
+
+  @override
+  String get audActLoanDefaultsUpdated =>
+      'கடன் இயல்புநிலைகள் புதுப்பிக்கப்பட்டன';
+
+  @override
+  String get audActAdminVerificationChanged =>
+      'நிர்வாகி ஒப்புதல் மாற்றப்பட்டது';
+
+  @override
+  String get audActAdminActiveChanged =>
+      'நிர்வாகி செயல்படுத்தப்பட்டார் அல்லது முடக்கப்பட்டார்';
+
+  @override
+  String get audActAdminDefaultsChanged =>
+      'நிர்வாகி இயல்புநிலைகள் மாற்றப்பட்டன';
+
+  @override
+  String get audActEmployeeCreated => 'பணியாளர் உருவாக்கப்பட்டார்';
+
+  @override
+  String get audActEmployeeVerificationChanged =>
+      'பணியாளர் ஒப்புதல் மாற்றப்பட்டது';
+
+  @override
+  String get audActEmployeeActiveChanged =>
+      'பணியாளர் செயல்படுத்தப்பட்டார் அல்லது முடக்கப்பட்டார்';
+
+  @override
+  String get audActEmployeeReassigned =>
+      'பணியாளர் வேறு நிர்வாகிக்கு மாற்றப்பட்டார்';
+
+  @override
+  String get audActEmployeeDefaultsUpdated =>
+      'பணியாளர் இயல்புநிலைகள் புதுப்பிக்கப்பட்டன';
+
+  @override
+  String get audActEmployeeProfileEdited =>
+      'பணியாளர் சுயவிவரம் திருத்தப்பட்டது';
+
+  @override
+  String get audActCustomerCreated => 'வாடிக்கையாளர் உருவாக்கப்பட்டார்';
+
+  @override
+  String get audActCustomerUpdated => 'வாடிக்கையாளர் புதுப்பிக்கப்பட்டார்';
+
+  @override
+  String get audActCustomerDeleted => 'வாடிக்கையாளர் நீக்கப்பட்டார்';
+
+  @override
+  String get audActCustomerReassigned =>
+      'வாடிக்கையாளர் மறுஒதுக்கீடு செய்யப்பட்டார்';
+
+  @override
+  String get audActReferrerChanged => 'பரிந்துரைப்பவர் மாற்றப்பட்டார்';
+
+  @override
+  String get audActLoanCreated => 'கடன் உருவாக்கப்பட்டது';
+
+  @override
+  String get audActLoanStatusChanged => 'கடன் நிலை மாற்றப்பட்டது';
+
+  @override
+  String get audActLoanTermsEdited => 'கடன் விதிமுறைகள் திருத்தப்பட்டன';
+
+  @override
+  String get audActLoanClosed => 'கடன் மூடப்பட்டது';
+
+  @override
+  String get audActLoanWrittenOff => 'கடன் தள்ளுபடி செய்யப்பட்டது';
+
+  @override
+  String get audActLoanDeleted => 'கடன் நீக்கப்பட்டது';
+
+  @override
+  String get audActPaymentRecorded => 'கட்டணம் பதிவு செய்யப்பட்டது';
+
+  @override
+  String get audActPaymentEdited => 'கட்டணம் திருத்தப்பட்டது';
+
+  @override
+  String get audActPaymentReversed => 'கட்டணம் திரும்பப்பெறப்பட்டது';
+
+  @override
+  String get audActWeekStatusChanged => 'வார நிலை மாற்றப்பட்டது';
+
+  @override
+  String get audActBackdatedPayment => 'பின்தேதியிட்ட கட்டணம்';
+
+  @override
+  String get audActLoanLimitsUpdated => 'கடன் வரம்புகள் புதுப்பிக்கப்பட்டன';
+
+  @override
+  String get audActSettingsChanged => 'அமைப்புகள் மாற்றப்பட்டன';
+
+  @override
+  String get audActDataExported => 'தரவு ஏற்றுமதி செய்யப்பட்டது';
+
+  @override
+  String get audActBulkImport => 'மொத்த இறக்குமதி';
+
+  @override
+  String get audEntUser => 'பயனர்';
+
+  @override
+  String get audEntWeek => 'வாரம்';
+
+  @override
+  String get audEntSetting => 'அமைப்பு';
+
+  @override
+  String get audFieldStatus => 'நிலை';
+
+  @override
+  String get audFieldName => 'பெயர்';
+
+  @override
+  String get audFieldPhone => 'தொலைபேசி';
+
+  @override
+  String get audFieldEmail => 'மின்னஞ்சல்';
+
+  @override
+  String get audFieldApproval => 'ஒப்புதல்';
+
+  @override
+  String get audFieldActive => 'செயலில்';
+
+  @override
+  String get audFieldDefaultUpfrontFee => 'இயல்புநிலை முன்கட்டணம்';
+
+  @override
+  String get audFieldDefaultInterest => 'இயல்புநிலை வட்டி';
+
+  @override
+  String get audFieldDefaultTerm => 'இயல்புநிலை காலம்';
+
+  @override
+  String get audFieldDefaultTermWeeks => 'இயல்புநிலை காலம் (வாரங்கள்)';
+
+  @override
+  String get audFieldPrincipal => 'அசல்';
+
+  @override
+  String get audFieldTotalPayable => 'செலுத்த வேண்டிய மொத்தம்';
+
+  @override
+  String get audFieldWeeklyInstallment => 'வாராந்திர தவணை';
+
+  @override
+  String get audFieldUpfrontFee => 'முன்கட்டணம்';
+
+  @override
+  String get audFieldMinPrincipal => 'குறைந்தபட்ச அசல்';
+
+  @override
+  String get audFieldMaxPrincipal => 'அதிகபட்ச அசல்';
+
+  @override
+  String get audFieldMinTerm => 'குறைந்தபட்ச காலம்';
+
+  @override
+  String get audFieldMaxTerm => 'அதிகபட்ச காலம்';
+
+  @override
+  String get audFieldMaxFee => 'அதிகபட்ச கட்டணம்';
+
+  @override
+  String get audFieldMaxInterest => 'அதிகபட்ச வட்டி';
+
+  @override
+  String get audFieldAmountPaid => 'செலுத்திய தொகை';
+
+  @override
+  String get audFieldCustomerName => 'வாடிக்கையாளர் பெயர்';
+
+  @override
+  String get audFieldCollectionDay => 'வசூல் நாள்';
+
+  @override
+  String get audFieldReason => 'காரணம்';
+
+  @override
+  String get audFieldSource => 'மூலம்';
+
+  @override
+  String get audValEmpty => 'காலி';
+
+  @override
+  String get audValVerified => 'சரிபார்க்கப்பட்டது';
+
+  @override
+  String get audValNotVerified => 'சரிபார்க்கப்படவில்லை';
+
+  @override
+  String get audValInactive => 'செயலற்றது';
+
+  @override
+  String get audValYes => 'ஆம்';
+
+  @override
+  String get audValNo => 'இல்லை';
+
+  @override
+  String audValMonths(String n) {
+    return '$n மாதங்கள்';
+  }
+
+  @override
+  String audValWeeks(String n) {
+    return '$n வாரங்கள்';
+  }
+
+  @override
+  String audMoreCount(int count) {
+    return '+$count மேலும்';
+  }
+
+  @override
+  String get audYesterday => 'நேற்று';
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:micro_lending_app/l10n/app_localizations.dart';
-import 'package:micro_lending_app/utils/constants/colors.dart';
-import 'package:micro_lending_app/utils/constants/sizes.dart';
+import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
+import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Lets us show the one-time notice without a BuildContext.
@@ -11,18 +12,19 @@ final rootMessengerKey = GlobalKey<ScaffoldMessengerState>();
 /// - Until the user picks a language, the app follows the phone: Tamil if it is
 ///   the top preferred language, English otherwise (checked on every launch).
 /// - Once the user picks one in the Language sheet, that choice wins.
-class LocaleController extends ChangeNotifier {
-  LocaleController._();
-  static final LocaleController instance = LocaleController._();
+final localeProvider = NotifierProvider<LocaleController, Locale>(
+  LocaleController.new,
+);
 
+class LocaleController extends Notifier<Locale> {
   static const supported = [Locale('en'), Locale('ta')];
 
   // new key: the old 'app_language' held auto-detected values, so it is ignored
   static const _kChosen = 'app_language_user';
   static const _kNotice = 'app_language_notice_shown';
 
-  Locale _locale = const Locale('en');
-  Locale get locale => _locale;
+  @override
+  Locale build() => const Locale('en');
 
   bool _userChosen = false;
   bool _pendingNotice = false;
@@ -30,7 +32,7 @@ class LocaleController extends ChangeNotifier {
   static bool _isSupported(String? code) =>
       supported.any((l) => l.languageCode == code);
 
-  /// Call once in main() before runApp.
+  /// Call once in bootstrap before runApp.
   Future<void> init() async {
     try {
       final p = await SharedPreferences.getInstance();
@@ -39,13 +41,13 @@ class LocaleController extends ChangeNotifier {
 
       if (_isSupported(chosen)) {
         _userChosen = true;
-        _locale = Locale(chosen!);
+        state = Locale(chosen!);
         return;
       }
 
       // no manual choice yet: follow the phone's top preferred language
       final isTamil = device.isNotEmpty && device.first.languageCode == 'ta';
-      _locale = Locale(isTamil ? 'ta' : 'en');
+      state = Locale(isTamil ? 'ta' : 'en');
       _pendingNotice = isTamil && !(p.getBool(_kNotice) ?? false);
     } catch (e) {
       debugPrint('LocaleController.init failed: $e');
@@ -56,12 +58,11 @@ class LocaleController extends ChangeNotifier {
   Future<void> setLocale(Locale l) async {
     if (!_isSupported(l.languageCode)) return;
 
-    final changed = l.languageCode != _locale.languageCode;
+    final changed = l.languageCode != state.languageCode;
     if (!changed && _userChosen) return;
 
-    _locale = l;
+    if (changed) state = l;
     _userChosen = true;
-    if (changed) notifyListeners();
     try {
       final p = await SharedPreferences.getInstance();
       await p.setString(_kChosen, l.languageCode);
@@ -80,15 +81,18 @@ class LocaleController extends ChangeNotifier {
 }
 
 /// Shows "your phone is set to Tamil" once, ever.
-Future<void> showDeviceLanguageNotice([int attempt = 0]) async {
-  final c = LocaleController.instance;
+Future<void> showDeviceLanguageNotice(
+  ProviderContainer container, [
+  int attempt = 0,
+]) async {
+  final c = container.read(localeProvider.notifier);
   if (!c.hasPendingNotice) return;
 
   final messenger = rootMessengerKey.currentState;
   if (messenger == null) {
     if (attempt < 5) {
       await Future<void>.delayed(const Duration(milliseconds: 300));
-      return showDeviceLanguageNotice(attempt + 1);
+      return showDeviceLanguageNotice(container, attempt + 1);
     }
     return; // not marked as shown, so the next launch tries again
   }

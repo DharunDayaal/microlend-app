@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:micro_lending_app/common/styles/spacing_style.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
 import 'package:micro_lending_app/l10n/app_localizations.dart';
 import 'package:micro_lending_app/l10n/locale_controller.dart';
-import 'package:micro_lending_app/utils/constants/colors.dart';
-import 'package:micro_lending_app/utils/constants/sizes.dart';
+import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
+import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
 
 Future<void> showLanguageSheet(BuildContext context) =>
     showModalBottomSheet<void>(
@@ -30,10 +31,9 @@ class _LanguageSheet extends StatelessWidget {
       (const Locale('ta'), l.languageTamil),
     ];
 
-    return ListenableBuilder(
-      listenable: LocaleController.instance,
-      builder: (context, _) {
-        final current = LocaleController.instance.locale.languageCode;
+    return Consumer(
+      builder: (context, ref, _) {
+        final current = ref.watch(localeProvider).languageCode;
         return Padding(
           padding: const EdgeInsets.all(AppSizes.lg),
           child: Column(
@@ -60,7 +60,7 @@ class _LanguageSheet extends StatelessWidget {
                         )
                       : null,
                   onTap: () async {
-                    await LocaleController.instance.setLocale(locale);
+                    await ref.read(localeProvider.notifier).setLocale(locale);
                     if (context.mounted) Navigator.of(context).pop();
                   },
                 ),

@@ -3176,5 +3176,197 @@
   "pcEditLimits": "Edit loan limits",
   "pcApp": "App",
   "pcVersion": "Version",
-  "commonConfirm": "Confirm"
+  "commonConfirm": "Confirm",
+  "profNoAnswerReloaded": "No answer from the server. Your profile was reloaded; check it and save again if needed.",
+  "profNoApprovedTeam": "There is no approved team to show yet.",
+  "expDownloadExpired": "This file has expired. Create it again.",
+  "expDownloadNotReady": "The file is not ready yet.",
+  "expDownloadFailed": "The download did not finish. Check your connection and try again.",
+  "expDownloadEmpty": "The downloaded file is empty. Try again.",
+  "valRequired": "{field} is required",
+  "@valRequired": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
+  "valThisField": "This field",
+  "valValue": "Value",
+  "valFieldCity": "City",
+  "valFieldConfirmPassword": "Confirm Password",
+  "valNameRequired": "Name is required",
+  "valNameShort": "Name is too short",
+  "valNameChars": "Name can only contain letters, spaces, and certain punctuation",
+  "valPhoneRequired": "Phone number is required",
+  "valPhoneInvalid": "Enter a valid 10-digit mobile number",
+  "valOtpRequired": "OTP is required",
+  "valOtpLength": "Enter the {length}-digit OTP",
+  "@valOtpLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "valEmailRequired": "Email is required",
+  "valEmailInvalid": "Enter a valid email",
+  "valPasswordRequired": "Password is required",
+  "valPasswordMissing": "Missing: {items}",
+  "@valPasswordMissing": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "valMinChars": "{count}+ chars",
+  "@valMinChars": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "valUppercase": "uppercase",
+  "valNumber": "number",
+  "valSpecialChar": "special char",
+  "valConfirmPassword": "Confirm your password",
+  "valPasswordsMismatch": "Passwords do not match",
+  "valAmountRequired": "Amount is required",
+  "valAmountPositive": "Enter an amount greater than 0",
+  "valAmountMin": "Minimum is {amount}",
+  "@valAmountMin": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "valAmountMax": "Maximum is {amount}",
+  "@valAmountMax": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "valPercentRequired": "Percentage is required",
+  "valNumberInvalid": "Enter a valid number",
+  "valPercentRange": "Enter a value between 0 and {max}",
+  "@valPercentRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "valPositiveNumber": "Enter a valid number greater than 0",
+  "audModAuth": "Auth",
+  "audModProfile": "Profile",
+  "audModAdmin": "Admin",
+  "audModEmployee": "Employee",
+  "audModCustomer": "Customer",
+  "audModLoan": "Loan",
+  "audModPayment": "Payment",
+  "audModSettings": "Settings",
+  "audModSystem": "System",
+  "audModOther": "Other",
+  "audActAdminRegistered": "Admin registered",
+  "audActLoginFailed": "Login failed",
+  "audActLoginBlocked": "Login blocked",
+  "audActPasswordReset": "Password reset",
+  "audActSessionsRevoked": "Sessions signed out",
+  "audActProfileUpdated": "Profile updated",
+  "audActPhoneChanged": "Phone number changed",
+  "audActPasswordChanged": "Password changed",
+  "audActLoanDefaultsUpdated": "Loan defaults updated",
+  "audActAdminVerificationChanged": "Admin approval changed",
+  "audActAdminActiveChanged": "Admin activated or deactivated",
+  "audActAdminDefaultsChanged": "Admin defaults changed",
+  "audActEmployeeCreated": "Employee created",
+  "audActEmployeeVerificationChanged": "Employee approval changed",
+  "audActEmployeeActiveChanged": "Employee activated or deactivated",
+  "audActEmployeeReassigned": "Employee moved to another admin",
+  "audActEmployeeDefaultsUpdated": "Employee defaults updated",
+  "audActEmployeeProfileEdited": "Employee profile edited",
+  "audActCustomerCreated": "Customer created",
+  "audActCustomerUpdated": "Customer updated",
+  "audActCustomerDeleted": "Customer deleted",
+  "audActCustomerReassigned": "Customer reassigned",
+  "audActReferrerChanged": "Referrer changed",
+  "audActLoanCreated": "Loan created",
+  "audActLoanStatusChanged": "Loan status changed",
+  "audActLoanTermsEdited": "Loan terms edited",
+  "audActLoanClosed": "Loan closed",
+  "audActLoanWrittenOff": "Loan written off",
+  "audActLoanDeleted": "Loan deleted",
+  "audActPaymentRecorded": "Payment recorded",
+  "audActPaymentEdited": "Payment edited",
+  "audActPaymentReversed": "Payment reversed",
+  "audActWeekStatusChanged": "Week status changed",
+  "audActBackdatedPayment": "Backdated payment",
+  "audActLoanLimitsUpdated": "Loan limits updated",
+  "audActSettingsChanged": "Settings changed",
+  "audActDataExported": "Data exported",
+  "audActBulkImport": "Bulk import",
+  "audEntUser": "User",
+  "audEntWeek": "Week",
+  "audEntSetting": "Setting",
+  "audFieldStatus": "Status",
+  "audFieldName": "Name",
+  "audFieldPhone": "Phone",
+  "audFieldEmail": "Email",
+  "audFieldApproval": "Approval",
+  "audFieldActive": "Active",
+  "audFieldDefaultUpfrontFee": "Default upfront fee",
+  "audFieldDefaultInterest": "Default interest",
+  "audFieldDefaultTerm": "Default term",
+  "audFieldDefaultTermWeeks": "Default term (weeks)",
+  "audFieldPrincipal": "Principal",
+  "audFieldTotalPayable": "Total payable",
+  "audFieldWeeklyInstallment": "Weekly installment",
+  "audFieldUpfrontFee": "Upfront fee",
+  "audFieldMinPrincipal": "Minimum principal",
+  "audFieldMaxPrincipal": "Maximum principal",
+  "audFieldMinTerm": "Minimum term",
+  "audFieldMaxTerm": "Maximum term",
+  "audFieldMaxFee": "Maximum fee",
+  "audFieldMaxInterest": "Maximum interest",
+  "audFieldAmountPaid": "Amount paid",
+  "audFieldCustomerName": "Customer name",
+  "audFieldCollectionDay": "Collection day",
+  "audFieldReason": "Reason",
+  "audFieldSource": "Source",
+  "audValEmpty": "empty",
+  "audValVerified": "Verified",
+  "audValNotVerified": "Not verified",
+  "audValInactive": "Inactive",
+  "audValYes": "Yes",
+  "audValNo": "No",
+  "audValMonths": "{n} months",
+  "@audValMonths": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "audValWeeks": "{n} weeks",
+  "@audValWeeks": {
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "audMoreCount": "+{count} more",
+  "@audMoreCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "audYesterday": "Yesterday"
 }

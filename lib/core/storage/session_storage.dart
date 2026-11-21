@@ -1,0 +1,34 @@
+import 'dart:convert';
+
+import 'package:micro_lending_app/shared/session/models/user_role.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+/// Saves the signed-in profile so the app knows the role after a restart.
+class SessionStorage {
+  const SessionStorage();
+
+  static const _key = 'session_user_v1';
+
+  Future<void> save(AdminUser user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, jsonEncode(user.toJson()));
+  }
+
+  Future<AdminUser?> read() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_key);
+    if (raw == null) return null;
+
+    try {
+      return AdminUser.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      await prefs.remove(_key); // corrupt data: start clean
+      return null;
+    }
+  }
+
+  Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
+  }
+}

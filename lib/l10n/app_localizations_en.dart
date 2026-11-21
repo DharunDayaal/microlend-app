@@ -4219,4 +4219,393 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonConfirm => 'Confirm';
+
+  @override
+  String get profNoAnswerReloaded =>
+      'No answer from the server. Your profile was reloaded; check it and save again if needed.';
+
+  @override
+  String get profNoApprovedTeam => 'There is no approved team to show yet.';
+
+  @override
+  String get expDownloadExpired => 'This file has expired. Create it again.';
+
+  @override
+  String get expDownloadNotReady => 'The file is not ready yet.';
+
+  @override
+  String get expDownloadFailed =>
+      'The download did not finish. Check your connection and try again.';
+
+  @override
+  String get expDownloadEmpty => 'The downloaded file is empty. Try again.';
+
+  @override
+  String valRequired(String field) {
+    return '$field is required';
+  }
+
+  @override
+  String get valThisField => 'This field';
+
+  @override
+  String get valValue => 'Value';
+
+  @override
+  String get valFieldCity => 'City';
+
+  @override
+  String get valFieldConfirmPassword => 'Confirm Password';
+
+  @override
+  String get valNameRequired => 'Name is required';
+
+  @override
+  String get valNameShort => 'Name is too short';
+
+  @override
+  String get valNameChars =>
+      'Name can only contain letters, spaces, and certain punctuation';
+
+  @override
+  String get valPhoneRequired => 'Phone number is required';
+
+  @override
+  String get valPhoneInvalid => 'Enter a valid 10-digit mobile number';
+
+  @override
+  String get valOtpRequired => 'OTP is required';
+
+  @override
+  String valOtpLength(int length) {
+    return 'Enter the $length-digit OTP';
+  }
+
+  @override
+  String get valEmailRequired => 'Email is required';
+
+  @override
+  String get valEmailInvalid => 'Enter a valid email';
+
+  @override
+  String get valPasswordRequired => 'Password is required';
+
+  @override
+  String valPasswordMissing(String items) {
+    return 'Missing: $items';
+  }
+
+  @override
+  String valMinChars(int count) {
+    return '$count+ chars';
+  }
+
+  @override
+  String get valUppercase => 'uppercase';
+
+  @override
+  String get valNumber => 'number';
+
+  @override
+  String get valSpecialChar => 'special char';
+
+  @override
+  String get valConfirmPassword => 'Confirm your password';
+
+  @override
+  String get valPasswordsMismatch => 'Passwords do not match';
+
+  @override
+  String get valAmountRequired => 'Amount is required';
+
+  @override
+  String get valAmountPositive => 'Enter an amount greater than 0';
+
+  @override
+  String valAmountMin(String amount) {
+    return 'Minimum is $amount';
+  }
+
+  @override
+  String valAmountMax(String amount) {
+    return 'Maximum is $amount';
+  }
+
+  @override
+  String get valPercentRequired => 'Percentage is required';
+
+  @override
+  String get valNumberInvalid => 'Enter a valid number';
+
+  @override
+  String valPercentRange(int max) {
+    return 'Enter a value between 0 and $max';
+  }
+
+  @override
+  String get valPositiveNumber => 'Enter a valid number greater than 0';
+
+  @override
+  String get audModAuth => 'Auth';
+
+  @override
+  String get audModProfile => 'Profile';
+
+  @override
+  String get audModAdmin => 'Admin';
+
+  @override
+  String get audModEmployee => 'Employee';
+
+  @override
+  String get audModCustomer => 'Customer';
+
+  @override
+  String get audModLoan => 'Loan';
+
+  @override
+  String get audModPayment => 'Payment';
+
+  @override
+  String get audModSettings => 'Settings';
+
+  @override
+  String get audModSystem => 'System';
+
+  @override
+  String get audModOther => 'Other';
+
+  @override
+  String get audActAdminRegistered => 'Admin registered';
+
+  @override
+  String get audActLoginFailed => 'Login failed';
+
+  @override
+  String get audActLoginBlocked => 'Login blocked';
+
+  @override
+  String get audActPasswordReset => 'Password reset';
+
+  @override
+  String get audActSessionsRevoked => 'Sessions signed out';
+
+  @override
+  String get audActProfileUpdated => 'Profile updated';
+
+  @override
+  String get audActPhoneChanged => 'Phone number changed';
+
+  @override
+  String get audActPasswordChanged => 'Password changed';
+
+  @override
+  String get audActLoanDefaultsUpdated => 'Loan defaults updated';
+
+  @override
+  String get audActAdminVerificationChanged => 'Admin approval changed';
+
+  @override
+  String get audActAdminActiveChanged => 'Admin activated or deactivated';
+
+  @override
+  String get audActAdminDefaultsChanged => 'Admin defaults changed';
+
+  @override
+  String get audActEmployeeCreated => 'Employee created';
+
+  @override
+  String get audActEmployeeVerificationChanged => 'Employee approval changed';
+
+  @override
+  String get audActEmployeeActiveChanged => 'Employee activated or deactivated';
+
+  @override
+  String get audActEmployeeReassigned => 'Employee moved to another admin';
+
+  @override
+  String get audActEmployeeDefaultsUpdated => 'Employee defaults updated';
+
+  @override
+  String get audActEmployeeProfileEdited => 'Employee profile edited';
+
+  @override
+  String get audActCustomerCreated => 'Customer created';
+
+  @override
+  String get audActCustomerUpdated => 'Customer updated';
+
+  @override
+  String get audActCustomerDeleted => 'Customer deleted';
+
+  @override
+  String get audActCustomerReassigned => 'Customer reassigned';
+
+  @override
+  String get audActReferrerChanged => 'Referrer changed';
+
+  @override
+  String get audActLoanCreated => 'Loan created';
+
+  @override
+  String get audActLoanStatusChanged => 'Loan status changed';
+
+  @override
+  String get audActLoanTermsEdited => 'Loan terms edited';
+
+  @override
+  String get audActLoanClosed => 'Loan closed';
+
+  @override
+  String get audActLoanWrittenOff => 'Loan written off';
+
+  @override
+  String get audActLoanDeleted => 'Loan deleted';
+
+  @override
+  String get audActPaymentRecorded => 'Payment recorded';
+
+  @override
+  String get audActPaymentEdited => 'Payment edited';
+
+  @override
+  String get audActPaymentReversed => 'Payment reversed';
+
+  @override
+  String get audActWeekStatusChanged => 'Week status changed';
+
+  @override
+  String get audActBackdatedPayment => 'Backdated payment';
+
+  @override
+  String get audActLoanLimitsUpdated => 'Loan limits updated';
+
+  @override
+  String get audActSettingsChanged => 'Settings changed';
+
+  @override
+  String get audActDataExported => 'Data exported';
+
+  @override
+  String get audActBulkImport => 'Bulk import';
+
+  @override
+  String get audEntUser => 'User';
+
+  @override
+  String get audEntWeek => 'Week';
+
+  @override
+  String get audEntSetting => 'Setting';
+
+  @override
+  String get audFieldStatus => 'Status';
+
+  @override
+  String get audFieldName => 'Name';
+
+  @override
+  String get audFieldPhone => 'Phone';
+
+  @override
+  String get audFieldEmail => 'Email';
+
+  @override
+  String get audFieldApproval => 'Approval';
+
+  @override
+  String get audFieldActive => 'Active';
+
+  @override
+  String get audFieldDefaultUpfrontFee => 'Default upfront fee';
+
+  @override
+  String get audFieldDefaultInterest => 'Default interest';
+
+  @override
+  String get audFieldDefaultTerm => 'Default term';
+
+  @override
+  String get audFieldDefaultTermWeeks => 'Default term (weeks)';
+
+  @override
+  String get audFieldPrincipal => 'Principal';
+
+  @override
+  String get audFieldTotalPayable => 'Total payable';
+
+  @override
+  String get audFieldWeeklyInstallment => 'Weekly installment';
+
+  @override
+  String get audFieldUpfrontFee => 'Upfront fee';
+
+  @override
+  String get audFieldMinPrincipal => 'Minimum principal';
+
+  @override
+  String get audFieldMaxPrincipal => 'Maximum principal';
+
+  @override
+  String get audFieldMinTerm => 'Minimum term';
+
+  @override
+  String get audFieldMaxTerm => 'Maximum term';
+
+  @override
+  String get audFieldMaxFee => 'Maximum fee';
+
+  @override
+  String get audFieldMaxInterest => 'Maximum interest';
+
+  @override
+  String get audFieldAmountPaid => 'Amount paid';
+
+  @override
+  String get audFieldCustomerName => 'Customer name';
+
+  @override
+  String get audFieldCollectionDay => 'Collection day';
+
+  @override
+  String get audFieldReason => 'Reason';
+
+  @override
+  String get audFieldSource => 'Source';
+
+  @override
+  String get audValEmpty => 'empty';
+
+  @override
+  String get audValVerified => 'Verified';
+
+  @override
+  String get audValNotVerified => 'Not verified';
+
+  @override
+  String get audValInactive => 'Inactive';
+
+  @override
+  String get audValYes => 'Yes';
+
+  @override
+  String get audValNo => 'No';
+
+  @override
+  String audValMonths(String n) {
+    return '$n months';
+  }
+
+  @override
+  String audValWeeks(String n) {
+    return '$n weeks';
+  }
+
+  @override
+  String audMoreCount(int count) {
+    return '+$count more';
+  }
+
+  @override
+  String get audYesterday => 'Yesterday';
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:micro_lending_app/data/models/export_model.dart';
-import 'package:micro_lending_app/data/models/loan_status_change.dart';
-import 'package:micro_lending_app/data/models/user_role_model.dart';
-import 'package:micro_lending_app/features/loans/screens/loan_snapshot.dart';
+import 'package:micro_lending_app/features/exports/domain/entities/export.dart';
+import 'package:micro_lending_app/features/loans/domain/entities/manual_loan_status.dart';
+import 'package:micro_lending_app/shared/session/models/user_role.dart';
+import 'package:micro_lending_app/features/loans/presentation/models/loan_snapshot.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 
 /// Translated display text for model enums. The models keep their English

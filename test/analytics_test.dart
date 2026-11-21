@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:micro_lending_app/data/models/analytics_model.dart';
-import 'package:micro_lending_app/features/analytics/analytics_filter.dart';
-import 'package:micro_lending_app/features/analytics/widgets/analytics_cards_more.dart';
-import 'package:micro_lending_app/features/analytics/widgets/analytics_common.dart';
+import 'package:micro_lending_app/features/analytics/domain/entities/analytics.dart';
+import 'package:micro_lending_app/features/analytics/presentation/analytics_filter.dart';
+import 'package:micro_lending_app/features/analytics/presentation/widgets/analytics_cards_more.dart';
+import 'package:micro_lending_app/features/analytics/presentation/widgets/analytics_common.dart';
 
 void main() {
   group('Money.compact', () {
