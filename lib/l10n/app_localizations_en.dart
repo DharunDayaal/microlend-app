@@ -4608,4 +4608,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get audYesterday => 'Yesterday';
+
+  @override
+  String get trackerNothingLeft => 'Nothing left to collect on this loan.';
 }

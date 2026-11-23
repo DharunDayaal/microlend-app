@@ -3368,5 +3368,6 @@
       }
     }
   },
-  "audYesterday": "Yesterday"
+  "audYesterday": "Yesterday",
+  "trackerNothingLeft": "Nothing left to collect on this loan."
 }

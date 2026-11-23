@@ -95,21 +95,19 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
       return;
     }
 
-    final row = RepaymentRows.fromLoan(loan)
-        .where((r) => r.collected <= 0 && r.state != RepaymentRowState.paid)
-        .firstOrNull;
-
-    if (row == null) {
-      AppSnackbar.info(context, context.l10n.trackerAllWeeksHavePayment);
+    if (loan.outstandingAmount <= 0) {
+      AppSnackbar.info(context, context.l10n.trackerNothingLeft);
       return;
     }
 
+    // Always a new week after the latest payment; missed weeks are not
+    // back-filled from here (use Collect on that week instead).
     final result = await PaymentSheet.showForWeek(
       context,
       customerId: _h.borrower?.id ?? '',
       customerName: _h.borrower?.customerName ?? '',
       loan: loan,
-      weekNumber: row.week,
+      weekNumber: RepaymentRows.nextNewWeek(loan.tracks),
     );
 
     if (result != null) await _applyPayment(result);

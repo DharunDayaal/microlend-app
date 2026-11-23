@@ -1314,5 +1314,6 @@
   "audValMonths": "{n} மாதங்கள்",
   "audValWeeks": "{n} வாரங்கள்",
   "audMoreCount": "+{count} மேலும்",
-  "audYesterday": "நேற்று"
+  "audYesterday": "நேற்று",
+  "trackerNothingLeft": "இந்தக் கடனில் வசூலிக்க எதுவும் இல்லை."
 }

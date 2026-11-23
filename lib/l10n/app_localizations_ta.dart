@@ -4650,4 +4650,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get audYesterday => 'நேற்று';
+
+  @override
+  String get trackerNothingLeft => 'இந்தக் கடனில் வசூலிக்க எதுவும் இல்லை.';
 }

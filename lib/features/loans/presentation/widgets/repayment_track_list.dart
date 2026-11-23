@@ -44,6 +44,19 @@ class RepaymentRow {
 class RepaymentRows {
   RepaymentRows._();
 
+  /// The week "Record weekly payment" opens: the one after the latest week
+  /// that has money against it. Earlier unpaid weeks are left as they are
+  /// (missed); they are paid only through their own Collect button.
+  static int nextNewWeek(List<LoanTrackModel> tracks) =>
+      tracks
+          .where(
+            (t) =>
+                t.totalCollected > 0 ||
+                const {'PAID', 'PARTIAL'}.contains(t.status.toUpperCase()),
+          )
+          .fold<int>(0, (last, t) => math.max(last, t.weekNumber)) +
+      1;
+
   static List<RepaymentRow> fromLoan(LoanModel loan) => build(
     tracks: loan.tracks,
     totalWeeks: loan.totalWeeks,

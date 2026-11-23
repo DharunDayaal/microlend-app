@@ -8013,6 +8013,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yesterday'**
   String get audYesterday;
+
+  /// No description provided for @trackerNothingLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing left to collect on this loan.'**
+  String get trackerNothingLeft;
 }
 
 class _AppLocalizationsDelegate
