@@ -286,7 +286,11 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
             collectedAt: attempt.collectedAt,
           );
       _attempt = null;
-      if (mounted) Navigator.of(context).pop(response);
+      // Pop only this sheet. If it is somehow no longer on top, popping
+      // would close the screen below with the wrong result type.
+      if (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
+        Navigator.of(context).pop(response);
+      }
     } on ApiException catch (e) {
       // A network or server error may have saved it anyway, so a retry
       // reuses the key. Any other rejection saved nothing: start fresh.
@@ -300,65 +304,73 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    return GestureDetector(
-      onTap: () => _focusNode.unfocus(),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppGap.h12,
-                  _dragHandle(),
-                  AppGap.h8,
-                  _statusBanner(text),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSizes.lg,
-                      AppSizes.lg,
-                      AppSizes.lg,
-                      0,
+    // While a payment is being sent the sheet can't be closed (back button,
+    // barrier tap, drag or X); its result must reach the screen below.
+    return PopScope(
+      canPop: !_isSubmitting,
+      child: GestureDetector(
+        onTap: () => _focusNode.unfocus(),
+        // the sheet's own drag-to-dismiss ignores PopScope, so take the drag
+        onVerticalDragStart: _isSubmitting ? (_) {} : null,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppGap.h12,
+                    _dragHandle(),
+                    AppGap.h8,
+                    _statusBanner(text),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSizes.lg,
+                        AppSizes.lg,
+                        AppSizes.lg,
+                        0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _header(text),
+                          AppGap.h4,
+                          _borrowerRow(text),
+                          AppGap.h16,
+                          _amountHero(text),
+                          AppGap.h16,
+                          _quickActions(text),
+                          AppGap.h12,
+                          AppSegmentedTabs(
+                            tabs: [
+                              SegmentTab(
+                                value: _PaymentMethod.cash,
+                                label: context.l10n.payCash,
+                                icon: Icons.money_outlined,
+                              ),
+                              SegmentTab(
+                                value: _PaymentMethod.upi,
+                                label: context.l10n.payUpi,
+                                icon: Icons.qr_code,
+                              ),
+                            ],
+                            selected: _method,
+                            onChanged: (value) =>
+                                setState(() => _method = value),
+                          ),
+                          AppGap.h24,
+                          _impactCard(text),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _header(text),
-                        AppGap.h4,
-                        _borrowerRow(text),
-                        AppGap.h16,
-                        _amountHero(text),
-                        AppGap.h16,
-                        _quickActions(text),
-                        AppGap.h12,
-                        AppSegmentedTabs(
-                          tabs: [
-                            SegmentTab(
-                              value: _PaymentMethod.cash,
-                              label: context.l10n.payCash,
-                              icon: Icons.money_outlined,
-                            ),
-                            SegmentTab(
-                              value: _PaymentMethod.upi,
-                              label: context.l10n.payUpi,
-                              icon: Icons.qr_code,
-                            ),
-                          ],
-                          selected: _method,
-                          onChanged: (value) => setState(() => _method = value),
-                        ),
-                        AppGap.h24,
-                        _impactCard(text),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          _footer(text),
-        ],
+            _footer(text),
+          ],
+        ),
       ),
     );
   }
@@ -439,7 +451,9 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
           backgroundColor: AppColors.approvalBase.withAlpha(
             AppAlphas.badgeFill,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (!_isSubmitting) Navigator.of(context).pop();
+          },
         ),
       ],
     );

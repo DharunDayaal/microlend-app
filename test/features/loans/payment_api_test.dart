@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,6 +56,27 @@ class _PayRepo extends FakeLoanRepository {
     calls.add((key: idempotencyKey, amount: amount, collectedAt: collectedAt));
     final next = outcomes.removeAt(0);
     if (next is ApiException) throw next;
+    return PaymentResultModel(
+      track: track(weekNumber),
+      loanStatus: 'ACTIVE',
+      loanOutstandingAfter: 900,
+    );
+  }
+}
+
+/// Holds the payment until [gate] completes.
+class _SlowRepo extends FakeLoanRepository {
+  final gate = Completer<void>();
+
+  @override
+  Future<PaymentResultModel> collectPayment({
+    required String loanId,
+    required int weekNumber,
+    required double amount,
+    required String idempotencyKey,
+    required DateTime collectedAt,
+  }) async {
+    await gate.future;
     return PaymentResultModel(
       track: track(weekNumber),
       loanStatus: 'ACTIVE',
@@ -212,5 +235,85 @@ void main() {
       expect(repo.calls.map((c) => c.amount), [100, 200]);
       expect(repo.calls[0].key, isNot(repo.calls[1].key));
     });
+  });
+
+  testWidgets('the sheet cannot be closed while a payment is being sent', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+
+    final repo = _SlowRepo();
+    Object? sheetResult = 'not closed';
+    bool? pageResult;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loanRepositoryProvider.overrideWithValue(repo)],
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              // like the tracker: a pushed screen that returns a bool
+              onPressed: () async {
+                pageResult = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      body: TextButton(
+                        onPressed: () async {
+                          sheetResult = await PaymentSheet.show(
+                            context,
+                            customerId: 'c1',
+                            customerName: 'Kavya',
+                            weekNumber: 3,
+                            totalWeeks: 12,
+                            issuedAt: DateTime.now(),
+                            targetAmount: 100,
+                            loanOutstandingAmount: 1000,
+                            loanId: 'l1',
+                          );
+                        },
+                        child: const Text('pay'),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              child: const Text('open screen'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open screen'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('pay'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.textContaining('CONFIRM'));
+    await tester.pump();
+
+    // every way out while the request is pending
+    await tester.tap(find.byIcon(Icons.close));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.tapAt(const Offset(20, 20)); // the barrier above the sheet
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.drag(find.text('Collect Payment'), const Offset(0, 600));
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.binding.handlePopRoute(); // Android back
+    await tester.pump(const Duration(milliseconds: 600));
+    expect(find.byType(PaymentSheet), findsOneWidget);
+
+    repo.gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(PaymentSheet), findsNothing);
+    expect(sheetResult, isA<PaymentResultModel>()); // reached the screen
+    expect(find.text('pay'), findsOneWidget); // the screen is still open
+    expect(pageResult, isNull);
   });
 }
