@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -34,9 +33,6 @@ class LoanTrackerScreen extends ConsumerStatefulWidget {
 }
 
 class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
-  final _headerKey = GlobalKey();
-  bool _chromeVisible = true;
-
   /// A payment was recorded here, so the previous screen must reload.
   bool _changed = false;
 
@@ -47,34 +43,7 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
   LoanWithBorrowerController get _ctrl =>
       ref.read(loanWithBorrowerProvider(widget.loanId).notifier);
 
-  Future<void> _retry() async {
-    final ok = await _ctrl.load();
-    if (ok && mounted) setState(() => _chromeVisible = true);
-  }
-
-  bool _onListScroll(UserScrollNotification n) {
-    // only the track list: ignore horizontal and nested scrollables
-    if (n.metrics.axis != Axis.vertical || n.depth != 0) return false;
-
-    switch (n.direction) {
-      case ScrollDirection.reverse: // scrolling down
-        // Hide only if the list will still be scrollable once the header is
-        // gone. Otherwise it would hide, the list would stop scrolling, and
-        // the header would flick back on.
-        final headerHeight = _headerKey.currentContext?.size?.height ?? 0;
-        final canCollapse =
-            n.metrics.maxScrollExtent > headerHeight + 48 &&
-            n.metrics.pixels > 8;
-        if (canCollapse && _chromeVisible) {
-          setState(() => _chromeVisible = false);
-        }
-      case ScrollDirection.forward: // scrolling up
-        if (!_chromeVisible) setState(() => _chromeVisible = true);
-      case ScrollDirection.idle:
-        break;
-    }
-    return false;
-  }
+  Future<void> _retry() => _ctrl.load();
 
   Future<void> _applyPayment(PaymentResultModel result) async {
     if (_h.loan == null) return;
@@ -136,82 +105,71 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
         ),
         body: SafeArea(
           bottom: false, // the bottom bar handles the bottom inset
-          child: Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_h.isLoading) ...[
-                  const _UserDetailSectionLoading(),
-                  AppGap.h16,
-                  const _LoanStatsSectionLoading(),
-                  AppGap.h16,
-                  const RecoveryProgressCardSkeleton(),
-                  AppGap.h16,
-                  const Expanded(child: _RepaymentTracksSkeleton(count: 7)),
-                ] else if (loan == null) ...[
-                  Expanded(
-                    child: ErrorView(
-                      message: _h.error ?? context.l10n.loanLoadFailed,
-                      onRetry: _retry,
-                    ),
+          child: _h.isLoading
+              ? const _TrackerLoading()
+              : loan == null
+              ? Padding(
+                  padding: const EdgeInsets.all(AppSizes.md),
+                  child: ErrorView(
+                    message: _h.error ?? context.l10n.loanLoadFailed,
+                    onRetry: _retry,
                   ),
-                ] else ...[
-                  // header: collapses while the list scrolls down
-                  ClipRect(
-                    child: AnimatedAlign(
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut,
-                      alignment: Alignment.topCenter,
-                      heightFactor: _chromeVisible ? 1 : 0,
-                      child: Column(
-                        key: _headerKey,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _userDetailSection(textTheme),
-                          AppGap.h16,
-                          _loanStatsSection(),
-                          AppGap.h16,
-                          RecoveryProgressCard(
-                            progress: LoanHelper.recoveryProgress(loan, (week) {
-                              final i = loan.issuedAt.toLocal();
-                              return DateTime(
-                                i.year,
-                                i.month,
-                                i.day + 7 * week,
-                              );
-                            }),
+                )
+              // One scroll view: the header scrolls away with the tracks,
+              // so the page fits any screen height.
+              : CustomScrollView(
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.all(AppSizes.md),
+                      sliver: SliverMainAxisGroup(
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _userDetailSection(textTheme),
+                                AppGap.h16,
+                                _loanStatsSection(),
+                                AppGap.h16,
+                                RecoveryProgressCard(
+                                  progress: LoanHelper.recoveryProgress(loan, (
+                                    week,
+                                  ) {
+                                    final i = loan.issuedAt.toLocal();
+                                    return DateTime(
+                                      i.year,
+                                      i.month,
+                                      i.day + 7 * week,
+                                    );
+                                  }),
+                                ),
+                                AppGap.h16,
+                              ],
+                            ),
                           ),
-                          AppGap.h16,
+                          _RepaymentTracks(
+                            loan: loan,
+                            onCollect: (row) async {
+                              final paymentResult =
+                                  await PaymentSheet.showForWeek(
+                                    context,
+                                    customerId: _h.borrower?.id ?? '',
+                                    customerName:
+                                        _h.borrower?.customerName ?? '',
+                                    loan: loan,
+                                    weekNumber: row.week,
+                                  );
+
+                              if (paymentResult != null) {
+                                await _applyPayment(paymentResult);
+                              }
+                            },
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: NotificationListener<UserScrollNotification>(
-                      onNotification: _onListScroll,
-                      child: _RepaymentTracks(
-                        loan: loan,
-                        onCollect: (row) async {
-                          final paymentResult = await PaymentSheet.showForWeek(
-                            context,
-                            customerId: _h.borrower?.id ?? '',
-                            customerName: _h.borrower?.customerName ?? '',
-                            loan: loan,
-                            weekNumber: row.week,
-                          );
-
-                          if (paymentResult != null) {
-                            await _applyPayment(paymentResult);
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
+                  ],
+                ),
         ),
         bottomNavigationBar: ClipRect(
           child: AnimatedAlign(
@@ -241,6 +199,45 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  /// One of the principal / total due / tenure figures. A third of the row
+  /// each; the value scales down rather than overflow on narrow screens.
+  Widget _figure(
+    TextTheme textTheme,
+    String label,
+    String value,
+    CrossAxisAlignment align,
+  ) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: align,
+        children: [
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.labelLarge?.copyWith(
+              color: AppColors.darkOnSurfaceMuted,
+            ),
+          ),
+          _Fit(
+            alignment: switch (align) {
+              CrossAxisAlignment.start => Alignment.centerLeft,
+              CrossAxisAlignment.end => Alignment.centerRight,
+              _ => Alignment.center,
+            },
+            child: Text(
+              value,
+              style: textTheme.titleLarge?.copyWith(
+                color: AppColors.lightBorderStrong,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -275,13 +272,15 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       spacing: AppSizes.sm,
                       children: [
-                        AppChip(
-                          label: context.l10n.trackerCycle(
-                            _h.borrower?.creditHistory.totalLoans ?? 0,
-                          ),
-                          radius: AppSizes.sm,
-                          backgroundColor: AppColors.darkHint.withAlpha(
-                            AppAlphas.badgeFill,
+                        Flexible(
+                          child: AppChip(
+                            label: context.l10n.trackerCycle(
+                              _h.borrower?.creditHistory.totalLoans ?? 0,
+                            ),
+                            radius: AppSizes.sm,
+                            backgroundColor: AppColors.darkHint.withAlpha(
+                              AppAlphas.badgeFill,
+                            ),
                           ),
                         ),
                         Flexible(
@@ -299,6 +298,8 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
                               ),
                               Text(
                                 TextFormatter.dummyId(_h.loan?.id ?? '', "#LN"),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: textTheme.labelMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -312,25 +313,34 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
                 ),
               ),
               AppGap.w12,
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    context.l10n.trackerWeeklyTarget,
-                    style: textTheme.labelMedium?.copyWith(
-                      color: AppColors.darkOnSurfaceMuted,
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      context.l10n.trackerWeeklyTarget,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: AppColors.darkOnSurfaceMuted,
+                      ),
                     ),
-                  ),
-                  Text(
-                    CurrencyFormatter.format(_h.loan?.weeklyPayableAmount ?? 0),
-                    style: textTheme.titleLarge?.copyWith(
-                      color: AppColors.success,
-                      fontWeight: FontWeight.bold,
+                    _Fit(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        CurrencyFormatter.format(
+                          _h.loan?.weeklyPayableAmount ?? 0,
+                        ),
+                        style: textTheme.titleLarge?.copyWith(
+                          color: AppColors.success,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -344,62 +354,25 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: AppSizes.sm,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.trackerPrincipal,
-                      style: textTheme.labelLarge?.copyWith(
-                        color: AppColors.darkOnSurfaceMuted,
-                      ),
-                    ),
-                    Text(
-                      CurrencyFormatter.format(_h.loan?.disbursedAmount),
-                      style: textTheme.titleLarge?.copyWith(
-                        color: AppColors.lightBorderStrong,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                _figure(
+                  textTheme,
+                  context.l10n.trackerPrincipal,
+                  CurrencyFormatter.format(_h.loan?.disbursedAmount),
+                  CrossAxisAlignment.start,
                 ),
-                const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.l10n.trackerTotalDue,
-                      style: textTheme.labelLarge?.copyWith(
-                        color: AppColors.darkOnSurfaceMuted,
-                      ),
-                    ),
-                    Text(
-                      CurrencyFormatter.format(_h.loan?.totalPayableAmount),
-                      style: textTheme.titleLarge?.copyWith(
-                        color: AppColors.lightBorderStrong,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                _figure(
+                  textTheme,
+                  context.l10n.trackerTotalDue,
+                  CurrencyFormatter.format(_h.loan?.totalPayableAmount),
+                  CrossAxisAlignment.center,
                 ),
-                const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      context.l10n.trackerTenure,
-                      style: textTheme.labelLarge?.copyWith(
-                        color: AppColors.darkOnSurfaceMuted,
-                      ),
-                    ),
-                    Text(
-                      context.l10n.loanWeeksCount(_h.loan?.totalWeeks ?? 0),
-                      style: textTheme.titleLarge?.copyWith(
-                        color: AppColors.lightBorderStrong,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+                _figure(
+                  textTheme,
+                  context.l10n.trackerTenure,
+                  context.l10n.loanWeeksCount(_h.loan?.totalWeeks ?? 0),
+                  CrossAxisAlignment.end,
                 ),
               ],
             ),
@@ -692,63 +665,61 @@ class _RepaymentTracks extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final rows = RepaymentRows.fromLoan(loan);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    context.l10n.trackerWeeklyTracks,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      context.l10n.trackerWeeklyTracks,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  Text(
-                    context.l10n.trackerInstallmentsPlanned(loan.totalWeeks),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.labelMedium?.copyWith(
-                      color: AppColors.stepCurrentLabel,
+                    Text(
+                      context.l10n.trackerInstallmentsPlanned(loan.totalWeeks),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: AppColors.stepCurrentLabel,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            AppGap.w8,
-            AppChip(
-              label: context.l10n.trackerLedger,
-              backgroundColor: AppColors.darkBorder.withAlpha(
-                AppAlphas.badgeFill,
+              AppGap.w8,
+              AppChip(
+                label: context.l10n.trackerLedger,
+                backgroundColor: AppColors.darkBorder.withAlpha(
+                  AppAlphas.badgeFill,
+                ),
+                textStyle: textTheme.labelMedium?.copyWith(
+                  color: AppColors.stepCurrentLabel,
+                ),
+                leading: Icon(
+                  Icons.receipt_long_outlined,
+                  color: AppColors.stepCurrentLabel,
+                  size: AppSizes.xl,
+                ),
               ),
-              textStyle: textTheme.labelMedium?.copyWith(
-                color: AppColors.stepCurrentLabel,
-              ),
-              leading: Icon(
-                Icons.receipt_long_outlined,
-                color: AppColors.stepCurrentLabel,
-                size: AppSizes.xl,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-        AppGap.h16,
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.only(bottom: AppSizes.md),
-            itemCount: rows.length,
-            separatorBuilder: (_, _) => AppGap.h8,
-            itemBuilder: (context, index) => RepaymentTrackCard(
-              row: rows[index],
-              totalWeeks: loan.totalWeeks,
-              onCollect: () => onCollect(rows[index]),
-            ),
+        const SliverToBoxAdapter(child: AppGap.h16),
+        SliverList.separated(
+          itemCount: rows.length,
+          separatorBuilder: (_, _) => AppGap.h8,
+          itemBuilder: (context, index) => RepaymentTrackCard(
+            row: rows[index],
+            totalWeeks: loan.totalWeeks,
+            onCollect: () => onCollect(rows[index]),
           ),
         ),
       ],
@@ -793,14 +764,16 @@ class _UserDetailSectionLoading extends StatelessWidget {
                             height: 24,
                             radius: AppSizes.radiusSm,
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              SkeletonBox(width: 50, height: 10),
-                              SizedBox(height: 4),
-                              SkeletonBox(width: 65, height: 12),
-                            ],
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                SkeletonBox(width: 50, height: 10),
+                                SizedBox(height: 4),
+                                SkeletonBox(width: 65, height: 12),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -940,16 +913,10 @@ class _RepaymentTracksSkeleton extends StatelessWidget {
           ),
         ),
         AppGap.h12,
-        Expanded(
-          child: ListView.separated(
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: AppSizes.md),
-            itemCount: count,
-            separatorBuilder: (_, _) => AppGap.h8,
-            itemBuilder: (_, i) =>
-                _TrackCardSkeleton(subWidth: _widths[i % _widths.length]),
-          ),
-        ),
+        for (var i = 0; i < count; i++) ...[
+          if (i > 0) AppGap.h8,
+          _TrackCardSkeleton(subWidth: _widths[i % _widths.length]),
+        ],
       ],
     );
   }
@@ -1028,4 +995,41 @@ class _TrackCardSkeleton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The loading layout. Not scrollable, but clipped, so a short screen just
+/// shows less of it instead of overflowing.
+class _TrackerLoading extends StatelessWidget {
+  const _TrackerLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SingleChildScrollView(
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.all(AppSizes.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _UserDetailSectionLoading(),
+          AppGap.h16,
+          _LoanStatsSectionLoading(),
+          AppGap.h16,
+          RecoveryProgressCardSkeleton(),
+          AppGap.h16,
+          _RepaymentTracksSkeleton(count: 7),
+        ],
+      ),
+    );
+  }
+}
+
+/// Shrinks a single line (an amount) to fit, never grows it.
+class _Fit extends StatelessWidget {
+  final Widget child;
+  final AlignmentGeometry alignment;
+  const _Fit({required this.child, this.alignment = Alignment.centerLeft});
+
+  @override
+  Widget build(BuildContext context) =>
+      FittedBox(fit: BoxFit.scaleDown, alignment: alignment, child: child);
 }

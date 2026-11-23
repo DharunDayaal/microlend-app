@@ -332,17 +332,20 @@ class RepaymentTrackCard extends StatelessWidget {
                   ),
                 ),
                 AppGap.w8,
-                AppChip(
-                  label: chipLabel,
-                  backgroundColor: chipBg,
-                  foregroundColor: chipFg,
-                  borderColor: Colors.transparent,
-                  radius: AppSizes.radiusSm,
-                  padding: chipPadding,
-                  textStyle: text.labelSmall,
-                  leading: chipIcon == null
-                      ? null
-                      : Icon(chipIcon, size: 12, color: chipFg),
+                // may shrink with an ellipsis on narrow screens / long labels
+                Flexible(
+                  child: AppChip(
+                    label: chipLabel,
+                    backgroundColor: chipBg,
+                    foregroundColor: chipFg,
+                    borderColor: Colors.transparent,
+                    radius: AppSizes.radiusSm,
+                    padding: chipPadding,
+                    textStyle: text.labelSmall,
+                    leading: chipIcon == null
+                        ? null
+                        : Icon(chipIcon, size: 12, color: chipFg),
+                  ),
                 ),
               ],
             ),

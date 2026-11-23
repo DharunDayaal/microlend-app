@@ -95,10 +95,6 @@ void main() {
   });
 
   Future<void> openRecordSheet(WidgetTester tester, LoanModel l) async {
-    // tall enough for the overdue header; small-screen layout is separate
-    tester.view.physicalSize = const Size(800, 1000);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
     final repo = FakeLoanRepository()..loans['l1'] = l;
     await tester.pumpWidget(
       ProviderScope(
