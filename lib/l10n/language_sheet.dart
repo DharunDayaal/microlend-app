@@ -71,3 +71,55 @@ class _LanguageSheet extends StatelessWidget {
     );
   }
 }
+
+/// Header button showing the current language ("EN" / "த"); opens
+/// [showLanguageSheet].
+class LanguageButton extends ConsumerWidget {
+  const LanguageButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final code = ref.watch(localeProvider).languageCode;
+    final label = code == 'ta' ? 'த' : 'EN';
+
+    return Tooltip(
+      message: AppLocalizations.of(context).languageTitle,
+      child: Semantics(
+        button: true,
+        label: AppLocalizations.of(context).languageTitle,
+        excludeSemantics: true,
+        child: InkWell(
+          onTap: () => showLanguageSheet(context),
+          borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+          child: Container(
+            height: 32,
+            padding: const EdgeInsets.symmetric(horizontal: AppSizes.sm + 2),
+            decoration: BoxDecoration(
+              color: AppColors.darkSurface,
+              borderRadius: BorderRadius.circular(AppSizes.radiusFull),
+              border: Border.all(color: AppColors.darkBorder),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.translate_rounded,
+                  size: 16,
+                  color: AppColors.stepCurrentLabel,
+                ),
+                const SizedBox(width: AppSizes.xs),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: AppColors.darkOnSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

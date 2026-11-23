@@ -23,7 +23,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deviceLanguageNotice =>
-      'Your phone\'s preferred language is Tamil, so the app opened in Tamil. You can change this under Language in your profile menu.';
+      'Your phone\'s preferred language is Tamil, so the app opened in Tamil. You can change this with the language button at the top of the home screen.';
 
   @override
   String get commonOk => 'OK';

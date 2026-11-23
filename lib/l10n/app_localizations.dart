@@ -125,7 +125,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceLanguageNotice.
   ///
   /// In en, this message translates to:
-  /// **'Your phone\'s preferred language is Tamil, so the app opened in Tamil. You can change this under Language in your profile menu.'**
+  /// **'Your phone\'s preferred language is Tamil, so the app opened in Tamil. You can change this with the language button at the top of the home screen.'**
   String get deviceLanguageNotice;
 
   /// No description provided for @commonOk.

@@ -112,12 +112,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           },
         ),
         ProfileMenuItem(
-          icon: Icons.translate_rounded,
-          title: context.l10n.languageTitle,
-          subtitle: context.l10n.languageSubtitle,
-          onTap: () => showLanguageSheet(context),
-        ),
-        ProfileMenuItem(
           icon: Icons.person_add_alt_1_outlined,
           title: context.l10n.menuAddBorrower,
           subtitle: context.l10n.menuAddBorrowerSub,
@@ -200,6 +194,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
             title: labels[tabIndex],
             onProfileTap: _openMenu,
             actions: [
+              const LanguageButton(),
               ExportMenuButton(
                 types: _exportTypes[index.clamp(0, _exportTypes.length - 1)],
               ),
