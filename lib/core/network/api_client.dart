@@ -41,7 +41,8 @@ class ApiClient {
   /// Set once in main(): send the user to the login screen.
   void Function()? onSessionExpired;
 
-  Options _opts(bool auth) => Options(extra: {kSkipAuth: !auth});
+  Options _opts(bool auth, [Map<String, String>? headers]) =>
+      Options(extra: {kSkipAuth: !auth}, headers: headers);
 
   Future<dynamic> get(
     String path, {
@@ -50,8 +51,12 @@ class ApiClient {
   }) =>
       _send(() => _dio.get(path, queryParameters: query, options: _opts(auth)));
 
-  Future<dynamic> post(String path, {Object? data, bool auth = true}) =>
-      _send(() => _dio.post(path, data: data, options: _opts(auth)));
+  Future<dynamic> post(
+    String path, {
+    Object? data,
+    bool auth = true,
+    Map<String, String>? headers,
+  }) => _send(() => _dio.post(path, data: data, options: _opts(auth, headers)));
 
   Future<dynamic> put(String path, {Object? data, bool auth = true}) =>
       _send(() => _dio.put(path, data: data, options: _opts(auth)));

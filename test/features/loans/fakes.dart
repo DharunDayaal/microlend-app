@@ -146,6 +146,8 @@ class FakeLoanRepository implements LoanRepository {
     required String loanId,
     required int weekNumber,
     required double amount,
+    required String idempotencyKey,
+    required DateTime collectedAt,
   }) => throw UnimplementedError();
 
   @override

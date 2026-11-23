@@ -51,13 +51,27 @@ class LoanRemoteDataSource {
     query: {"page": page, "limit": limit},
   );
 
+  /// [idempotencyKey] is sent as the `Idempotency-Key` header: the same key
+  /// on a retry returns the saved payment instead of recording it twice.
+  /// [collectedAt] is when the money was taken (device time).
   Future<dynamic> collectPayment({
     required String loanId,
     required int weekNumber,
     required double amount,
+    required String idempotencyKey,
+    required DateTime collectedAt,
   }) => _api.post(
     ApiEndpoints.collectPayment(loanId),
-    data: {"week_number": weekNumber, "amount_paid": amount},
+    headers: {'Idempotency-Key': idempotencyKey},
+    data: {
+      "week_number": weekNumber,
+      "amount_paid": amount,
+      // milliseconds only: what JavaScript dates hold
+      "collected_at": DateTime.fromMillisecondsSinceEpoch(
+        collectedAt.millisecondsSinceEpoch,
+        isUtc: true,
+      ).toIso8601String(),
+    },
   );
 
   Future<dynamic> issueLoan(Map<String, dynamic> payload) =>

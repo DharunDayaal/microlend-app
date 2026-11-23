@@ -32,10 +32,14 @@ abstract interface class LoanRepository {
     int limit = 20,
   });
 
+  /// Sends one payment. Retrying with the same [idempotencyKey] is safe:
+  /// the server returns the saved payment (`replayed`) instead of a second.
   Future<PaymentResultModel> collectPayment({
     required String loanId,
     required int weekNumber,
     required double amount,
+    required String idempotencyKey,
+    required DateTime collectedAt,
   });
 
   Future<LoanModel> issueLoan({

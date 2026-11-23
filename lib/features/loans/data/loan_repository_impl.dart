@@ -96,11 +96,15 @@ class LoanRepositoryImpl implements LoanRepository {
     required String loanId,
     required int weekNumber,
     required double amount,
+    required String idempotencyKey,
+    required DateTime collectedAt,
   }) async {
     final res = await _remote.collectPayment(
       loanId: loanId,
       weekNumber: weekNumber,
       amount: amount,
+      idempotencyKey: idempotencyKey,
+      collectedAt: collectedAt,
     );
     return PaymentResultDto.fromJson(res['data']);
   }

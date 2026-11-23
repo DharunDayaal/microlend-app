@@ -9,6 +9,7 @@ import 'package:micro_lending_app/shared/widgets/app_segmented_tabs.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/payment_result.dart';
 import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
+import 'package:micro_lending_app/core/utils/uuid.dart';
 import 'package:micro_lending_app/shared/design_system/constants/alphas.dart';
 import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
 import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
@@ -142,6 +143,17 @@ class PaymentSheet extends ConsumerStatefulWidget {
 // ignore: unused_field
 enum _PaymentMethod { cash, upi }
 
+class _PaymentAttempt {
+  final String key;
+  final double amount;
+  final DateTime collectedAt;
+  const _PaymentAttempt({
+    required this.key,
+    required this.amount,
+    required this.collectedAt,
+  });
+}
+
 class _PaymentSheetState extends ConsumerState<PaymentSheet> {
   final _amountController = TextEditingController();
   final _focusNode = FocusNode();
@@ -233,6 +245,27 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
 
   void _changeAmount(double delta) => _setAmount(_amount + delta);
 
+  /// The last attempt whose outcome is unknown (network or server error).
+  _PaymentAttempt? _attempt;
+
+  /// Same amount as an unanswered attempt: send it again with the same
+  /// `Idempotency-Key` and collection time, so the server can't record it
+  /// twice. A new amount is a new payment with a new key.
+  _PaymentAttempt _attemptFor(double amount) {
+    final last = _attempt;
+    if (last != null && last.amount == amount) return last;
+    return _attempt = _PaymentAttempt(
+      key: uuidV4(),
+      amount: amount,
+      collectedAt: DateTime.now(),
+    );
+  }
+
+  static bool _mayHaveSaved(ApiException e) {
+    final code = e.statusCode;
+    return code == null || code >= 500;
+  }
+
   Future<void> collectPayment() async {
     final amount = _amount;
     if (amount <= 0) {
@@ -242,15 +275,22 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
 
     setState(() => _isSubmitting = true);
     try {
+      final attempt = _attemptFor(amount);
       final response = await ref
           .read(loanRepositoryProvider)
           .collectPayment(
             loanId: widget.loanId,
             weekNumber: widget.weekNumber,
             amount: amount,
+            idempotencyKey: attempt.key,
+            collectedAt: attempt.collectedAt,
           );
+      _attempt = null;
       if (mounted) Navigator.of(context).pop(response);
     } on ApiException catch (e) {
+      // A network or server error may have saved it anyway, so a retry
+      // reuses the key. Any other rejection saved nothing: start fresh.
+      if (!_mayHaveSaved(e)) _attempt = null;
       if (mounted) AppSnackbar.error(context, e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);

@@ -132,6 +132,8 @@ abstract final class PaymentResultDto {
           ((loan['total_payable_amount'] as num) -
                   (loan['total_collected'] as num? ?? 0))
               .toDouble(),
+      replayed: json['replayed'] as bool? ?? false,
+      flags: [for (final f in json['flags'] as List? ?? const []) f.toString()],
     );
   }
 }
