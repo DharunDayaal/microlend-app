@@ -8025,6 +8025,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Overdue — past the {weeks}-week term'**
   String payPastTermOverdue(int weeks);
+
+  /// No description provided for @payHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment history'**
+  String get payHistory;
+
+  /// No description provided for @payCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment} other{{count} payments}}'**
+  String payCount(int count);
+
+  /// No description provided for @payOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'of {amount}'**
+  String payOfTotal(String amount);
+
+  /// No description provided for @payWeeksPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'WEEKS PAID'**
+  String get payWeeksPaid;
+
+  /// No description provided for @payWeeksPaidValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{paid} of {total}'**
+  String payWeeksPaidValue(int paid, int total);
+
+  /// No description provided for @payLastPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'LAST PAID'**
+  String get payLastPaid;
+
+  /// No description provided for @payWeekClearedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Week cleared'**
+  String get payWeekClearedShort;
+
+  /// No description provided for @payLeftForWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} left for this week'**
+  String payLeftForWeek(String amount);
+
+  /// No description provided for @payDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment details'**
+  String get payDetails;
+
+  /// No description provided for @payPaidOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on'**
+  String get payPaidOn;
+
+  /// No description provided for @payCollectedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected by'**
+  String get payCollectedBy;
+
+  /// No description provided for @payReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment reference'**
+  String get payReference;
+
+  /// No description provided for @payWeekRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Week record'**
+  String get payWeekRecord;
+
+  /// No description provided for @payOpenDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Open payment details'**
+  String get payOpenDetails;
 }
 
 class _AppLocalizationsDelegate

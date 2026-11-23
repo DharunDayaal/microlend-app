@@ -1,5 +1,6 @@
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/core/network/body_unwrap.dart';
+import 'package:micro_lending_app/core/network/response_parser.dart';
 import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/features/manage/domain/entities/team.dart';
 import 'package:micro_lending_app/features/manage/data/dtos/team_dto.dart';
@@ -91,7 +92,36 @@ class ManageRepositoryImpl implements ManageRepository {
         : null;
   }
 
+  /// The endpoint is paged (by name), but callers need the whole team for
+  /// pickers and counts, so every page is read. The counts
+  /// (`pending_count`, `pending_admin_approvals`) already cover the whole
+  /// team, so they come from the first page.
   @override
-  Future<TeamSummary> team({String? adminId}) async =>
-      TeamSummaryDto.fromJson(unwrapBody(await _remote.team(adminId)));
+  Future<TeamSummary> team({String? adminId}) async {
+    TeamSummary? first;
+    final members = <TeamMember>[];
+    final teams = <AdminTeam>[];
+    await fetchAllPages<Object>((page) async {
+      final body = unwrapBody(await _remote.team(adminId, page, kMaxPageLimit));
+      final summary = TeamSummaryDto.fromJson(body);
+      first ??= summary;
+      members.addAll(summary.members);
+      teams.addAll(summary.teams);
+      // one page of whichever list this view returns
+      return ResponseParser.pagedData<Object>(
+        body,
+        summary.isOverview ? 'teams' : 'members',
+        (j) => j,
+        page: page,
+      );
+    });
+    final f = first!;
+    return TeamSummary(
+      isOverview: f.isOverview,
+      members: members,
+      pendingCount: f.pendingCount,
+      teams: teams,
+      pendingAdminApprovals: f.pendingAdminApprovals,
+    );
+  }
 }

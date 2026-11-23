@@ -100,11 +100,13 @@ class CustomerDetailController extends Notifier<CustomerDetailState> {
 
   Future<void> _loans(int id, void Function(String)? onError) async {
     try {
-      final res = await ref.read(customerRepositoryProvider).loans(customerId);
-      if (_stale(id) || !res.success) return;
-      state = state.copyWith(loans: List.unmodifiable(res.loans));
+      final loans = await ref
+          .read(customerRepositoryProvider)
+          .loans(customerId);
+      if (_stale(id)) return;
+      state = state.copyWith(loans: List.unmodifiable(loans));
 
-      final current = res.loans
+      final current = loans
           .where((l) => CustomerDetailState._isOpen(l.status))
           .firstOrNull;
       if (current == null) {
@@ -122,13 +124,11 @@ class CustomerDetailController extends Notifier<CustomerDetailState> {
 
   Future<void> _referrals(int id, void Function(String)? onError) async {
     try {
-      final res = await ref
+      final referrals = await ref
           .read(customerRepositoryProvider)
           .referrals(customerId);
       if (_stale(id)) return;
-      if (res.success) {
-        state = state.copyWith(referrals: List.unmodifiable(res.referrals));
-      }
+      state = state.copyWith(referrals: List.unmodifiable(referrals));
     } on ApiException catch (e) {
       if (!_stale(id)) onError?.call(e.message);
     }

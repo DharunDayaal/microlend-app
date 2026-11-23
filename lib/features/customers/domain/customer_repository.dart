@@ -27,9 +27,23 @@ abstract interface class CustomerRepository {
 
   Future<CustomerDetails> details(String customerId);
 
-  /// Every loan the customer has had.
-  Future<CustomerLoans> loans(String customerId);
+  /// One page of the customer's loans, newest first.
+  Future<PagedResult<LoanItem>> loansPage(
+    String customerId, {
+    int page = 1,
+    int limit = kMaxPageLimit,
+  });
 
-  /// Customers this customer referred.
-  Future<CustomerReferrals> referrals(String customerId);
+  /// Every loan the customer has had (all pages).
+  Future<List<LoanItem>> loans(String customerId);
+
+  /// One page of the customers this customer referred, newest first.
+  Future<PagedResult<ReferralItem>> referralsPage(
+    String customerId, {
+    int page = 1,
+    int limit = kMaxPageLimit,
+  });
+
+  /// Every customer this customer referred (all pages).
+  Future<List<ReferralItem>> referrals(String customerId);
 }

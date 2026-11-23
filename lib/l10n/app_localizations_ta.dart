@@ -4658,4 +4658,60 @@ class AppLocalizationsTa extends AppLocalizations {
   String payPastTermOverdue(int weeks) {
     return 'நிலுவை — $weeks வார காலம் கடந்தது';
   }
+
+  @override
+  String get payHistory => 'கட்டண வரலாறு';
+
+  @override
+  String payCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count கட்டணங்கள்',
+      one: '1 கட்டணம்',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String payOfTotal(String amount) {
+    return '$amount-இல்';
+  }
+
+  @override
+  String get payWeeksPaid => 'செலுத்திய வாரங்கள்';
+
+  @override
+  String payWeeksPaidValue(int paid, int total) {
+    return '$total-இல் $paid';
+  }
+
+  @override
+  String get payLastPaid => 'கடைசி கட்டணம்';
+
+  @override
+  String get payWeekClearedShort => 'வாரம் முடிந்தது';
+
+  @override
+  String payLeftForWeek(String amount) {
+    return 'இந்த வாரத்திற்கு $amount மீதம்';
+  }
+
+  @override
+  String get payDetails => 'கட்டண விவரங்கள்';
+
+  @override
+  String get payPaidOn => 'செலுத்திய நேரம்';
+
+  @override
+  String get payCollectedBy => 'வசூலித்தவர்';
+
+  @override
+  String get payReference => 'கட்டண குறிப்பு எண்';
+
+  @override
+  String get payWeekRecord => 'வாரப் பதிவு';
+
+  @override
+  String get payOpenDetails => 'கட்டண விவரங்களைத் திற';
 }

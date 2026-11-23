@@ -1,3 +1,4 @@
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 
 class ResponseParser {
@@ -28,5 +29,35 @@ class ResponseParser {
     final data = res is Map ? res['data'] : null;
     final meta = data is Map ? data['metadata'] : null;
     return meta is Map && meta['has_next_page'] == true;
+  }
+
+  /// A full response body `{ data: { [key]: [...], metadata } }` as a page.
+  static PagedResult<T> paged<T>(
+    dynamic res,
+    String key,
+    T Function(Map<String, dynamic>) make, {
+    required int page,
+  }) => pagedData(_data(res), key, make, page: page);
+
+  /// The same from the `data` map itself (what the analytics gateway and
+  /// `unwrapBody` hand back). `current_page` wins over the requested page.
+  static PagedResult<T> pagedData<T>(
+    dynamic data,
+    String key,
+    T Function(Map<String, dynamic>) make, {
+    required int page,
+  }) {
+    final list = data is Map ? data[key] : null;
+    final meta = data is Map ? data['metadata'] : null;
+    final current = meta is Map ? meta['current_page'] : null;
+    return PagedResult(
+      items: [
+        if (list is List)
+          for (final e in list)
+            if (e is Map) make(Map<String, dynamic>.from(e)),
+      ],
+      page: current is int ? current : page,
+      hasNextPage: meta is Map && meta['has_next_page'] == true,
+    );
   }
 }

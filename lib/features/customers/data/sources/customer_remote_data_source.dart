@@ -29,9 +29,13 @@ class CustomerRemoteDataSource {
   Future<dynamic> details(String customerId) =>
       _api.get(ApiEndpoints.getCustomerDetails(customerId));
 
-  Future<dynamic> loans(String customerId) =>
-      _api.get(ApiEndpoints.getCustomerLoans(customerId));
+  Future<dynamic> loans(String customerId, int page, int limit) => _api.get(
+    ApiEndpoints.getCustomerLoans(customerId),
+    query: {'page': page, 'limit': limit},
+  );
 
-  Future<dynamic> referrals(String customerId) =>
-      _api.get(ApiEndpoints.getCustomerReferrals(customerId));
+  Future<dynamic> referrals(String customerId, int page, int limit) => _api.get(
+    ApiEndpoints.getCustomerReferrals(customerId),
+    query: {'page': page, 'limit': limit},
+  );
 }

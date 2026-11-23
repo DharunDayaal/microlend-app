@@ -166,7 +166,8 @@ class ExportsController extends Notifier<ExportsState> {
     });
     final epoch = _epoch;
     try {
-      final list = await ref.read(exportRepositoryProvider).list();
+      // the first page (20, newest first), as before
+      final list = (await ref.read(exportRepositoryProvider).list()).items;
       if (epoch != _epoch || !ref.mounted) return;
 
       final keep = state.jobs.values.where(

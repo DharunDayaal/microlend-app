@@ -1008,7 +1008,8 @@ class ReferralsCard extends StatelessWidget {
       cacheKey: 'refs|${f.scopeKey}',
       title: context.l10n.anTopReferrers,
       skeletonHeight: 150,
-      load: (ref) => ref.analytics.referrals(scope: f.scope('admin')),
+      load: (ref) async =>
+          (await ref.analytics.referrals(scope: f.scope('admin'))).items,
       builder: (context, list) => AnalyticsFrame(
         title: context.l10n.anTopReferrers,
         child: list.isEmpty
@@ -1059,11 +1060,11 @@ class _GeographyCardState extends State<GeographyCard> {
       cacheKey: 'geo|${widget.platform}|$_level|${f.scopeKey}',
       title: context.l10n.anGeography,
       skeletonHeight: 200,
-      load: (ref) => ref.analytics.geography(
+      load: (ref) async => (await ref.analytics.geography(
         level: _level,
         platform: widget.platform,
         scope: f.scope('admin'),
-      ),
+      )).items,
       builder: (context, areas) {
         final maxV = areas.fold<double>(
           0,

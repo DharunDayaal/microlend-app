@@ -1,3 +1,4 @@
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/features/profile/domain/entities/profile.dart';
 
 /// The signed-in user's own account: profile, defaults, security, numbers.
@@ -20,6 +21,13 @@ abstract interface class ProfileRepository {
     String? refreshToken,
   });
 
+  /// One page of active sessions, newest first.
+  Future<PagedResult<SessionInfo>> sessionsPage({
+    int page = 1,
+    int limit = kMaxPageLimit,
+  });
+
+  /// Every active session (all pages).
   Future<List<SessionInfo>> getSessions();
   Future<void> deleteSession(String id);
   Future<void> deleteAllSessions();

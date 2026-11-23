@@ -104,8 +104,8 @@ class _IssueLoanScreenState extends ConsumerState<IssueLoanScreen> {
   }
 
   Future<LoanItem?> _findOpenLoan(String customerId) async {
-    final res = await ref.read(customerRepositoryProvider).loans(customerId);
-    return res.loans.where((l) {
+    final loans = await ref.read(customerRepositoryProvider).loans(customerId);
+    return loans.where((l) {
       final s = l.status.toUpperCase();
       return s == 'ACTIVE' || s == 'OVERDUE';
     }).firstOrNull;

@@ -1316,5 +1316,19 @@
   "audMoreCount": "+{count} மேலும்",
   "audYesterday": "நேற்று",
   "trackerNothingLeft": "இந்தக் கடனில் வசூலிக்க எதுவும் இல்லை.",
-  "payPastTermOverdue": "நிலுவை — {weeks} வார காலம் கடந்தது"
+  "payPastTermOverdue": "நிலுவை — {weeks} வார காலம் கடந்தது",
+  "payHistory": "கட்டண வரலாறு",
+  "payCount": "{count, plural, =1{1 கட்டணம்} other{{count} கட்டணங்கள்}}",
+  "payOfTotal": "{amount}-இல்",
+  "payWeeksPaid": "செலுத்திய வாரங்கள்",
+  "payWeeksPaidValue": "{total}-இல் {paid}",
+  "payLastPaid": "கடைசி கட்டணம்",
+  "payWeekClearedShort": "வாரம் முடிந்தது",
+  "payLeftForWeek": "இந்த வாரத்திற்கு {amount} மீதம்",
+  "payDetails": "கட்டண விவரங்கள்",
+  "payPaidOn": "செலுத்திய நேரம்",
+  "payCollectedBy": "வசூலித்தவர்",
+  "payReference": "கட்டண குறிப்பு எண்",
+  "payWeekRecord": "வாரப் பதிவு",
+  "payOpenDetails": "கட்டண விவரங்களைத் திற"
 }

@@ -1,3 +1,4 @@
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:flutter/foundation.dart';
 import 'package:micro_lending_app/features/analytics/domain/entities/analytics.dart';
 import 'package:micro_lending_app/features/analytics/domain/entities/analytics_status.dart';
@@ -97,15 +98,20 @@ abstract interface class AnalyticsRepository {
 
   Future<RepeatData> repeat({Map<String, dynamic> scope = const {}});
 
-  Future<List<Referrer>> referrals({
+  /// One page of referrers, most referrals first (limit max 50).
+  Future<PagedResult<Referrer>> referrals({
+    int page = 1,
     int limit = 10,
     Map<String, dynamic> scope = const {},
   });
 
+  /// One page of areas, highest outstanding first (limit max 100).
   /// Platform routes take no scope filters.
-  Future<List<GeoArea>> geography({
+  Future<PagedResult<GeoArea>> geography({
     required String level, // district, city
     bool platform = false,
+    int page = 1,
+    int limit = 50,
     Map<String, dynamic> scope = const {},
   });
 
@@ -134,6 +140,15 @@ abstract interface class AnalyticsRepository {
 
   Future<Overview> spOverview();
 
+  /// One page of admins, highest collections first.
+  Future<PagedResult<AdminPerf>> spAdminsPage({
+    required String from,
+    required String to,
+    int page = 1,
+    int limit = kMaxPageLimit,
+  });
+
+  /// Every admin (all pages).
   Future<List<AdminPerf>> spAdmins({required String from, required String to});
 
   Future<List<GrowthPoint>> spGrowth({
@@ -151,7 +166,9 @@ abstract interface class AnalyticsRepository {
 
   Future<List<AgingBucket>> spAging();
 
-  Future<Map<String, dynamic>> spConcentration({int limit = 10});
+  /// The platform totals and `by_admin` (always whole-platform), plus one
+  /// page of `top_exposures` (limit max 50).
+  Future<Concentration> spConcentration({int page = 1, int limit = 10});
 
   Future<Map<String, dynamic>> spAccounts();
 }

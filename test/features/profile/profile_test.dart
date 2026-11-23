@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/core/storage/storage_providers.dart';
 import 'package:micro_lending_app/features/manage/data/manage_providers.dart';
 import 'package:micro_lending_app/features/profile/data/dtos/profile_dto.dart';
@@ -54,6 +55,13 @@ class FakeProfileRepository implements ProfileRepository {
     calls.add('stats|$range|$scope|$adminId');
     return ProfileStatsDto.fromJson({'range': range, 'collected': 1500});
   }
+
+  @override
+  Future<PagedResult<SessionInfo>> sessionsPage({
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async =>
+      PagedResult(items: await getSessions(), page: page, hasNextPage: false);
 
   @override
   Future<List<SessionInfo>> getSessions() async {

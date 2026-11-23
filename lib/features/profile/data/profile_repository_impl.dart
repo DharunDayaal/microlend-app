@@ -1,5 +1,7 @@
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/core/network/body_unwrap.dart';
+import 'package:micro_lending_app/core/network/response_parser.dart';
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/features/profile/data/dtos/profile_dto.dart';
 import 'package:micro_lending_app/features/profile/data/sources/profile_remote_data_source.dart';
 import 'package:micro_lending_app/features/profile/domain/entities/profile.dart';
@@ -63,8 +65,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<List<SessionInfo>> getSessions() async =>
-      _list(await _remote.getSessions(), 'sessions', SessionInfoDto.fromJson);
+  Future<PagedResult<SessionInfo>> sessionsPage({
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async => ResponseParser.pagedData(
+    unwrapBody(await _remote.getSessions(page, limit)),
+    'sessions',
+    SessionInfoDto.fromJson,
+    page: page,
+  );
+
+  @override
+  Future<List<SessionInfo>> getSessions() =>
+      fetchAllPages((page) => sessionsPage(page: page));
 
   @override
   Future<void> deleteSession(String id) async {

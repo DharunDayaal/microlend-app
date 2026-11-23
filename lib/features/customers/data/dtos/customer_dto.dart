@@ -104,17 +104,6 @@ abstract final class ReferralStatsDto {
   }
 }
 
-abstract final class CustomerReferralsDto {
-  static CustomerReferrals fromJson(Map<String, dynamic> json) {
-    final list = json['data']?['referrals'] as List? ?? [];
-    return CustomerReferrals(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
-      referrals: list.map((item) => ReferralItemDto.fromJson(item)).toList(),
-    );
-  }
-}
-
 abstract final class ReferralItemDto {
   static ReferralItem fromJson(Map<String, dynamic> json) {
     return ReferralItem(
@@ -126,17 +115,6 @@ abstract final class ReferralItemDto {
       createdAt: DateTime.parse(
         json['created_at'] ?? DateTime.now().toIso8601String(),
       ),
-    );
-  }
-}
-
-abstract final class CustomerLoansDto {
-  static CustomerLoans fromJson(Map<String, dynamic> json) {
-    final list = json['data']?['loans'] as List? ?? [];
-    return CustomerLoans(
-      success: json['success'] ?? false,
-      message: json['message'] ?? '',
-      loans: list.map((item) => LoanItemDto.fromJson(item)).toList(),
     );
   }
 }

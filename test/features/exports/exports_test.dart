@@ -1,3 +1,5 @@
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -57,7 +59,8 @@ class FakeExportRepository implements ExportRepository {
   }) async => ExportCreated(job('j1'), false);
 
   @override
-  Future<List<ExportJob>> list() async => listed;
+  Future<PagedResult<ExportJob>> list({int page = 1, int limit = 20}) async =>
+      PagedResult(items: listed, page: page, hasNextPage: false);
 }
 
 class FakeExportFiles implements ExportFiles {

@@ -137,18 +137,6 @@ class ReferralStats {
   });
 }
 
-class CustomerReferrals {
-  final bool success;
-  final String message;
-  final List<ReferralItem> referrals;
-
-  CustomerReferrals({
-    required this.success,
-    required this.message,
-    required this.referrals,
-  });
-}
-
 class ReferralItem {
   final String id;
   final String customerName;
@@ -164,18 +152,6 @@ class ReferralItem {
     required this.referredById,
     required this.preferredPaymentDay,
     required this.createdAt,
-  });
-}
-
-class CustomerLoans {
-  final bool success;
-  final String message;
-  final List<LoanItem> loans;
-
-  CustomerLoans({
-    required this.success,
-    required this.message,
-    required this.loans,
   });
 }
 

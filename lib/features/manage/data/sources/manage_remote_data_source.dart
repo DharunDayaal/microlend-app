@@ -54,6 +54,8 @@ class ManageRemoteDataSource {
   Future<dynamic> createEmployee(Map<String, dynamic> body) =>
       _api.post(ApiEndpoints.createEmployee, data: body, auth: true);
 
-  Future<dynamic> team(String? adminId) =>
-      _api.get(ApiEndpoints.meTeam, query: {'admin_id': ?adminId});
+  Future<dynamic> team(String? adminId, int page, int limit) => _api.get(
+    ApiEndpoints.meTeam,
+    query: {'admin_id': ?adminId, 'page': page, 'limit': limit},
+  );
 }

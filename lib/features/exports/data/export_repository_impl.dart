@@ -1,3 +1,5 @@
+import 'package:micro_lending_app/core/network/response_parser.dart';
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/core/network/body_unwrap.dart';
 import 'package:micro_lending_app/features/exports/data/dtos/export_dto.dart';
@@ -38,13 +40,11 @@ class ExportRepositoryImpl implements ExportRepository {
   Future<ExportJob> get(String id) async => _job(await _remote.get(id));
 
   @override
-  Future<List<ExportJob>> list() async {
-    final v = unwrapBody(await _remote.list())['exports'];
-    return v is List
-        ? [
-            for (final e in v)
-              if (e is Map) ExportJobDto.fromJson(Map<String, dynamic>.from(e)),
-          ]
-        : <ExportJob>[];
-  }
+  Future<PagedResult<ExportJob>> list({int page = 1, int limit = 20}) async =>
+      ResponseParser.pagedData(
+        unwrapBody(await _remote.list(page, limit)),
+        'exports',
+        ExportJobDto.fromJson,
+        page: page,
+      );
 }

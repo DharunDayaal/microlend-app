@@ -357,16 +357,15 @@ class ConcentrationCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     double n(dynamic v) => (num.tryParse('$v') ?? 0).toDouble();
 
-    return AsyncCard<Map<String, dynamic>>(
+    return AsyncCard<Concentration>(
       cacheKey: 'sp-conc|${f.tick}',
       title: context.l10n.anRiskConcentration,
       skeletonHeight: 240,
       load: (ref) => ref.analytics.spConcentration(),
-      builder: (context, d) {
+      builder: (context, c) {
+        final d = c.data;
         final admins = (d['by_admin'] as List? ?? []).whereType<Map>().toList();
-        final top = (d['top_exposures'] as List? ?? [])
-            .whereType<Map>()
-            .toList();
+        final top = c.topExposures.items;
 
         return Column(
           children: [

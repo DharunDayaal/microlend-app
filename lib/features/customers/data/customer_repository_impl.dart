@@ -69,10 +69,34 @@ class CustomerRepositoryImpl implements CustomerRepository {
       CustomerDetailsDto.fromJson(await _remote.details(customerId));
 
   @override
-  Future<CustomerLoans> loans(String customerId) async =>
-      CustomerLoansDto.fromJson(await _remote.loans(customerId));
+  Future<PagedResult<LoanItem>> loansPage(
+    String customerId, {
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async => ResponseParser.paged(
+    await _remote.loans(customerId, page, limit),
+    'loans',
+    LoanItemDto.fromJson,
+    page: page,
+  );
 
   @override
-  Future<CustomerReferrals> referrals(String customerId) async =>
-      CustomerReferralsDto.fromJson(await _remote.referrals(customerId));
+  Future<List<LoanItem>> loans(String customerId) =>
+      fetchAllPages((page) => loansPage(customerId, page: page));
+
+  @override
+  Future<PagedResult<ReferralItem>> referralsPage(
+    String customerId, {
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async => ResponseParser.paged(
+    await _remote.referrals(customerId, page, limit),
+    'referrals',
+    ReferralItemDto.fromJson,
+    page: page,
+  );
+
+  @override
+  Future<List<ReferralItem>> referrals(String customerId) =>
+      fetchAllPages((page) => referralsPage(customerId, page: page));
 }

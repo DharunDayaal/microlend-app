@@ -13,6 +13,6 @@ class CustomerBorrowerLookup implements BorrowerLookup {
       _customers.details(customerId);
 
   @override
-  Future<List<LoanItem>> loansOf(String customerId) async =>
-      (await _customers.loans(customerId)).loans;
+  Future<List<LoanItem>> loansOf(String customerId) =>
+      _customers.loans(customerId);
 }

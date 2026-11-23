@@ -1,3 +1,5 @@
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
+
 double? _n(dynamic v) => v == null ? null : num.tryParse('$v')?.toDouble();
 double _d(dynamic v) => _n(v) ?? 0;
 int _i(dynamic v) => (_n(v) ?? 0).round();
@@ -306,6 +308,14 @@ class WeekdayRow {
 }
 
 typedef Json = Map<String, dynamic>;
+
+/// Risk concentration: [data] keeps `total_outstanding` and `by_admin` (whole
+/// platform); [topExposures] is one page of the largest exposures.
+class Concentration {
+  final Json data;
+  final PagedResult<Json> topExposures;
+  const Concentration(this.data, this.topExposures);
+}
 
 class PagedRows<T> {
   final List<T> rows;

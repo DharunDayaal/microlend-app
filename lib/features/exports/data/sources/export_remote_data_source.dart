@@ -11,5 +11,6 @@ class ExportRemoteDataSource {
 
   Future<dynamic> get(String id) => _api.get(ApiEndpoints.exportById(id));
 
-  Future<dynamic> list() => _api.get(ApiEndpoints.exports);
+  Future<dynamic> list(int page, int limit) =>
+      _api.get(ApiEndpoints.exports, query: {'page': page, 'limit': limit});
 }

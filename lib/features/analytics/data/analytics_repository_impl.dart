@@ -1,3 +1,5 @@
+import 'package:micro_lending_app/core/pagination/paged_result.dart';
+import 'package:micro_lending_app/core/network/response_parser.dart';
 import 'package:intl/intl.dart';
 import 'package:micro_lending_app/core/network/api_endpoints.dart';
 import 'package:micro_lending_app/features/analytics/data/analytics_gateway.dart';
@@ -234,25 +236,39 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
       RepeatData(await _admin('customers/repeat', scope));
 
   @override
-  Future<List<Referrer>> referrals({
+  Future<PagedResult<Referrer>> referrals({
+    int page = 1,
     int limit = 10,
     Map<String, dynamic> scope = const {},
-  }) => _list(
-    _admin('referrals/performance', {'limit': limit, ...scope}),
+  }) async => ResponseParser.pagedData(
+    await _admin('referrals/performance', {
+      'page': page,
+      'limit': limit,
+      ...scope,
+    }),
     'referrers',
     Referrer.new,
+    page: page,
   );
 
   /// Platform routes take no scope filters.
   @override
-  Future<List<GeoArea>> geography({
+  Future<PagedResult<GeoArea>> geography({
     required String level, // district, city
     bool platform = false,
+    int page = 1,
+    int limit = 50,
     Map<String, dynamic> scope = const {},
-  }) => _list(
-    _level(platform, 'geography', {'level': level, if (!platform) ...scope}),
+  }) async => ResponseParser.pagedData(
+    await _level(platform, 'geography', {
+      'level': level,
+      'page': page,
+      'limit': limit,
+      if (!platform) ...scope,
+    }),
     'areas',
     GeoArea.new,
+    page: page,
   );
 
   // ---------- admin: team and forecast ----------
@@ -313,14 +329,29 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   Future<Overview> spOverview() async => Overview(await _super('overview'));
 
   @override
+  Future<PagedResult<AdminPerf>> spAdminsPage({
+    required String from,
+    required String to,
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async => ResponseParser.pagedData(
+    await _super('admins/performance', {
+      'from': from,
+      'to': to,
+      'page': page,
+      'limit': limit,
+    }),
+    'admins',
+    AdminPerf.new,
+    page: page,
+  );
+
+  /// The card and the split trend name every admin, so read all pages.
+  @override
   Future<List<AdminPerf>> spAdmins({
     required String from,
     required String to,
-  }) => _list(
-    _super('admins/performance', {'from': from, 'to': to}),
-    'admins',
-    AdminPerf.new,
-  );
+  }) => fetchAllPages((page) => spAdminsPage(from: from, to: to, page: page));
 
   @override
   Future<List<GrowthPoint>> spGrowth({
@@ -355,8 +386,16 @@ class AnalyticsRepositoryImpl implements AnalyticsRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> spConcentration({int limit = 10}) =>
-      _super('risk/concentration', {'limit': limit});
+  Future<Concentration> spConcentration({int page = 1, int limit = 10}) async {
+    final d = await _super('risk/concentration', {
+      'page': page,
+      'limit': limit,
+    });
+    return Concentration(
+      d,
+      ResponseParser.pagedData(d, 'top_exposures', (j) => j, page: page),
+    );
+  }
 
   @override
   Future<Map<String, dynamic>> spAccounts() => _super('accounts/summary');

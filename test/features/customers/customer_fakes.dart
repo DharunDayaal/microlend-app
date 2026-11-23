@@ -29,11 +29,8 @@ CustomerDetails customerDetails(String id, {bool success = true}) =>
       },
     });
 
-CustomerLoans customerLoans(List<Map<String, dynamic>> loans) =>
-    CustomerLoansDto.fromJson({
-      'success': true,
-      'data': {'loans': loans},
-    });
+List<LoanItem> customerLoans(List<Map<String, dynamic>> loans) =>
+    loans.map(LoanItemDto.fromJson).toList();
 
 /// In-memory [CustomerRepository]. Set fields to steer each test.
 class FakeCustomerRepository implements CustomerRepository {
@@ -47,11 +44,8 @@ class FakeCustomerRepository implements CustomerRepository {
   ApiException? failSummary;
   ApiException? failDetails;
   ApiException? failReferrals;
-  CustomerLoans loanList = customerLoans([]);
-  CustomerReferrals referralList = CustomerReferralsDto.fromJson({
-    'success': true,
-    'data': {'referrals': []},
-  });
+  List<LoanItem> loanList = const [];
+  List<ReferralItem> referralList = const [];
 
   @override
   Future<DashboardSummary> dashboardSummary() async {
@@ -80,10 +74,28 @@ class FakeCustomerRepository implements CustomerRepository {
   }
 
   @override
-  Future<CustomerLoans> loans(String customerId) async => loanList;
+  Future<PagedResult<LoanItem>> loansPage(
+    String customerId, {
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async => PagedResult(items: loanList, page: page, hasNextPage: false);
 
   @override
-  Future<CustomerReferrals> referrals(String customerId) async {
+  Future<List<LoanItem>> loans(String customerId) async => loanList;
+
+  @override
+  Future<PagedResult<ReferralItem>> referralsPage(
+    String customerId, {
+    int page = 1,
+    int limit = kMaxPageLimit,
+  }) async => PagedResult(
+    items: await referrals(customerId),
+    page: page,
+    hasNextPage: false,
+  );
+
+  @override
+  Future<List<ReferralItem>> referrals(String customerId) async {
     if (failReferrals != null) throw failReferrals!;
     return referralList;
   }

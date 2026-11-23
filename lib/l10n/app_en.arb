@@ -3377,5 +3377,50 @@
         "type": "int"
       }
     }
-  }
+  },
+  "payHistory": "Payment history",
+  "payCount": "{count, plural, =1{1 payment} other{{count} payments}}",
+  "@payCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "payOfTotal": "of {amount}",
+  "@payOfTotal": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payWeeksPaid": "WEEKS PAID",
+  "payWeeksPaidValue": "{paid} of {total}",
+  "@payWeeksPaidValue": {
+    "placeholders": {
+      "paid": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "payLastPaid": "LAST PAID",
+  "payWeekClearedShort": "Week cleared",
+  "payLeftForWeek": "{amount} left for this week",
+  "@payLeftForWeek": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "payDetails": "Payment details",
+  "payPaidOn": "Paid on",
+  "payCollectedBy": "Collected by",
+  "payReference": "Payment reference",
+  "payWeekRecord": "Week record",
+  "payOpenDetails": "Open payment details"
 }

@@ -43,7 +43,8 @@ class ProfileRemoteDataSource {
     },
   );
 
-  Future<dynamic> getSessions() => _api.get(ApiEndpoints.meSessions);
+  Future<dynamic> getSessions(int page, int limit) =>
+      _api.get(ApiEndpoints.meSessions, query: {'page': page, 'limit': limit});
   Future<dynamic> deleteSession(String id) =>
       _api.delete(ApiEndpoints.meSession(id));
   Future<dynamic> deleteAllSessions() => _api.delete(ApiEndpoints.meSessions);

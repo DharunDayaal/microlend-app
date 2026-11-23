@@ -4616,4 +4616,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String payPastTermOverdue(int weeks) {
     return 'Overdue — past the $weeks-week term';
   }
+
+  @override
+  String get payHistory => 'Payment history';
+
+  @override
+  String payCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count payments',
+      one: '1 payment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String payOfTotal(String amount) {
+    return 'of $amount';
+  }
+
+  @override
+  String get payWeeksPaid => 'WEEKS PAID';
+
+  @override
+  String payWeeksPaidValue(int paid, int total) {
+    return '$paid of $total';
+  }
+
+  @override
+  String get payLastPaid => 'LAST PAID';
+
+  @override
+  String get payWeekClearedShort => 'Week cleared';
+
+  @override
+  String payLeftForWeek(String amount) {
+    return '$amount left for this week';
+  }
+
+  @override
+  String get payDetails => 'Payment details';
+
+  @override
+  String get payPaidOn => 'Paid on';
+
+  @override
+  String get payCollectedBy => 'Collected by';
+
+  @override
+  String get payReference => 'Payment reference';
+
+  @override
+  String get payWeekRecord => 'Week record';
+
+  @override
+  String get payOpenDetails => 'Open payment details';
 }
