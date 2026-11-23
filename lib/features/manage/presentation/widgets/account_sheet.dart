@@ -64,7 +64,7 @@ Future<void> showAccountSheet(
 String _num(double v) =>
     v == v.truncateToDouble() ? v.toInt().toString() : v.toStringAsFixed(1);
 
-class _AccountSheet extends StatelessWidget {
+class _AccountSheet extends StatefulWidget {
   final ManagedAccount a;
   final bool isAdminAccount;
   final bool showAdminName;
@@ -77,133 +77,157 @@ class _AccountSheet extends StatelessWidget {
     required this.actions,
   });
 
-  Future<void> _do(
-    BuildContext context,
-    Future<bool> Function(ManagedAccount) f,
-  ) async {
-    final ok = await f(a);
-    // the sheet may have been closed while the request ran
-    if (ok && context.mounted) context.popIfTop();
+  @override
+  State<_AccountSheet> createState() => _AccountSheetState();
+}
+
+class _AccountSheetState extends State<_AccountSheet> {
+  /// An action (its confirm dialog and request) is running: the sheet
+  /// can't be closed and the buttons wait.
+  bool _busy = false;
+
+  Future<void> _do(Future<bool> Function(ManagedAccount) f) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    bool ok = false;
+    try {
+      ok = await f(widget.a);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (ok && mounted) context.popIfTop();
   }
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
+    final a = widget.a;
+    final isAdminAccount = widget.isAdminAccount;
+    final showAdminName = widget.showAdminName;
+    final actions = widget.actions;
     final (label, color) = statusLook(context, a.status);
 
-    return FractionallySizedBox(
-      heightFactor: 0.88,
-      child: ListView(
-        padding: const EdgeInsets.all(AppSizes.lg),
-        children: [
-          Row(
-            children: [
-              AppNameCard(name: a.displayName, width: 56, height: 56),
-              AppGap.w12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      a.displayName,
-                      style: text.headlineSmall,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Wrap(
-                      spacing: AppSizes.sm,
-                      children: [
-                        Pill(label, color),
-                        Pill(
-                          a.role.l10nLabel(context).toUpperCase(),
-                          roleColor(a.role),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          AppGap.h16,
-          AnalyticsFrame(
-            child: Column(
+    return BusySheetGuard(
+      busy: _busy,
+      child: FractionallySizedBox(
+        heightFactor: 0.88,
+        child: ListView(
+          padding: const EdgeInsets.all(AppSizes.lg),
+          children: [
+            Row(
               children: [
-                InfoRow(
-                  icon: Icons.phone_outlined,
-                  label: context.l10n.accPhone,
-                  value: a.phone.isEmpty
-                      ? '--'
-                      : PhoneFormatter.display(a.phone),
-                  trailing: a.phone.isEmpty
-                      ? null
-                      : CallIconButton(phone: a.phone),
-                ),
-                const Divider(height: 1, color: AppColors.darkBorder),
-                InfoRow(
-                  icon: Icons.mail_outline,
-                  label: context.l10n.accEmail,
-                  value: a.email.isEmpty ? context.l10n.accNotAdded : a.email,
-                ),
-                const Divider(height: 1, color: AppColors.darkBorder),
-                InfoRow(
-                  icon: Icons.event_outlined,
-                  label: context.l10n.accJoined,
-                  value: DateFormatter.date(a.createdAt),
-                ),
-                if (!isAdminAccount &&
-                    showAdminName &&
-                    (a.adminName ?? '').isNotEmpty) ...[
-                  const Divider(height: 1, color: AppColors.darkBorder),
-                  InfoRow(
-                    icon: Icons.admin_panel_settings_outlined,
-                    label: context.l10n.empWorksUnder,
-                    value: a.adminName!,
+                AppNameCard(name: a.displayName, width: 56, height: 56),
+                AppGap.w12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        a.displayName,
+                        style: text.headlineSmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: AppSizes.sm,
+                        children: [
+                          Pill(label, color),
+                          Pill(
+                            a.role.l10nLabel(context).toUpperCase(),
+                            roleColor(a.role),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-                if (a.fee != null) ...[
-                  const Divider(height: 1, color: AppColors.darkBorder),
-                  InfoRow(
-                    icon: Icons.tune_rounded,
-                    label: isAdminAccount
-                        ? context.l10n.empLoanDefaults
-                        : context.l10n.accLoanDefaultsOwn,
-                    value: context.l10n.accDefaultsLine(
-                      _num(a.fee!),
-                      _num(a.interest ?? 0),
-                      _num(a.months ?? 0),
-                    ),
-                  ),
-                ],
+                ),
               ],
             ),
-          ),
-          AppGap.h16,
-          if (isAdminAccount) _TeamSection(a: a) else _EmployeeSection(a: a),
-          AppGap.h16,
-          AppButton(
-            label: context.l10n.commonHistory,
-            outlined: true,
-            prefixIcon: Icons.history_rounded,
-            radius: AppSizes.md,
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.push(
-                AppRoutes.auditFor(targetId: a.id, label: a.displayName),
-              );
-            },
-          ),
-          AppGap.h12,
-          AccountActionBar(
-            status: a.status,
-            busy: false,
-            onApprove: () => _do(context, actions.approve),
-            onReject: () => _do(context, actions.reject),
-            onDeactivate: () => _do(context, actions.deactivate),
-            onReactivate: () => _do(context, actions.reactivate),
-          ),
-        ],
+            AppGap.h16,
+            AnalyticsFrame(
+              child: Column(
+                children: [
+                  InfoRow(
+                    icon: Icons.phone_outlined,
+                    label: context.l10n.accPhone,
+                    value: a.phone.isEmpty
+                        ? '--'
+                        : PhoneFormatter.display(a.phone),
+                    trailing: a.phone.isEmpty
+                        ? null
+                        : CallIconButton(phone: a.phone),
+                  ),
+                  const Divider(height: 1, color: AppColors.darkBorder),
+                  InfoRow(
+                    icon: Icons.mail_outline,
+                    label: context.l10n.accEmail,
+                    value: a.email.isEmpty ? context.l10n.accNotAdded : a.email,
+                  ),
+                  const Divider(height: 1, color: AppColors.darkBorder),
+                  InfoRow(
+                    icon: Icons.event_outlined,
+                    label: context.l10n.accJoined,
+                    value: DateFormatter.date(a.createdAt),
+                  ),
+                  if (!isAdminAccount &&
+                      showAdminName &&
+                      (a.adminName ?? '').isNotEmpty) ...[
+                    const Divider(height: 1, color: AppColors.darkBorder),
+                    InfoRow(
+                      icon: Icons.admin_panel_settings_outlined,
+                      label: context.l10n.empWorksUnder,
+                      value: a.adminName!,
+                    ),
+                  ],
+                  if (a.fee != null) ...[
+                    const Divider(height: 1, color: AppColors.darkBorder),
+                    InfoRow(
+                      icon: Icons.tune_rounded,
+                      label: isAdminAccount
+                          ? context.l10n.empLoanDefaults
+                          : context.l10n.accLoanDefaultsOwn,
+                      value: context.l10n.accDefaultsLine(
+                        _num(a.fee!),
+                        _num(a.interest ?? 0),
+                        _num(a.months ?? 0),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            AppGap.h16,
+            if (isAdminAccount) _TeamSection(a: a) else _EmployeeSection(a: a),
+            AppGap.h16,
+            AppButton(
+              label: context.l10n.commonHistory,
+              outlined: true,
+              prefixIcon: Icons.history_rounded,
+              radius: AppSizes.md,
+              onPressed: _busy
+                  ? null
+                  : () {
+                      Navigator.of(context).pop();
+                      context.push(
+                        AppRoutes.auditFor(
+                          targetId: a.id,
+                          label: a.displayName,
+                        ),
+                      );
+                    },
+            ),
+            AppGap.h12,
+            AccountActionBar(
+              status: a.status,
+              busy: _busy,
+              onApprove: () => _do(actions.approve),
+              onReject: () => _do(actions.reject),
+              onDeactivate: () => _do(actions.deactivate),
+              onReactivate: () => _do(actions.reactivate),
+            ),
+          ],
+        ),
       ),
     );
   }
