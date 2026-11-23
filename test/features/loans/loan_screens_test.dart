@@ -51,6 +51,11 @@ void main() {
   testWidgets('payments, tracker and details screens build with data', (
     tester,
   ) async {
+    // the fake loan is past its term, so the tracker shows the taller
+    // overdue header; small-screen layout is a separate issue
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     for (final screen in const [
       LoanPaymentsScreen(loanId: 'l1'),
       LoanTrackerScreen(loanId: 'l1'),

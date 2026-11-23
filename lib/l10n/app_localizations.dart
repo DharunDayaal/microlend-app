@@ -8019,6 +8019,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing left to collect on this loan.'**
   String get trackerNothingLeft;
+
+  /// No description provided for @payPastTermOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue — past the {weeks}-week term'**
+  String payPastTermOverdue(int weeks);
 }
 
 class _AppLocalizationsDelegate

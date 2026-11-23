@@ -4653,4 +4653,9 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get trackerNothingLeft => 'இந்தக் கடனில் வசூலிக்க எதுவும் இல்லை.';
+
+  @override
+  String payPastTermOverdue(int weeks) {
+    return 'நிலுவை — $weeks வார காலம் கடந்தது';
+  }
 }

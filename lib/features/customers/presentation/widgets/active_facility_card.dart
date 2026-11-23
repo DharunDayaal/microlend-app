@@ -37,7 +37,7 @@ class ActiveFacilityCard extends StatelessWidget {
     if (changed == true) onLoanChanged?.call();
   }
 
-  bool get _overdue => loan.isOverdue || loan.status.toUpperCase() == 'OVERDUE';
+  bool get _overdue => loan.isOverdueNow;
 
   String _nextLabel(BuildContext context, DateTime? date) {
     final l = context.l10n;

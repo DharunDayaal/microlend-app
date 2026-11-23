@@ -15,7 +15,12 @@ class CustomerRemoteDataSource {
     required String search,
   }) => _api.get(
     ApiEndpoints.getCustomersByWeekday,
-    query: {'week': weekday, 'page': page, 'limit': limit, 'search': search},
+    query: {
+      'week': weekday,
+      'page': page,
+      'limit': limit,
+      if (search.isNotEmpty) 'search': search,
+    },
   );
 
   Future<dynamic> addCustomer(Map<String, dynamic> payload) =>

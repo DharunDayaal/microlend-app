@@ -1,3 +1,5 @@
+import 'package:micro_lending_app/features/loans/domain/loan_helper.dart';
+
 /// Loan entities used across the app. Plain Dart: no JSON here.
 /// Parsing lives in `features/loans/data/dtos/loan_dto.dart`.
 class LoanModel {
@@ -25,6 +27,18 @@ class LoanModel {
   final bool isOverdue;
   final String? customerName;
   final String? phoneNumber;
+
+  /// Overdue as the server says, or because the term has run out with money
+  /// still owed (the server flag can lag until the loan is re-read).
+  bool get isOverdueNow =>
+      isOverdue ||
+      status.toUpperCase() == 'OVERDUE' ||
+      LoanHelper.isOverdue(
+        issuedAt: issuedAt,
+        totalWeeks: totalWeeks,
+        isActive: status.toUpperCase() == 'ACTIVE',
+        balance: outstandingAmount,
+      );
 
   const LoanModel({
     required this.id,

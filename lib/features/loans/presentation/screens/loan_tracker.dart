@@ -107,7 +107,10 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
       customerId: _h.borrower?.id ?? '',
       customerName: _h.borrower?.customerName ?? '',
       loan: loan,
-      weekNumber: RepaymentRows.nextNewWeek(loan.tracks),
+      weekNumber: RepaymentRows.nextNewWeek(
+        loan.tracks,
+        issuedAt: loan.issuedAt,
+      ),
     );
 
     if (result != null) await _applyPayment(result);
@@ -410,7 +413,7 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
     final loan = _h.loan;
     final totalWeeks = loan?.totalWeeks ?? 0;
     final allTracks = loan?.tracks ?? const [];
-    final isOverdue = loan?.isOverdue ?? false;
+    final isOverdue = loan?.isOverdueNow ?? false;
 
     final highestTrackedWeek = allTracks.fold<int>(
       totalWeeks,
@@ -543,7 +546,7 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
       DateFormat('d MMM').format(dueDate),
     );
 
-    if (loan.isOverdue || diff < 0) {
+    if (loan.isOverdueNow || diff < 0) {
       return _DueInfo(
         title: context.l10n.statusOverdue,
         footer: diff < 0

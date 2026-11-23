@@ -492,9 +492,7 @@ class BorrowerTile extends StatelessWidget {
                         remainingBalance: borrowerLoan.outstandingAmount,
                         loanTracks: borrowerLoan.tracks,
                         issuedAt: borrowerLoan.issuedAt,
-                        isOverdueLoan:
-                            borrowerLoan.isOverdue ||
-                            borrowerLoan.status.toUpperCase() == 'OVERDUE',
+                        isOverdueLoan: borrowerLoan.isOverdueNow,
                         weeklyAmount: borrowerLoan.weeklyPayableAmount,
                       ),
                       backgroundColor: AppColors.darkRim,

@@ -16,6 +16,8 @@ LoanModel loan(
   String status = 'ACTIVE',
   double outstanding = 1000,
   List<LoanTrackModel> tracks = const [],
+  DateTime? issuedAt,
+  bool isOverdue = false,
 }) => LoanModel(
   id: id,
   customerId: customerId,
@@ -27,7 +29,7 @@ LoanModel loan(
   totalMonths: 3,
   totalWeeks: 12,
   status: status,
-  issuedAt: DateTime(2026, 1, 1),
+  issuedAt: issuedAt ?? DateTime(2026, 1, 1),
   issuedByAdminId: 'a1',
   updatedAt: DateTime(2026, 1, 1),
   owningAdminId: 'a1',
@@ -37,7 +39,7 @@ LoanModel loan(
   tracks: tracks,
   outstandingAmount: outstanding,
   preferredPaymentDay: 'MONDAY',
-  isOverdue: false,
+  isOverdue: isOverdue,
 );
 
 LoanTrackModel track(int week, {String status = 'PAID'}) => LoanTrackModel(

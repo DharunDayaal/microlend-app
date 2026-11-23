@@ -246,7 +246,7 @@ class _LoanStatusStyle {
     final l = context.l10n;
     var status = loan.status.toUpperCase();
     // the API can flag a still-ACTIVE loan as overdue
-    if (status == 'ACTIVE' && loan.isOverdue) status = 'OVERDUE';
+    if (status == 'ACTIVE' && loan.isOverdueNow) status = 'OVERDUE';
 
     return switch (status) {
       'ACTIVE' => _LoanStatusStyle(

@@ -44,24 +44,40 @@ class RepaymentRow {
 class RepaymentRows {
   RepaymentRows._();
 
-  /// The week "Record weekly payment" opens: the one after the latest week
-  /// that has money against it. Earlier unpaid weeks are left as they are
-  /// (missed); they are paid only through their own Collect button.
-  static int nextNewWeek(List<LoanTrackModel> tracks) =>
-      tracks
-          .where(
-            (t) =>
-                t.totalCollected > 0 ||
-                const {'PAID', 'PARTIAL'}.contains(t.status.toUpperCase()),
-          )
-          .fold<int>(0, (last, t) => math.max(last, t.weekNumber)) +
-      1;
+  /// The week "Record weekly payment" opens: the next scheduled week, the
+  /// first one due today or later, and never one at or before the latest
+  /// week that has money against it. Missed weeks are not back-filled from
+  /// here; they stay unpaid until collected with their own Collect button.
+  /// Past the term this keeps counting (13, 14, ...) as overdue weeks.
+  static int nextNewWeek(
+    List<LoanTrackModel> tracks, {
+    required DateTime issuedAt,
+    DateTime? now,
+  }) {
+    final afterLatestPayment =
+        tracks
+            .where(
+              (t) =>
+                  t.totalCollected > 0 ||
+                  const {'PAID', 'PARTIAL'}.contains(t.status.toUpperCase()),
+            )
+            .fold<int>(0, (last, t) => math.max(last, t.weekNumber)) +
+        1;
+
+    final n = now ?? DateTime.now();
+    final today = DateTime(n.year, n.month, n.day);
+    var scheduled = 1;
+    while (LoanHelper.dueDateForWeek(issuedAt, scheduled).isBefore(today)) {
+      scheduled++;
+    }
+    return math.max(afterLatestPayment, scheduled);
+  }
 
   static List<RepaymentRow> fromLoan(LoanModel loan) => build(
     tracks: loan.tracks,
     totalWeeks: loan.totalWeeks,
     issuedAt: loan.issuedAt,
-    isOverdueLoan: loan.isOverdue || loan.status.toUpperCase() == 'OVERDUE',
+    isOverdueLoan: loan.isOverdueNow,
     weeklyAmount: loan.weeklyPayableAmount,
   );
 
@@ -95,7 +111,7 @@ class RepaymentRows {
       final track = byWeek[week];
       final due = LoanHelper.dueDateForWeek(issuedAt, week);
       final status = (track?.status ?? 'UNPAID').toUpperCase();
-      final isExtension = isOverdueLoan && week > totalWeeks;
+      final isExtension = week > totalWeeks;
 
       RepaymentRowState state;
       if (status == 'PAID') {
@@ -212,8 +228,9 @@ class RepaymentTrackCard extends StatelessWidget {
         opacity = 0.6;
     }
 
-    // weeks past the loan's term on an overdue loan
+    // weeks past the loan's term are overdue, paid or not
     if (row.isExtension) {
+      if (!unpaid) sub = _join([sub, l.trackPastTerm(totalWeeks)]);
       border = AppColors.dangerContainer;
       tint = AppColors.dangerContainer.withAlpha(AppAlphas.watermark);
       opacity = 1;

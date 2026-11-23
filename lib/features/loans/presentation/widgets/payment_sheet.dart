@@ -19,7 +19,8 @@ import 'package:micro_lending_app/features/loans/domain/loan_helper.dart';
 import 'package:micro_lending_app/shared/helpers/snackbar_helper.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 
-enum PaymentStatus { newPayment, partial, unpaid }
+/// [overdue] is a new week past the loan's term.
+enum PaymentStatus { newPayment, partial, unpaid, overdue }
 
 class PaymentSheet extends ConsumerStatefulWidget {
   final String customerId;
@@ -108,6 +109,8 @@ class PaymentSheet extends ConsumerStatefulWidget {
     final PaymentStatus status;
     if (track != null && track.status == 'PARTIAL') {
       status = PaymentStatus.partial;
+    } else if (weekNumber > loan.totalWeeks) {
+      status = PaymentStatus.overdue;
     } else {
       final dueDate = LoanHelper.dueDateForWeek(loan.issuedAt, weekNumber);
       final today = DateTime.now();
@@ -182,7 +185,7 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
   Color get _statusColor => switch (widget.status) {
     PaymentStatus.newPayment => AppColors.stepCurrentLabel,
     PaymentStatus.partial => AppColors.warning,
-    PaymentStatus.unpaid => AppColors.progressDanger,
+    PaymentStatus.unpaid || PaymentStatus.overdue => AppColors.progressDanger,
   };
 
   String get _statusHeadline => switch (widget.status) {
@@ -190,13 +193,12 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
       _isDueToday ? context.l10n.payDueToday : context.l10n.payScheduledAhead,
     PaymentStatus.partial => context.l10n.payPartialOnFile,
     PaymentStatus.unpaid => context.l10n.payOverdueNotCollected,
+    PaymentStatus.overdue => context.l10n.payPastTermOverdue(widget.totalWeeks),
   };
 
   String get _statusDetail => switch (widget.status) {
-    PaymentStatus.newPayment => context.l10n.payWeekDate(
-      widget.weekNumber,
-      DateFormatter.date(_dueDate),
-    ),
+    PaymentStatus.newPayment || PaymentStatus.overdue =>
+      context.l10n.payWeekDate(widget.weekNumber, DateFormatter.date(_dueDate)),
     PaymentStatus.partial => context.l10n.payStillOwedForWeek(
       CurrencyFormatter.format(_remainingForWeek),
       widget.weekNumber,
@@ -337,7 +339,8 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
       PaymentStatus.newPayment =>
         _isDueToday ? Icons.today_rounded : Icons.event_available_rounded,
       PaymentStatus.partial => Icons.hourglass_bottom_rounded,
-      PaymentStatus.unpaid => Icons.error_outline_rounded,
+      PaymentStatus.unpaid ||
+      PaymentStatus.overdue => Icons.error_outline_rounded,
     };
 
     return Container(

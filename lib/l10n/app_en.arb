@@ -3369,5 +3369,13 @@
     }
   },
   "audYesterday": "Yesterday",
-  "trackerNothingLeft": "Nothing left to collect on this loan."
+  "trackerNothingLeft": "Nothing left to collect on this loan.",
+  "payPastTermOverdue": "Overdue — past the {weeks}-week term",
+  "@payPastTermOverdue": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  }
 }

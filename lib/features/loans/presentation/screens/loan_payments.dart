@@ -176,7 +176,7 @@ class _LoanPaymentsScreenState extends ConsumerState<LoanPaymentsScreen> {
         : (progress * 100).floor();
 
     final status = loan.status.toUpperCase();
-    final overdue = loan.isOverdue || status == 'OVERDUE';
+    final overdue = loan.isOverdueNow;
     final (statusLabel, statusColor) = overdue
         ? (context.l10n.statusOverdue, AppColors.progressDanger)
         : status == 'ACTIVE'

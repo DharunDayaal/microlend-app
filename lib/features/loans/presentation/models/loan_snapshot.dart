@@ -96,7 +96,9 @@ class LoanSnapshot {
     final rows = RepaymentRows.fromLoan(loan);
 
     var stage = loanStageOf(loan.status);
-    if (stage == LoanStage.active && loan.isOverdue) stage = LoanStage.overdue;
+    if (stage == LoanStage.active && loan.isOverdueNow) {
+      stage = LoanStage.overdue;
+    }
 
     final open = LoanStatusView.of(stage).isOpen;
     bool isPastDue(RepaymentRow r) => r.isExtension || r.due.isBefore(today);

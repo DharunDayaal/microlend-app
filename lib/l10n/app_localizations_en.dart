@@ -4611,4 +4611,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trackerNothingLeft => 'Nothing left to collect on this loan.';
+
+  @override
+  String payPastTermOverdue(int weeks) {
+    return 'Overdue — past the $weeks-week term';
+  }
 }

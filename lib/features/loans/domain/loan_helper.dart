@@ -213,8 +213,7 @@ class LoanHelper {
 
     final collected = loan.totalCollected.clamp(0.0, total).toDouble();
 
-    final overdueLoan =
-        loan.isOverdue || loan.status.toUpperCase() == 'OVERDUE';
+    final overdueLoan = loan.isOverdueNow;
     if (!overdueLoan) {
       return RecoveryProgress(total: total, collected: collected, overdue: 0);
     }
