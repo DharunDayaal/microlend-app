@@ -3422,5 +3422,15 @@
   "payCollectedBy": "Collected by",
   "payReference": "Payment reference",
   "payWeekRecord": "Week record",
-  "payOpenDetails": "Open payment details"
+  "payOpenDetails": "Open payment details",
+  "trackerClosedPaidOff": "Loan paid off",
+  "trackerClosedStatus": "Loan status: {status}",
+  "@trackerClosedStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "trackerClosedNoPayments": "No more payments can be recorded on this loan."
 }

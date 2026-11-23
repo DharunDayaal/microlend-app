@@ -10,6 +10,7 @@ import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/payment_result.dart';
 import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
 import 'package:micro_lending_app/core/utils/uuid.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/shared/design_system/constants/alphas.dart';
 import 'package:micro_lending_app/shared/design_system/constants/colors.dart';
 import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
@@ -286,11 +287,8 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
             collectedAt: attempt.collectedAt,
           );
       _attempt = null;
-      // Pop only this sheet. If it is somehow no longer on top, popping
-      // would close the screen below with the wrong result type.
-      if (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
-        Navigator.of(context).pop(response);
-      }
+      // only this sheet: never the screen below (wrong result type)
+      if (mounted) context.popIfTop(response);
     } on ApiException catch (e) {
       // A network or server error may have saved it anyway, so a retry
       // reuses the key. Any other rejection saved nothing: start fresh.
@@ -306,12 +304,10 @@ class _PaymentSheetState extends ConsumerState<PaymentSheet> {
     final text = Theme.of(context).textTheme;
     // While a payment is being sent the sheet can't be closed (back button,
     // barrier tap, drag or X); its result must reach the screen below.
-    return PopScope(
-      canPop: !_isSubmitting,
+    return BusySheetGuard(
+      busy: _isSubmitting,
       child: GestureDetector(
         onTap: () => _focusNode.unfocus(),
-        // the sheet's own drag-to-dismiss ignores PopScope, so take the drag
-        onVerticalDragStart: _isSubmitting ? (_) {} : null,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [

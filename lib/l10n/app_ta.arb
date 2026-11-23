@@ -1330,5 +1330,8 @@
   "payCollectedBy": "வசூலித்தவர்",
   "payReference": "கட்டண குறிப்பு எண்",
   "payWeekRecord": "வாரப் பதிவு",
-  "payOpenDetails": "கட்டண விவரங்களைத் திற"
+  "payOpenDetails": "கட்டண விவரங்களைத் திற",
+  "trackerClosedPaidOff": "கடன் முழுமையாகச் செலுத்தப்பட்டது",
+  "trackerClosedStatus": "கடன் நிலை: {status}",
+  "trackerClosedNoPayments": "இந்தக் கடனில் இனி கட்டணம் பதிவு செய்ய முடியாது."
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
 import 'package:micro_lending_app/l10n/app_localizations.dart';
 import 'package:micro_lending_app/l10n/locale_controller.dart';
@@ -61,7 +62,7 @@ class _LanguageSheet extends StatelessWidget {
                       : null,
                   onTap: () async {
                     await ref.read(localeProvider.notifier).setLocale(locale);
-                    if (context.mounted) Navigator.of(context).pop();
+                    if (context.mounted) context.popIfTop();
                   },
                 ),
             ],

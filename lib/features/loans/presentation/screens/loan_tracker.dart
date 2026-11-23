@@ -14,6 +14,8 @@ import 'package:micro_lending_app/shared/widgets/recovery_progress_card.dart';
 import 'package:micro_lending_app/features/loans/presentation/widgets/repayment_track_list.dart';
 import 'package:micro_lending_app/shared/widgets/state_views.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
+import 'package:micro_lending_app/features/loans/domain/entities/loan_stage.dart';
+import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/payment_result.dart';
 import 'package:micro_lending_app/features/loans/presentation/controllers/loan_with_borrower_controller.dart';
 import 'package:micro_lending_app/shared/design_system/constants/alphas.dart';
@@ -149,21 +151,23 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
                           ),
                           _RepaymentTracks(
                             loan: loan,
-                            onCollect: (row) async {
-                              final paymentResult =
-                                  await PaymentSheet.showForWeek(
-                                    context,
-                                    customerId: _h.borrower?.id ?? '',
-                                    customerName:
-                                        _h.borrower?.customerName ?? '',
-                                    loan: loan,
-                                    weekNumber: row.week,
-                                  );
+                            onCollect: !_takesPayments(loan)
+                                ? null
+                                : (row) async {
+                                    final paymentResult =
+                                        await PaymentSheet.showForWeek(
+                                          context,
+                                          customerId: _h.borrower?.id ?? '',
+                                          customerName:
+                                              _h.borrower?.customerName ?? '',
+                                          loan: loan,
+                                          weekNumber: row.week,
+                                        );
 
-                              if (paymentResult != null) {
-                                await _applyPayment(paymentResult);
-                              }
-                            },
+                                    if (paymentResult != null) {
+                                      await _applyPayment(paymentResult);
+                                    }
+                                  },
                           ),
                         ],
                       ),
@@ -188,12 +192,15 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.all(AppSizes.md),
-                  child: AppButton(
-                    label: context.l10n.trackerRecordWeekly,
-                    onPressed: loan == null ? null : _recordNewPayment,
-                    prefixIcon: Icons.credit_card_outlined,
-                    radius: AppSizes.md,
-                  ),
+                  // a closed or paid-off loan shows its state, not a button
+                  child: loan != null && !_takesPayments(loan)
+                      ? _ClosedLoanBar(loan: loan)
+                      : AppButton(
+                          label: context.l10n.trackerRecordWeekly,
+                          onPressed: loan == null ? null : _recordNewPayment,
+                          prefixIcon: Icons.credit_card_outlined,
+                          radius: AppSizes.md,
+                        ),
                 ),
               ),
             ),
@@ -655,9 +662,88 @@ class _DueInfo {
   });
 }
 
+/// Only open loans (active or overdue) with money still owed take payments.
+bool _takesPayments(LoanModel loan) {
+  final stage = loanStageOf(loan.status);
+  return (stage == LoanStage.active || stage == LoanStage.overdue) &&
+      loan.outstandingAmount > 0;
+}
+
+/// Replaces "Record weekly payment" on a loan that can't take payments,
+/// so a paid-off loan never looks like it still owes money.
+class _ClosedLoanBar extends StatelessWidget {
+  final LoanModel loan;
+  const _ClosedLoanBar({required this.loan});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final text = Theme.of(context).textTheme;
+    final stage = loanStageOf(loan.status);
+    final paidOff = stage == LoanStage.paidOff || loan.outstandingAmount <= 0;
+
+    final (Color color, IconData icon) = paidOff
+        ? (AppColors.success, Icons.check_circle_rounded)
+        : stage == LoanStage.defaulted
+        ? (AppColors.progressDanger, Icons.block_rounded)
+        : (AppColors.darkOnSurfaceMuted, Icons.lock_outline_rounded);
+
+    return Semantics(
+      container: true,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.md,
+          vertical: AppSizes.sm + 4,
+        ),
+        decoration: BoxDecoration(
+          color: color.withAlpha(AppAlphas.watermark),
+          borderRadius: BorderRadius.circular(AppSizes.md),
+          border: Border.all(color: color.withAlpha(AppAlphas.borderTint)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: AppSizes.iconMd),
+            AppGap.w12,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    paidOff
+                        ? l.trackerClosedPaidOff
+                        : l.trackerClosedStatus(stage.l10nLabel(context)),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.bodyLarge?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    l.trackerClosedNoPayments,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: text.labelMedium?.copyWith(
+                      color: AppColors.darkOnSurfaceMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _RepaymentTracks extends StatelessWidget {
   final LoanModel loan;
-  final void Function(RepaymentRow row) onCollect;
+
+  /// Null when the loan can't take payments: no Collect buttons.
+  final void Function(RepaymentRow row)? onCollect;
   const _RepaymentTracks({required this.loan, required this.onCollect});
 
   @override
@@ -719,7 +805,7 @@ class _RepaymentTracks extends StatelessWidget {
           itemBuilder: (context, index) => RepaymentTrackCard(
             row: rows[index],
             totalWeeks: loan.totalWeeks,
-            onCollect: () => onCollect(rows[index]),
+            onCollect: onCollect == null ? null : () => onCollect!(rows[index]),
           ),
         ),
       ],

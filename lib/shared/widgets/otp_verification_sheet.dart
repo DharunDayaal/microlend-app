@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/shared/widgets/app_button.dart';
 import 'package:micro_lending_app/shared/widgets/app_icon_button.dart';
@@ -116,7 +117,7 @@ class _OtpVerificationSheetState extends ConsumerState<OtpVerificationSheet> {
             purpose: widget.purpose,
             otpCode: code,
           );
-      if (mounted) Navigator.of(context).pop(true);
+      if (mounted) context.popIfTop(true);
     } on ApiException catch (e) {
       DeviceUtils.error();
       _otp.clear(); // so they can retype straight away

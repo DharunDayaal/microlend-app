@@ -8109,6 +8109,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open payment details'**
   String get payOpenDetails;
+
+  /// No description provided for @trackerClosedPaidOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan paid off'**
+  String get trackerClosedPaidOff;
+
+  /// No description provided for @trackerClosedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan status: {status}'**
+  String trackerClosedStatus(String status);
+
+  /// No description provided for @trackerClosedNoPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'No more payments can be recorded on this loan.'**
+  String get trackerClosedNoPayments;
 }
 
 class _AppLocalizationsDelegate

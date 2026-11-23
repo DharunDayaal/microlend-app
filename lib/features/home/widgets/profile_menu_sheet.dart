@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
@@ -166,7 +167,7 @@ class ProfileMenuSheet extends ConsumerWidget {
                   confirmText: context.l10n.menuLogOut,
                 );
                 if (!ok || !context.mounted) return;
-                Navigator.of(context).pop();
+                context.popIfTop();
                 await onLogout();
               },
             ),

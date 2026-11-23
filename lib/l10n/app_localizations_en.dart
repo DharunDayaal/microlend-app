@@ -4672,4 +4672,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get payOpenDetails => 'Open payment details';
+
+  @override
+  String get trackerClosedPaidOff => 'Loan paid off';
+
+  @override
+  String trackerClosedStatus(String status) {
+    return 'Loan status: $status';
+  }
+
+  @override
+  String get trackerClosedNoPayments =>
+      'No more payments can be recorded on this loan.';
 }

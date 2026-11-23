@@ -12,6 +12,7 @@ import 'package:micro_lending_app/shared/design_system/constants/sizes.dart';
 import 'package:micro_lending_app/core/utils/formatters/phone_formatter.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/shared/session/models/profile_limits.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 
 Future<T?> showProfileSheet<T>(BuildContext context, WidgetBuilder builder) {
   return showModalBottomSheet<T>(
@@ -99,7 +100,7 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
     if (!mounted) return;
 
     if (err == null) {
-      Navigator.of(context).pop(true);
+      context.popIfTop(true);
       return;
     }
     setState(() {
@@ -129,66 +130,69 @@ class _ChangePasswordSheetState extends State<ChangePasswordSheet> {
       ),
     );
 
-    return Form(
-      key: _form,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SheetTitle(
-            context.l10n.profChangePassword,
-            context.l10n.profOtherDevicesSignedOut,
-          ),
-          TextFormField(
-            controller: _current,
-            enabled: !_saving,
-            obscureText: !_show,
-            forceErrorText: _currentErr,
-            validator: (v) =>
-                (v ?? '').isEmpty ? context.l10n.profEnterCurrent : null,
-            decoration: deco(context.l10n.profCurrentPassword),
-          ),
-          AppGap.h12,
-          TextFormField(
-            controller: _next,
-            enabled: !_saving,
-            obscureText: !_show,
-            validator: (v) {
-              final s = v ?? '';
-              if (s.length < 8) return context.l10n.empMin8;
-              if (s == _current.text) {
-                return context.l10n.profDifferentPassword;
-              }
-              return null;
-            },
-            decoration: deco(context.l10n.profNewPassword),
-          ),
-          AppGap.h12,
-          TextFormField(
-            controller: _confirm,
-            enabled: !_saving,
-            obscureText: !_show,
-            validator: (v) =>
-                v == _next.text ? null : context.l10n.empPasswordsMismatch,
-            decoration: deco(context.l10n.profConfirmNewPassword),
-          ),
-          if (_err != null) ...[
-            AppGap.h8,
-            Text(
-              _err!,
-              style: text.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.error,
+    return BusySheetGuard(
+      busy: _saving,
+      child: Form(
+        key: _form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SheetTitle(
+              context.l10n.profChangePassword,
+              context.l10n.profOtherDevicesSignedOut,
+            ),
+            TextFormField(
+              controller: _current,
+              enabled: !_saving,
+              obscureText: !_show,
+              forceErrorText: _currentErr,
+              validator: (v) =>
+                  (v ?? '').isEmpty ? context.l10n.profEnterCurrent : null,
+              decoration: deco(context.l10n.profCurrentPassword),
+            ),
+            AppGap.h12,
+            TextFormField(
+              controller: _next,
+              enabled: !_saving,
+              obscureText: !_show,
+              validator: (v) {
+                final s = v ?? '';
+                if (s.length < 8) return context.l10n.empMin8;
+                if (s == _current.text) {
+                  return context.l10n.profDifferentPassword;
+                }
+                return null;
+              },
+              decoration: deco(context.l10n.profNewPassword),
+            ),
+            AppGap.h12,
+            TextFormField(
+              controller: _confirm,
+              enabled: !_saving,
+              obscureText: !_show,
+              validator: (v) =>
+                  v == _next.text ? null : context.l10n.empPasswordsMismatch,
+              decoration: deco(context.l10n.profConfirmNewPassword),
+            ),
+            if (_err != null) ...[
+              AppGap.h8,
+              Text(
+                _err!,
+                style: text.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
+            ],
+            AppGap.h16,
+            AppButton(
+              label: context.l10n.profUpdatePassword,
+              radius: AppSizes.md,
+              isLoading: _saving,
+              onPressed: _submit,
             ),
           ],
-          AppGap.h16,
-          AppButton(
-            label: context.l10n.profUpdatePassword,
-            radius: AppSizes.md,
-            isLoading: _saving,
-            onPressed: _submit,
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -291,7 +295,7 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
       final err = await widget.save(_target);
       if (!mounted) return;
       if (err == null) {
-        Navigator.of(context).pop(true);
+        context.popIfTop(true);
         return;
       }
       setState(() {
@@ -312,82 +316,85 @@ class _ChangePhoneSheetState extends State<ChangePhoneSheet> {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SheetTitle(
-          context.l10n.profChangePhone,
-          _step == 0
-              ? context.l10n.profWillSendCode
-              : context.l10n.profCodeSentTo(PhoneFormatter.display(_target)),
-        ),
-        if (_step == 0)
-          TextField(
-            controller: _phone,
-            enabled: !_busy,
-            keyboardType: TextInputType.phone,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[\d+ ]')),
-            ],
-            decoration: InputDecoration(labelText: context.l10n.profNewPhone),
-          )
-        else
-          TextField(
-            controller: _code,
-            enabled: !_busy,
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(
-              labelText: context.l10n.profSixDigitCode,
-              counterText: '',
-            ),
+    return BusySheetGuard(
+      busy: _busy,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetTitle(
+            context.l10n.profChangePhone,
+            _step == 0
+                ? context.l10n.profWillSendCode
+                : context.l10n.profCodeSentTo(PhoneFormatter.display(_target)),
           ),
-        if (_err != null) ...[
-          AppGap.h8,
-          Text(
-            _err!,
-            style: text.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-        ],
-        AppGap.h16,
-        AppButton(
-          label: _step == 0
-              ? context.l10n.profSendCode
-              : context.l10n.profVerifyUpdate,
-          radius: AppSizes.md,
-          isLoading: _busy,
-          onPressed: _step == 0 ? _send : _verify,
-        ),
-        if (_step == 1) ...[
-          AppGap.h8,
-          Row(
-            children: [
-              TextButton(
-                onPressed: _busy
-                    ? null
-                    : () => setState(() {
-                        _step = 0;
-                        _err = null;
-                      }),
-                child: Text(context.l10n.profUseAnother),
+          if (_step == 0)
+            TextField(
+              controller: _phone,
+              enabled: !_busy,
+              keyboardType: TextInputType.phone,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[\d+ ]')),
+              ],
+              decoration: InputDecoration(labelText: context.l10n.profNewPhone),
+            )
+          else
+            TextField(
+              controller: _code,
+              enabled: !_busy,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: InputDecoration(
+                labelText: context.l10n.profSixDigitCode,
+                counterText: '',
               ),
-              const Spacer(),
-              TextButton(
-                onPressed: (_busy || _cooldown > 0) ? null : _send,
-                child: Text(
-                  _cooldown > 0
-                      ? context.l10n.profResendIn(_cooldown)
-                      : context.l10n.profResendCode,
+            ),
+          if (_err != null) ...[
+            AppGap.h8,
+            Text(
+              _err!,
+              style: text.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          ],
+          AppGap.h16,
+          AppButton(
+            label: _step == 0
+                ? context.l10n.profSendCode
+                : context.l10n.profVerifyUpdate,
+            radius: AppSizes.md,
+            isLoading: _busy,
+            onPressed: _step == 0 ? _send : _verify,
+          ),
+          if (_step == 1) ...[
+            AppGap.h8,
+            Row(
+              children: [
+                TextButton(
+                  onPressed: _busy
+                      ? null
+                      : () => setState(() {
+                          _step = 0;
+                          _err = null;
+                        }),
+                  child: Text(context.l10n.profUseAnother),
                 ),
-              ),
-            ],
-          ),
+                const Spacer(),
+                TextButton(
+                  onPressed: (_busy || _cooldown > 0) ? null : _send,
+                  child: Text(
+                    _cooldown > 0
+                        ? context.l10n.profResendIn(_cooldown)
+                        : context.l10n.profResendCode,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -493,7 +500,7 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
     final err = await widget.onSave(changes);
     if (!mounted) return;
     if (err == null) {
-      Navigator.of(context).pop(true);
+      context.popIfTop(true);
     } else {
       setState(() {
         _saving = false;
@@ -506,60 +513,66 @@ class _EditLimitsSheetState extends State<EditLimitsSheet> {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
 
-    return Form(
-      key: _form,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SheetTitle(context.l10n.profLoanLimits, context.l10n.profLimitsNote),
-          for (final f in _fields) ...[
-            TextFormField(
-              controller: _c[f.$1],
-              enabled: !_saving,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(f.$3 ? r'^\d{0,7}\.?\d{0,2}' : r'^\d{0,9}'),
+    return BusySheetGuard(
+      busy: _saving,
+      child: Form(
+        key: _form,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SheetTitle(
+              context.l10n.profLoanLimits,
+              context.l10n.profLimitsNote,
+            ),
+            for (final f in _fields) ...[
+              TextFormField(
+                controller: _c[f.$1],
+                enabled: !_saving,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
                 ),
-              ],
-              validator: (v) {
-                final n = double.tryParse((v ?? '').trim());
-                if (n == null || n <= 0) {
-                  return f.$1 == 'max_fee_percent' && n == 0
-                      ? null
-                      : context.l10n.profPositiveNumber;
-                }
-                if (f.$3 && ((n * 10) - (n * 10).round()).abs() > 1e-9) {
-                  return context.l10n.empOneDecimal;
-                }
-                if (f.$4 != null && n > f.$4!) {
-                  return context.l10n.profMustBeOrLess(fmtNum(f.$4!));
-                }
-                return null;
-              },
-              decoration: InputDecoration(labelText: _fieldLabel(f.$1)),
-            ),
-            AppGap.h12,
-          ],
-          if (_err != null) ...[
-            Text(
-              _err!,
-              style: text.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.error,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    RegExp(f.$3 ? r'^\d{0,7}\.?\d{0,2}' : r'^\d{0,9}'),
+                  ),
+                ],
+                validator: (v) {
+                  final n = double.tryParse((v ?? '').trim());
+                  if (n == null || n <= 0) {
+                    return f.$1 == 'max_fee_percent' && n == 0
+                        ? null
+                        : context.l10n.profPositiveNumber;
+                  }
+                  if (f.$3 && ((n * 10) - (n * 10).round()).abs() > 1e-9) {
+                    return context.l10n.empOneDecimal;
+                  }
+                  if (f.$4 != null && n > f.$4!) {
+                    return context.l10n.profMustBeOrLess(fmtNum(f.$4!));
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(labelText: _fieldLabel(f.$1)),
               ),
+              AppGap.h12,
+            ],
+            if (_err != null) ...[
+              Text(
+                _err!,
+                style: text.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+              AppGap.h12,
+            ],
+            AppButton(
+              label: context.l10n.profSaveLimits,
+              radius: AppSizes.md,
+              isLoading: _saving,
+              onPressed: _submit,
             ),
-            AppGap.h12,
           ],
-          AppButton(
-            label: context.l10n.profSaveLimits,
-            radius: AppSizes.md,
-            isLoading: _saving,
-            onPressed: _submit,
-          ),
-        ],
+        ),
       ),
     );
   }

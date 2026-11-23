@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/features/customers/data/customer_providers.dart';
 import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
 import 'package:micro_lending_app/shared/session/session_controller.dart';
@@ -201,7 +202,7 @@ class _IssueLoanScreenState extends ConsumerState<IssueLoanScreen> {
           customer.customerName,
         ),
       );
-      context.pop(true);
+      context.popIfTop(true); // not a dialog that opened on top meanwhile
     } on ApiException catch (e) {
       DeviceUtils.error();
       if (!mounted) return;

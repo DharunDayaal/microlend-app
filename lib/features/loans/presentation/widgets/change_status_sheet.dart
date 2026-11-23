@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
@@ -141,7 +142,7 @@ class _ChangeStatusSheetState extends ConsumerState<ChangeStatusSheet> {
           .changeStatus(loanId: loan.id, status: target);
       if (!mounted) return;
       DeviceUtils.success();
-      Navigator.of(context).pop(true);
+      context.popIfTop(true);
     } on ApiException catch (e) {
       DeviceUtils.error();
       if (!mounted) return;

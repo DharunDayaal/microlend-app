@@ -4714,4 +4714,16 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get payOpenDetails => 'கட்டண விவரங்களைத் திற';
+
+  @override
+  String get trackerClosedPaidOff => 'கடன் முழுமையாகச் செலுத்தப்பட்டது';
+
+  @override
+  String trackerClosedStatus(String status) {
+    return 'கடன் நிலை: $status';
+  }
+
+  @override
+  String get trackerClosedNoPayments =>
+      'இந்தக் கடனில் இனி கட்டணம் பதிவு செய்ய முடியாது.';
 }
