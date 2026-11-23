@@ -21,6 +21,7 @@ Future<void> refreshSessionProfile(ProviderContainer container) async {
     final p = await container.read(profileRepositoryProvider).getProfile();
     await container.read(sessionProvider.notifier).setUser(p.toAdminUser());
   } catch (_) {
-    // offline or signed out: the stored profile stays
+    // offline or signed out: the stored profile, and its role, stay
+    container.read(sessionProvider.notifier).confirmSavedRole();
   }
 }

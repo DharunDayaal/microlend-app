@@ -24,6 +24,8 @@ class SessionController extends Notifier<SessionState> {
     state = SessionState(
       status: hasTokens ? AuthStatus.signedIn : AuthStatus.signedOut,
       user: user,
+      // the saved role is a guess until GET /api/me answers
+      roleConfirmed: user == null,
     );
 
     // Tokens but no saved profile: an install from before profiles were
@@ -48,6 +50,12 @@ class SessionController extends Notifier<SessionState> {
       );
     }
     state = state.withUser(user);
+  }
+
+  /// /me could not be reached (offline, server error): keep working with the
+  /// saved role rather than hiding features for the whole run.
+  void confirmSavedRole() {
+    if (!state.roleConfirmed) state = state.withRoleConfirmed();
   }
 
   Future<void> clearUser() async {
