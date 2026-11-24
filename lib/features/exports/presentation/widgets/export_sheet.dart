@@ -440,7 +440,10 @@ class _ExportSheetState extends ConsumerState<ExportSheet> {
 
   Future<void> _use(ExportJob j, {required bool share}) async {
     try {
-      await _t.use(j, share: share);
+      final savedIn = await _t.use(j, share: share);
+      if (savedIn != null && mounted) {
+        AppSnackbar.success(context, context.l10n.expSavedTo(savedIn));
+      }
     } on ApiException catch (e) {
       if (mounted) AppSnackbar.error(context, e.message);
     } catch (_) {

@@ -1,4 +1,25 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Release builds need this to reach the API (debug/profile add it on
+         their own, which is why it was easy to miss). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- Saving exports to Download/Lending Docs. Only Android 9 and 10 need
+         it; from Android 11 an app may add files to Download without any
+         permission. -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29"/>
+
+    <!-- open_filex adds these for opening photos, videos and audio. Exports
+         are only Excel, CSV and PDF, so they are never used; removing them
+         avoids Google Play's photo/video permission declaration. Its
+         READ_EXTERNAL_STORAGE (Android 12 and older) stays: it is needed to
+         open files in Download there. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove"/>
+
     <queries>
         <intent>
             <action android:name="android.intent.action.DIAL"/>
@@ -8,7 +29,10 @@
     <application
         android:label="Thavanai"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
+        <!-- requestLegacyExternalStorage: lets Android 10 write to the public
+             Download folder by path; ignored on Android 11 and later. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

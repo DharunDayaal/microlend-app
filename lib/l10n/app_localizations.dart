@@ -8127,6 +8127,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No more payments can be recorded on this loan.'**
   String get trackerClosedNoPayments;
+
+  /// No description provided for @expStorageDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow storage access to save files to Lending Docs.'**
+  String get expStorageDenied;
+
+  /// No description provided for @expSavedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to {folder}'**
+  String expSavedTo(String folder);
 }
 
 class _AppLocalizationsDelegate

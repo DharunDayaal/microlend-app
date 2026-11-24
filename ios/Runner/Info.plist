@@ -14,6 +14,12 @@
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<!-- Shows the app's Documents folder (Lending Docs) in the Files app,
+	     under On My iPhone > Thavanai. -->
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>CFBundleName</key>
 	<string>micro_lending_app</string>
 	<key>CFBundlePackageType</key>

@@ -236,9 +236,11 @@ class ExportsController extends Notifier<ExportsState> {
           );
     } on ApiException catch (e) {
       throw ApiException(
-        message: e.code == 'DOWNLOAD_EMPTY'
-            ? _l.expDownloadEmpty
-            : _l.expDownloadFailed,
+        message: switch (e.code) {
+          'DOWNLOAD_EMPTY' => _l.expDownloadEmpty,
+          'STORAGE_DENIED' => _l.expStorageDenied,
+          _ => _l.expDownloadFailed,
+        },
         code: e.code,
       );
     }
@@ -248,16 +250,31 @@ class ExportsController extends Notifier<ExportsState> {
     return path;
   }
 
-  /// Downloads (once) and then opens or shares the file.
-  Future<void> use(ExportJob job, {required bool share}) async {
+  /// Downloads (once) and then opens or shares the file. Returns the
+  /// folder it was saved in (`Lending Docs/2026-11-24`) when it was just
+  /// downloaded, or null when it was already on the phone.
+  Future<String?> use(ExportJob job, {required bool share}) async {
     final files = ref.read(exportFilesProvider);
     var path = state.files[job.id];
-    if (path == null || !files.exists(path)) path = await download(job);
+    String? savedIn;
+    if (path == null || !files.exists(path)) {
+      path = await download(job);
+      savedIn = folderLabel(path);
+    }
     if (share) {
       await files.share(path);
     } else {
       await files.open(path);
     }
+    return savedIn;
+  }
+
+  /// `…/Lending Docs/2026-11-24/file.pdf` -> `Lending Docs/2026-11-24`.
+  static String folderLabel(String path) {
+    final parts = path.split(RegExp(r'[/\\]'));
+    return parts.length >= 3
+        ? '${parts[parts.length - 3]}/${parts[parts.length - 2]}'
+        : path;
   }
 
   void _cancelTimers() {

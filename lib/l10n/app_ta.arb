@@ -1333,5 +1333,7 @@
   "payOpenDetails": "கட்டண விவரங்களைத் திற",
   "trackerClosedPaidOff": "கடன் முழுமையாகச் செலுத்தப்பட்டது",
   "trackerClosedStatus": "கடன் நிலை: {status}",
-  "trackerClosedNoPayments": "இந்தக் கடனில் இனி கட்டணம் பதிவு செய்ய முடியாது."
+  "trackerClosedNoPayments": "இந்தக் கடனில் இனி கட்டணம் பதிவு செய்ய முடியாது.",
+  "expStorageDenied": "Lending Docs-இல் கோப்புகளைச் சேமிக்க சேமிப்பக அனுமதியை வழங்குங்கள்.",
+  "expSavedTo": "{folder}-இல் சேமிக்கப்பட்டது"
 }

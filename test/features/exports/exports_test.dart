@@ -70,6 +70,9 @@ class FakeExportFiles implements ExportFiles {
   final Set<String> present = {};
   final List<String> actions = [];
 
+  /// Where the next download "lands"; defaults to `/tmp/<name>`.
+  String? savePath;
+
   @override
   Future<String> download(
     String url,
@@ -80,7 +83,7 @@ class FakeExportFiles implements ExportFiles {
     onProgress?.call(0.5);
     if (gate != null) await gate!.future;
     if (fail != null) throw fail!;
-    final path = '/tmp/$fileName';
+    final path = savePath ?? '/tmp/$fileName';
     present.add(path);
     return path;
   }
@@ -177,6 +180,32 @@ void main() {
   );
 
   group('download', () {
+    test('a denied storage permission is explained, translated', () async {
+      repo.answers['j1'] = [done];
+      files.fail = const ApiException(message: 'x', code: 'STORAGE_DENIED');
+      await expectLater(
+        ctrl().download(done),
+        throwsA(
+          isA<ApiException>().having(
+            (e) => e.message,
+            'message',
+            'Allow storage access to save files to Lending Docs.',
+          ),
+        ),
+      );
+    });
+
+    test(
+      'use tells where a new download was saved, only the first time',
+      () async {
+        repo.answers['j1'] = [done];
+        files.savePath = '/storage/Download/Lending Docs/2026-11-24/a.xlsx';
+        expect(await ctrl().use(done, share: false), 'Lending Docs/2026-11-24');
+        expect(await ctrl().use(done, share: false), isNull); // already saved
+        expect(files.downloads, 1);
+      },
+    );
+
     test('an expired or unfinished file explains why, translated', () async {
       repo.answers['j1'] = [
         job('j1', status: 'done', url: 'u', expiresAt: '2000-01-01T00:00:00Z'),

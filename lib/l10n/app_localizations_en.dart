@@ -4684,4 +4684,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get trackerClosedNoPayments =>
       'No more payments can be recorded on this loan.';
+
+  @override
+  String get expStorageDenied =>
+      'Allow storage access to save files to Lending Docs.';
+
+  @override
+  String expSavedTo(String folder) {
+    return 'Saved to $folder';
+  }
 }

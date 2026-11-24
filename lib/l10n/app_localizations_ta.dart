@@ -4726,4 +4726,13 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get trackerClosedNoPayments =>
       'இந்தக் கடனில் இனி கட்டணம் பதிவு செய்ய முடியாது.';
+
+  @override
+  String get expStorageDenied =>
+      'Lending Docs-இல் கோப்புகளைச் சேமிக்க சேமிப்பக அனுமதியை வழங்குங்கள்.';
+
+  @override
+  String expSavedTo(String folder) {
+    return '$folder-இல் சேமிக்கப்பட்டது';
+  }
 }

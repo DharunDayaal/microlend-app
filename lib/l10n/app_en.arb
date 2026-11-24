@@ -3432,5 +3432,14 @@
       }
     }
   },
-  "trackerClosedNoPayments": "No more payments can be recorded on this loan."
+  "trackerClosedNoPayments": "No more payments can be recorded on this loan.",
+  "expStorageDenied": "Allow storage access to save files to Lending Docs.",
+  "expSavedTo": "Saved to {folder}",
+  "@expSavedTo": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  }
 }
