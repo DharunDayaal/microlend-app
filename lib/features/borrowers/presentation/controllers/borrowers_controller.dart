@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:micro_lending_app/core/logging/app_logger.dart';
 import 'package:micro_lending_app/core/pagination/paged_result.dart';
 import 'package:micro_lending_app/core/utils/formatters/date_formatter.dart';
 import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
+import 'package:micro_lending_app/features/loans/data/payment_outbox.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/collections_due.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/payment_result.dart';
@@ -42,6 +45,19 @@ final borrowersProvider =
 class BorrowersController extends PagedNotifier<LoanModel> {
   /// Today's collection day, in the API's form ('MONDAY').
   final String weekday = DateFormatter.weekdayFull(DateTime.now());
+
+  @override
+  PagedState<LoanModel> build() {
+    // a queued payment for a loan on this list synced (or was rejected)
+    // in the background: reload so the rows show the server's numbers
+    ref.listen(paymentOutboxProvider.select((s) => s.settledVersion), (_, _) {
+      final settled = ref.read(paymentOutboxProvider).settledLoanIds;
+      if (state.items.any((l) => settled.contains(l.id))) {
+        unawaited(refresh(showSkeleton: false));
+      }
+    });
+    return super.build();
+  }
 
   @override
   Future<PagedResult<LoanModel>> fetchPage(int page, int limit) async {

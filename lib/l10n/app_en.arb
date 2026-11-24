@@ -3441,5 +3441,76 @@
         "type": "String"
       }
     }
-  }
+  },
+  "paySavedOffline": "No connection. Payment saved on this phone and will sync automatically.",
+  "syncWaiting": "{count, plural, =1{1 payment waiting to sync} other{{count} payments waiting to sync}}",
+  "@syncWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncFailed": "{count, plural, =1{1 payment couldn't sync} other{{count} payments couldn't sync}}",
+  "@syncFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncWaitingHint": "Saved on this phone. They'll send when you're back online.",
+  "syncNow": "Sync now",
+  "syncSyncing": "Syncing…",
+  "syncReview": "Review",
+  "syncFailedTitle": "Payments that couldn't sync",
+  "syncFailedHelp": "The server didn't accept these, so nothing was recorded for them. Check the reason, then record the payment again if needed.",
+  "syncRemove": "Remove",
+  "syncItemLine": "{amount} • Week {week} • {date}",
+  "@syncItemLine": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "week": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "syncPendingLabel": "Waiting to sync",
+  "syncLogoutWarn": "{count, plural, =1{1 payment hasn't synced yet. It stays on this phone and syncs the next time you sign in here.} other{{count} payments haven't synced yet. They stay on this phone and sync the next time you sign in here.}}",
+  "@syncLogoutWarn": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "netGood": "Online",
+  "netWeak": "Weak connection",
+  "netSyncing": "{count, plural, =1{Syncing 1 payment…} other{Syncing {count} payments…}}",
+  "@netSyncing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "netStatusA11y": "Connection: {status}",
+  "@netStatusA11y": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "netOfflineTitle": "You're offline",
+  "netOfflineBody": "Showing saved data. Payments are kept on this phone.",
+  "netWeakBody": "Pages may load slowly.",
+  "netBackOnline": "Back online",
+  "netSynced": "All payments synced",
+  "netDismiss": "Dismiss"
 }

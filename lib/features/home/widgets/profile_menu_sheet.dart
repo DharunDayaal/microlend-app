@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/features/loans/data/payment_outbox.dart';
 import 'package:micro_lending_app/shared/helpers/route_guard.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/l10n/l10n_labels.dart';
@@ -163,7 +164,14 @@ class ProfileMenuSheet extends ConsumerWidget {
                 final ok = await DialogHelper.confirm(
                   context,
                   title: context.l10n.menuLogOutConfirm,
-                  message: context.l10n.menuLogOutSub,
+                  // unsynced payments stay on the phone; say so before logging out
+                  message: switch (ref
+                      .read(paymentOutboxProvider)
+                      .waiting
+                      .length) {
+                    0 => context.l10n.menuLogOutSub,
+                    final n => context.l10n.syncLogoutWarn(n),
+                  },
                   confirmText: context.l10n.menuLogOut,
                 );
                 if (!ok || !context.mounted) return;

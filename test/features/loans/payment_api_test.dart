@@ -7,7 +7,7 @@ import 'package:micro_lending_app/core/network/api_client.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/core/utils/uuid.dart';
 import 'package:micro_lending_app/features/loans/data/dtos/loan_dto.dart';
-import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
+import 'package:micro_lending_app/features/loans/data/payment_outbox.dart';
 import 'package:micro_lending_app/features/loans/data/sources/loan_remote_data_source.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/payment_result.dart';
 import 'package:micro_lending_app/features/loans/presentation/widgets/payment_sheet.dart';
@@ -15,6 +15,7 @@ import 'package:micro_lending_app/l10n/app_localizations.dart';
 import 'package:micro_lending_app/shared/design_system/theme/theme.dart';
 
 import 'fakes.dart';
+import 'offline_fakes.dart';
 
 /// Records the one POST the payment call makes.
 class _PostApi extends Fake implements ApiClient {
@@ -145,19 +146,22 @@ void main() {
     });
   });
 
-  group('payment sheet retries', () {
-    Future<_PayRepo> openSheet(
+  group('payment sheet with the outbox', () {
+    Future<(_PayRepo, ProviderContainer)> openSheet(
       WidgetTester tester,
-      List<Object?> outcomes,
-    ) async {
+      List<Object?> outcomes, {
+      bool offline = false,
+    }) async {
       tester.view.physicalSize = const Size(1080, 2340);
       tester.view.devicePixelRatio = 3;
       addTearDown(tester.view.reset);
 
       final repo = _PayRepo(outcomes);
+      final c = await offlineContainer(repo: repo);
+      if (offline) goOffline(c);
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [loanRepositoryProvider.overrideWithValue(repo)],
+        UncontrolledProviderScope(
+          container: c,
           child: MaterialApp(
             theme: AppTheme.darkTheme,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -185,7 +189,7 @@ void main() {
       );
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
-      return repo;
+      return (repo, c);
     }
 
     Future<void> confirm(WidgetTester tester) async {
@@ -193,46 +197,51 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('after a network or server error, retry reuses the key', (
+    testWidgets('online: sent with a key and the collection time', (
       tester,
     ) async {
-      final repo = await openSheet(tester, [_offline, _serverDown, null]);
+      final (repo, c) = await openSheet(tester, [null]);
       await confirm(tester);
-      await tester.pump(const Duration(seconds: 5)); // snackbar away
-      await confirm(tester);
-      await tester.pump(const Duration(seconds: 5));
-      await confirm(tester);
-
-      expect(repo.calls, hasLength(3));
-      expect(repo.calls.map((c) => c.key).toSet(), hasLength(1));
-      expect(repo.calls.map((c) => c.collectedAt).toSet(), hasLength(1));
-      expect(find.byType(PaymentSheet), findsNothing); // closed on success
+      expect(repo.calls, hasLength(1));
+      expect(repo.calls.single.key, hasLength(36));
+      expect(find.byType(PaymentSheet), findsNothing);
+      expect(c.read(paymentOutboxProvider).all, isEmpty);
     });
 
-    testWidgets('after a rejection, the next try is a new payment', (
+    testWidgets('offline: closes at once and the payment waits on the phone', (
       tester,
     ) async {
-      final repo = await openSheet(tester, [_rejected, null]);
+      final (repo, c) = await openSheet(tester, [], offline: true);
+      await confirm(tester);
+      expect(repo.calls, isEmpty); // no waiting for a timeout
+      expect(find.byType(PaymentSheet), findsNothing);
+      expect(c.read(paymentOutboxProvider).waiting.single.amount, 100);
+    });
+
+    testWidgets('no answer or a server error: queued, not an error', (
+      tester,
+    ) async {
+      for (final failure in [_offline, _serverDown]) {
+        final (repo, c) = await openSheet(tester, [failure]);
+        await confirm(tester);
+        expect(find.byType(PaymentSheet), findsNothing);
+        expect(c.read(paymentOutboxProvider).waiting, hasLength(1));
+        c.dispose(); // stop its retry timer
+      }
+    });
+
+    testWidgets('a rejection keeps the sheet open and nothing is kept', (
+      tester,
+    ) async {
+      final (repo, c) = await openSheet(tester, [_rejected, null]);
       await confirm(tester);
       expect(find.text('Amount too high'), findsOneWidget);
-      await tester.pump(const Duration(seconds: 5));
-      await confirm(tester);
+      expect(find.byType(PaymentSheet), findsOneWidget);
+      expect(c.read(paymentOutboxProvider).all, isEmpty);
 
+      await tester.pump(const Duration(seconds: 5));
+      await confirm(tester); // fixed and tried again: a new payment
       expect(repo.calls, hasLength(2));
-      expect(repo.calls[0].key, isNot(repo.calls[1].key));
-    });
-
-    testWidgets('changing the amount after a network error uses a new key', (
-      tester,
-    ) async {
-      final repo = await openSheet(tester, [_offline, null]);
-      await confirm(tester);
-      await tester.pump(const Duration(seconds: 5));
-      await tester.enterText(find.byType(TextField), '200');
-      await tester.pump();
-      await confirm(tester);
-
-      expect(repo.calls.map((c) => c.amount), [100, 200]);
       expect(repo.calls[0].key, isNot(repo.calls[1].key));
     });
   });
@@ -248,9 +257,10 @@ void main() {
     Object? sheetResult = 'not closed';
     bool? pageResult;
 
+    final c = await offlineContainer(repo: repo);
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [loanRepositoryProvider.overrideWithValue(repo)],
+      UncontrolledProviderScope(
+        container: c,
         child: MaterialApp(
           theme: AppTheme.darkTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,

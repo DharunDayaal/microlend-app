@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:micro_lending_app/features/loans/data/payment_outbox.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
 import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
 import 'package:micro_lending_app/shared/widgets/app_button.dart';
@@ -157,7 +158,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final ok = await DialogHelper.confirm(
       context,
       title: context.l10n.menuLogOutConfirm,
-      message: context.l10n.menuLogOutSub,
+      // unsynced payments stay on the phone; say so before logging out
+      message: switch (ref.read(paymentOutboxProvider).waiting.length) {
+        0 => context.l10n.menuLogOutSub,
+        final n => context.l10n.syncLogoutWarn(n),
+      },
       confirmText: context.l10n.menuLogOut,
     );
     if (ok) await ref.read(authActionsProvider).logout();

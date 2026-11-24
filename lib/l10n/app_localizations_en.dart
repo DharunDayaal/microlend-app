@@ -4693,4 +4693,114 @@ class AppLocalizationsEn extends AppLocalizations {
   String expSavedTo(String folder) {
     return 'Saved to $folder';
   }
+
+  @override
+  String get paySavedOffline =>
+      'No connection. Payment saved on this phone and will sync automatically.';
+
+  @override
+  String syncWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count payments waiting to sync',
+      one: '1 payment waiting to sync',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncFailed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count payments couldn\'t sync',
+      one: '1 payment couldn\'t sync',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncWaitingHint =>
+      'Saved on this phone. They\'ll send when you\'re back online.';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get syncSyncing => 'Syncing…';
+
+  @override
+  String get syncReview => 'Review';
+
+  @override
+  String get syncFailedTitle => 'Payments that couldn\'t sync';
+
+  @override
+  String get syncFailedHelp =>
+      'The server didn\'t accept these, so nothing was recorded for them. Check the reason, then record the payment again if needed.';
+
+  @override
+  String get syncRemove => 'Remove';
+
+  @override
+  String syncItemLine(String amount, int week, String date) {
+    return '$amount • Week $week • $date';
+  }
+
+  @override
+  String get syncPendingLabel => 'Waiting to sync';
+
+  @override
+  String syncLogoutWarn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count payments haven\'t synced yet. They stay on this phone and sync the next time you sign in here.',
+      one: '1 payment hasn\'t synced yet. It stays on this phone and syncs the next time you sign in here.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get netGood => 'Online';
+
+  @override
+  String get netWeak => 'Weak connection';
+
+  @override
+  String netSyncing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Syncing $count payments…',
+      one: 'Syncing 1 payment…',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String netStatusA11y(String status) {
+    return 'Connection: $status';
+  }
+
+  @override
+  String get netOfflineTitle => 'You\'re offline';
+
+  @override
+  String get netOfflineBody =>
+      'Showing saved data. Payments are kept on this phone.';
+
+  @override
+  String get netWeakBody => 'Pages may load slowly.';
+
+  @override
+  String get netBackOnline => 'Back online';
+
+  @override
+  String get netSynced => 'All payments synced';
+
+  @override
+  String get netDismiss => 'Dismiss';
 }

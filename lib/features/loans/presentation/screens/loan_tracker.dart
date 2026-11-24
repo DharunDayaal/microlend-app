@@ -51,7 +51,11 @@ class _LoanTrackerScreenState extends ConsumerState<LoanTrackerScreen> {
     if (_h.loan == null) return;
     _changed = true;
     if (mounted) {
-      AppSnackbar.success(context, context.l10n.trackerPaymentSuccess);
+      if (result.isQueued) {
+        AppSnackbar.info(context, context.l10n.paySavedOffline);
+      } else {
+        AppSnackbar.success(context, context.l10n.trackerPaymentSuccess);
+      }
     }
     await _ctrl.applyPayment(result);
   }

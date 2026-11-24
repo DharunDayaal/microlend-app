@@ -6,6 +6,7 @@ import 'package:micro_lending_app/core/logging/app_logger.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/features/customers/domain/entities/customer.dart';
 import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
+import 'package:micro_lending_app/features/loans/data/payment_outbox.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/loan_stage.dart';
 
@@ -90,6 +91,11 @@ class LoanDetailsController extends Notifier<LoanDetailsState> {
 
   @override
   LoanDetailsState build() {
+    ref.listen(paymentOutboxProvider.select((s) => s.settledVersion), (_, _) {
+      if (ref.read(paymentOutboxProvider).settledLoanIds.contains(loanId)) {
+        unawaited(load(silent: true));
+      }
+    });
     Future.microtask(load);
     return const LoanDetailsState();
   }

@@ -134,7 +134,11 @@ class _LoanDetailsScreenState extends ConsumerState<LoanDetailsScreen> {
       if (result == null || !mounted) return;
 
       _changed = true;
-      AppSnackbar.success(context, context.l10n.loanPaymentRecorded);
+      if (result.isQueued) {
+        AppSnackbar.info(context, context.l10n.paySavedOffline);
+      } else {
+        AppSnackbar.success(context, context.l10n.loanPaymentRecorded);
+      }
       await _load(silent: true); // balances always come from the server
     } finally {
       if (mounted) setState(() => _paying = false);

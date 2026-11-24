@@ -2,6 +2,9 @@ import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
 
 class PaymentResultModel {
   final LoanTrackModel track;
+
+  /// The loan's status after the payment. Empty for a [isQueued] result
+  /// (unknown until the server answers).
   final String loanStatus;
   final double loanOutstandingAfter;
 
@@ -12,12 +15,16 @@ class PaymentResultModel {
   /// `OTHER_COLLECTOR_THIS_WEEK`. The payment is still accepted.
   final List<String> flags;
 
+  /// Saved on this phone only; it syncs when the network is back.
+  final bool isQueued;
+
   const PaymentResultModel({
     required this.track,
     required this.loanStatus,
     required this.loanOutstandingAfter,
     this.replayed = false,
     this.flags = const [],
+    this.isQueued = false,
   });
 
   /// True once the loan has reached a terminal state — this is what the

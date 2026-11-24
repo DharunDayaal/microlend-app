@@ -6,6 +6,7 @@ import 'package:micro_lending_app/core/logging/app_logger.dart';
 import 'package:micro_lending_app/core/network/api_exception.dart';
 import 'package:micro_lending_app/features/customers/domain/entities/customer.dart';
 import 'package:micro_lending_app/features/loans/data/loan_providers.dart';
+import 'package:micro_lending_app/features/loans/data/payment_outbox.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/loan.dart';
 import 'package:micro_lending_app/features/loans/domain/entities/payment_result.dart';
 
@@ -39,6 +40,13 @@ class LoanWithBorrowerController extends Notifier<LoanWithBorrowerState> {
 
   @override
   LoanWithBorrowerState build() {
+    // a queued payment for this loan synced (or was rejected) in the
+    // background: show the server's numbers
+    ref.listen(paymentOutboxProvider.select((s) => s.settledVersion), (_, _) {
+      if (ref.read(paymentOutboxProvider).settledLoanIds.contains(loanId)) {
+        unawaited(load(showSkeleton: false));
+      }
+    });
     Future.microtask(load);
     return const LoanWithBorrowerState();
   }
@@ -95,7 +103,7 @@ class LoanWithBorrowerController extends Notifier<LoanWithBorrowerState> {
     state = LoanWithBorrowerState(
       loan: loan.copyWith(
         tracks: tracks,
-        status: result.loanStatus,
+        status: result.isQueued ? null : result.loanStatus,
         outstandingAmount: outstanding,
         totalCollected: loan.totalPayableAmount - outstanding,
       ),

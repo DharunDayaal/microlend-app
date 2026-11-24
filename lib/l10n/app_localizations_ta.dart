@@ -4735,4 +4735,114 @@ class AppLocalizationsTa extends AppLocalizations {
   String expSavedTo(String folder) {
     return '$folder-இல் சேமிக்கப்பட்டது';
   }
+
+  @override
+  String get paySavedOffline =>
+      'இணைப்பு இல்லை. கட்டணம் இந்த மொபைலில் சேமிக்கப்பட்டது, தானாக ஒத்திசைக்கப்படும்.';
+
+  @override
+  String syncWaiting(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count கட்டணங்கள் ஒத்திசைக்கக் காத்திருக்கின்றன',
+      one: '1 கட்டணம் ஒத்திசைக்கக் காத்திருக்கிறது',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String syncFailed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count கட்டணங்களை ஒத்திசைக்க முடியவில்லை',
+      one: '1 கட்டணத்தை ஒத்திசைக்க முடியவில்லை',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncWaitingHint =>
+      'இந்த மொபைலில் சேமிக்கப்பட்டது. இணைப்பு வந்ததும் அனுப்பப்படும்.';
+
+  @override
+  String get syncNow => 'இப்போது ஒத்திசை';
+
+  @override
+  String get syncSyncing => 'ஒத்திசைக்கிறது…';
+
+  @override
+  String get syncReview => 'பார்வையிடு';
+
+  @override
+  String get syncFailedTitle => 'ஒத்திசைக்க முடியாத கட்டணங்கள்';
+
+  @override
+  String get syncFailedHelp =>
+      'சர்வர் இவற்றை ஏற்கவில்லை, அதனால் எதுவும் பதிவாகவில்லை. காரணத்தைப் பார்த்து, தேவைப்பட்டால் கட்டணத்தை மீண்டும் பதிவு செய்யுங்கள்.';
+
+  @override
+  String get syncRemove => 'நீக்கு';
+
+  @override
+  String syncItemLine(String amount, int week, String date) {
+    return '$amount • வாரம் $week • $date';
+  }
+
+  @override
+  String get syncPendingLabel => 'ஒத்திசைக்கக் காத்திருக்கிறது';
+
+  @override
+  String syncLogoutWarn(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count கட்டணங்கள் இன்னும் ஒத்திசைக்கப்படவில்லை. அவை இந்த மொபைலில் இருக்கும், அடுத்த முறை இங்கே உள்நுழையும்போது ஒத்திசைக்கப்படும்.',
+      one: '1 கட்டணம் இன்னும் ஒத்திசைக்கப்படவில்லை. இது இந்த மொபைலில் இருக்கும், அடுத்த முறை இங்கே உள்நுழையும்போது ஒத்திசைக்கப்படும்.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get netGood => 'இணைப்பில் உள்ளது';
+
+  @override
+  String get netWeak => 'பலவீனமான இணைப்பு';
+
+  @override
+  String netSyncing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count கட்டணங்கள் ஒத்திசைக்கின்றன…',
+      one: '1 கட்டணம் ஒத்திசைக்கிறது…',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String netStatusA11y(String status) {
+    return 'இணைப்பு: $status';
+  }
+
+  @override
+  String get netOfflineTitle => 'இணைப்பு இல்லை';
+
+  @override
+  String get netOfflineBody =>
+      'சேமித்த தரவு காட்டப்படுகிறது. கட்டணங்கள் இந்த மொபைலில் சேமிக்கப்படும்.';
+
+  @override
+  String get netWeakBody => 'பக்கங்கள் மெதுவாக ஏறலாம்.';
+
+  @override
+  String get netBackOnline => 'மீண்டும் இணைப்பில்';
+
+  @override
+  String get netSynced => 'அனைத்து கட்டணங்களும் ஒத்திசைக்கப்பட்டன';
+
+  @override
+  String get netDismiss => 'மூடு';
 }

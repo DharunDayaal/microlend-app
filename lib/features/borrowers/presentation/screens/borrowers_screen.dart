@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:micro_lending_app/l10n/l10n_ext.dart';
+import 'package:micro_lending_app/shared/helpers/snackbar_helper.dart';
 import 'package:micro_lending_app/l10n/l10n_labels.dart';
 import 'package:micro_lending_app/shared/design_system/styles/spacing_style.dart';
 import 'package:micro_lending_app/shared/widgets/app_button.dart';
@@ -518,7 +519,14 @@ class BorrowerTile extends StatelessWidget {
                           loanOutstandingAmount: borrowerLoan.outstandingAmount,
                           issuedAt: borrowerLoan.issuedAt,
                         );
-                        if (payment != null) onTrackUpdated(payment);
+                        if (payment == null) return;
+                        if (payment.isQueued && context.mounted) {
+                          AppSnackbar.info(
+                            context,
+                            context.l10n.paySavedOffline,
+                          );
+                        }
+                        onTrackUpdated(payment);
                       },
                       prefixIcon: Icons.layers,
                       radius: AppSizes.radiusLg,

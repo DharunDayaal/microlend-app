@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/app/connection_notice.dart';
 import 'package:micro_lending_app/app/router/router_provider.dart';
 import 'package:micro_lending_app/l10n/app_localizations.dart';
 import 'package:micro_lending_app/l10n/locale_controller.dart';
@@ -17,6 +18,9 @@ class App extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       routerConfig: ref.watch(routerProvider),
+      // a notice at the top when the connection or payment sync changes
+      builder: (context, child) =>
+          ConnectionFrame(child: child ?? const SizedBox.shrink()),
       scaffoldMessengerKey: rootMessengerKey,
       locale: ref.watch(localeProvider),
       supportedLocales: AppLocalizations.supportedLocales,

@@ -245,6 +245,11 @@ class RepaymentTrackCard extends StatelessWidget {
       }
     }
 
+    // money recorded on this phone that the server hasn't confirmed yet
+    if (row.track?.pendingSync ?? false) {
+      sub = _join([l.syncPendingLabel, sub]);
+    }
+
     final isPartial = row.state == RepaymentRowState.partial;
     final canCollect =
         row.state == RepaymentRowState.partial ||

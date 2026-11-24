@@ -3,6 +3,11 @@ class ApiEndpoints {
 
   static const String baseUrl = "https://microlending-backend.vercel.app/api";
 
+  /// Health check on the server host, outside /api. Used to measure the
+  /// connection; needs no token.
+  static String get healthUrl =>
+      Uri.parse(baseUrl).replace(path: '/health').toString();
+
   static const String register = '/auth/register';
   static const String loginWithEmail = '/auth/login/email';
   static const String loginWithPhone = '/auth/login/phone';

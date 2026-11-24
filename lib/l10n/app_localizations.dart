@@ -8139,6 +8139,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved to {folder}'**
   String expSavedTo(String folder);
+
+  /// No description provided for @paySavedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection. Payment saved on this phone and will sync automatically.'**
+  String get paySavedOffline;
+
+  /// No description provided for @syncWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment waiting to sync} other{{count} payments waiting to sync}}'**
+  String syncWaiting(int count);
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment couldn\'t sync} other{{count} payments couldn\'t sync}}'**
+  String syncFailed(int count);
+
+  /// No description provided for @syncWaitingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this phone. They\'ll send when you\'re back online.'**
+  String get syncWaitingHint;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @syncSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
+  String get syncSyncing;
+
+  /// No description provided for @syncReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get syncReview;
+
+  /// No description provided for @syncFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments that couldn\'t sync'**
+  String get syncFailedTitle;
+
+  /// No description provided for @syncFailedHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'The server didn\'t accept these, so nothing was recorded for them. Check the reason, then record the payment again if needed.'**
+  String get syncFailedHelp;
+
+  /// No description provided for @syncRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get syncRemove;
+
+  /// No description provided for @syncItemLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} • Week {week} • {date}'**
+  String syncItemLine(String amount, int week, String date);
+
+  /// No description provided for @syncPendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting to sync'**
+  String get syncPendingLabel;
+
+  /// No description provided for @syncLogoutWarn.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment hasn\'t synced yet. It stays on this phone and syncs the next time you sign in here.} other{{count} payments haven\'t synced yet. They stay on this phone and sync the next time you sign in here.}}'**
+  String syncLogoutWarn(int count);
+
+  /// No description provided for @netGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get netGood;
+
+  /// No description provided for @netWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak connection'**
+  String get netWeak;
+
+  /// No description provided for @netSyncing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Syncing 1 payment…} other{Syncing {count} payments…}}'**
+  String netSyncing(int count);
+
+  /// No description provided for @netStatusA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection: {status}'**
+  String netStatusA11y(String status);
+
+  /// No description provided for @netOfflineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline'**
+  String get netOfflineTitle;
+
+  /// No description provided for @netOfflineBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing saved data. Payments are kept on this phone.'**
+  String get netOfflineBody;
+
+  /// No description provided for @netWeakBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages may load slowly.'**
+  String get netWeakBody;
+
+  /// No description provided for @netBackOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'Back online'**
+  String get netBackOnline;
+
+  /// No description provided for @netSynced.
+  ///
+  /// In en, this message translates to:
+  /// **'All payments synced'**
+  String get netSynced;
+
+  /// No description provided for @netDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get netDismiss;
 }
 
 class _AppLocalizationsDelegate

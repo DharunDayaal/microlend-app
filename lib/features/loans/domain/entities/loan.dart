@@ -114,6 +114,9 @@ class LoanTrackModel {
   final double remainingBalance;
   final bool? success;
 
+  /// Includes a payment saved on this phone that hasn't synced yet.
+  final bool pendingSync;
+
   const LoanTrackModel({
     required this.id,
     required this.loanId,
@@ -124,6 +127,7 @@ class LoanTrackModel {
     required this.isOverdued,
     required this.remainingBalance,
     this.success,
+    this.pendingSync = false,
   });
 }
 
