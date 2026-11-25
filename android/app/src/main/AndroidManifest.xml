@@ -4,6 +4,11 @@
          their own, which is why it was easy to miss). -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Lets the app hear when the phone's network drops or comes back (and
+         Android's speed estimate). A normal permission: granted at install,
+         no prompt, no Play declaration. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <!-- Saving exports to Download/Lending Docs. Only Android 9 and 10 need
          it; from Android 11 an app may add files to Download without any
          permission. -->

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:micro_lending_app/core/connectivity/phone_network.dart';
 import 'package:micro_lending_app/core/network/api_endpoints.dart';
 
 /// How well the app can reach the server right now.
@@ -33,10 +34,17 @@ final connectionProvider =
       ConnectionMonitor.new,
     );
 
-/// Tracks [ConnectionQuality] from the app's own requests ([report], wired
-/// to `ApiClient.onResult` in bootstrap) and from `GET /health` when the app
-/// has been quiet for a while. Probing only runs after [start] and while the
-/// app is in the foreground.
+/// Works out [ConnectionQuality] from three signals:
+///
+/// 1. The phone's own network ([PhoneNetwork], after [start]): offline the
+///    moment it drops, and a check the moment it comes back. On Android a
+///    very slow link (its own estimate) counts as weak.
+/// 2. The app's real requests ([report], wired to `ApiClient.onResult` in
+///    bootstrap): how fast our server actually answers decides good or weak.
+/// 3. `GET /health`, only as a fallback: to confirm the server answers when
+///    the phone's network comes back, and to retry while requests fail but
+///    the phone still says it's connected (server down, or Wi-Fi that needs
+///    a login). Never while all is well.
 class ConnectionMonitor extends Notifier<ConnectionQuality> {
   /// `/health` answers in about 0.2 s on a good connection.
   static const weakProbe = Duration(milliseconds: 1500);
@@ -44,39 +52,94 @@ class ConnectionMonitor extends Notifier<ConnectionQuality> {
   /// API calls carry real data, so they get more room.
   static const weakRequest = Duration(milliseconds: 3000);
 
-  /// Without other requests, check again after this long.
-  static const probeWhenOffline = Duration(seconds: 10);
-  static const probeWhenWeak = Duration(seconds: 30);
-  static const probeWhenGood = Duration(minutes: 1);
+  /// Android's speed estimate below this counts as weak (2G-like).
+  static const slowLinkKbps = 300;
+
+  /// Waits between /health retries while we can't reach the server but the
+  /// phone says it's connected (the last one repeats).
+  static const offlineRetries = [
+    Duration(seconds: 10),
+    Duration(seconds: 20),
+    Duration(seconds: 40),
+    Duration(minutes: 1),
+    Duration(minutes: 2),
+  ];
 
   /// Smoothed "slowness" as a share of the weak limit (1.0 = at the limit),
   /// so probes and requests can be mixed. Recent answers count most.
   double? _load;
-  Timer? _timer;
+
+  /// What requests and health checks say, before the phone's view.
+  ConnectionQuality _measured = ConnectionQuality.good;
+
+  /// Latest from the phone; null until it says something (or never, where
+  /// the native side isn't there).
+  PhoneNetwork? _phone;
+  StreamSubscription<PhoneNetwork>? _events;
+  Timer? _retry;
+  int _retries = 0;
   bool _running = false;
   bool _probing = false;
 
   @override
   ConnectionQuality build() {
-    ref.onDispose(() => _timer?.cancel());
+    ref.onDispose(() {
+      _retry?.cancel();
+      _events?.cancel();
+    });
     return ConnectionQuality.good; // until something says otherwise
   }
 
-  /// Starts background checks (once the app is up, and on resume).
+  /// Starts listening to the phone's network (once the app is up) and, on
+  /// resume, re-checks if we were offline.
   void start() {
     _running = true;
-    unawaited(checkNow());
+    _events ??= ref
+        .read(phoneNetworkProvider)
+        .listen(
+          onPhoneNetwork,
+          // no native side (tests, desktop): requests and /health only
+          onError: (Object _) => _events = null,
+          cancelOnError: true,
+        );
+    if (_measured == ConnectionQuality.offline) unawaited(checkNow());
   }
 
-  /// Stops background checks (app in the background).
+  /// App in the background: no retries.
   void pause() {
     _running = false;
-    _timer?.cancel();
+    _retry?.cancel();
   }
 
-  /// Calls `/health` now, unless a check is already running.
+  /// The phone's network changed.
+  void onPhoneNetwork(PhoneNetwork now) {
+    final before = _phone;
+    _phone = now;
+    if (!now.connected) {
+      _retry?.cancel(); // nothing to try until it comes back
+      _publish();
+      return;
+    }
+    // came back, or moved between Wi-Fi and mobile data
+    final cameBack =
+        before != null &&
+        (!before.connected || before.transport != now.transport);
+    // Android newly says the internet doesn't really work (e.g. Wi-Fi with a
+    // login page); repeats of the same news are ignored
+    final lostInternet = now.validated == false && before?.validated != false;
+    // first word from the phone while we already think we're offline
+    final startedOffline =
+        before == null && _measured == ConnectionQuality.offline;
+    if (cameBack || lostInternet || startedOffline) {
+      unawaited(checkNow()); // does our server really answer here?
+    }
+    _publish();
+  }
+
+  /// Calls `/health` now, unless a check is already running or the phone
+  /// has no network.
   Future<void> checkNow() async {
-    if (_probing) return;
+    if (_probing || _phone?.connected == false) return;
     _probing = true;
     try {
       final took = await ref.read(connectionProbeProvider)();
@@ -102,33 +165,54 @@ class ConnectionMonitor extends Notifier<ConnectionQuality> {
         final load = elapsed.inMilliseconds / limit;
         final avg = _load;
         // after being offline, the first answer starts a fresh average
-        _load = avg == null || state == ConnectionQuality.offline
+        _load = avg == null || _measured == ConnectionQuality.offline
             ? load
             : avg * 0.6 + load * 0.4;
-        state = _load! > 1 ? ConnectionQuality.weak : ConnectionQuality.good;
+        _measured = _load! > 1
+            ? ConnectionQuality.weak
+            : ConnectionQuality.good;
+        _retries = 0;
+        _retry?.cancel();
       case NetworkOutcome.timedOut:
         _load = 1.5; // a few quick answers are needed to show good again
-        state = ConnectionQuality.weak;
+        _measured = ConnectionQuality.weak;
+        _retries = 0;
+        _retry?.cancel();
       case NetworkOutcome.unreachable:
-        state = ConnectionQuality.offline;
+        _measured = ConnectionQuality.offline;
+        _scheduleRetry();
     }
-    _schedule();
+    _publish();
   }
 
-  void _schedule() {
-    _timer?.cancel();
-    if (!_running) return;
-    final wait = switch (state) {
-      ConnectionQuality.offline => probeWhenOffline,
-      ConnectionQuality.weak => probeWhenWeak,
-      ConnectionQuality.good => probeWhenGood,
-    };
-    _timer = Timer(wait, () => unawaited(checkNow()));
+  /// The phone's view can only make things worse than measured: no network
+  /// is offline, a very slow link is at best weak.
+  void _publish() {
+    final phone = _phone;
+    var q = _measured;
+    if (phone != null && !phone.connected) {
+      q = ConnectionQuality.offline;
+    } else if (q == ConnectionQuality.good &&
+        (phone?.downKbps ?? slowLinkKbps) < slowLinkKbps) {
+      q = ConnectionQuality.weak;
+    }
+    if (q != state) state = q;
+  }
+
+  /// Requests fail but the phone says it's connected: try /health again
+  /// later, waiting longer each time.
+  void _scheduleRetry() {
+    _retry?.cancel();
+    if (!_running || _phone?.connected == false) return;
+    final wait = offlineRetries[_retries.clamp(0, offlineRetries.length - 1)];
+    _retries++;
+    _retry = Timer(wait, () => unawaited(checkNow()));
   }
 }
 
-/// `GET /health`. Any HTTP answer means the server is reachable. No token
-/// is sent.
+/// `GET /health`. Only the server's own healthy answer counts as reached:
+/// a Wi-Fi login page or an error page also answers HTTP, but our server
+/// isn't usable then. No token is sent.
 class HealthProbe {
   HealthProbe(this._url);
 
@@ -140,14 +224,19 @@ class HealthProbe {
       receiveTimeout: timeout,
       sendTimeout: timeout,
       validateStatus: (_) => true,
+      followRedirects: false, // a login page usually redirects
     ),
   );
+
+  /// `{"success": true, ...}` with status 200.
+  static bool isHealthy(int? status, Object? body) =>
+      status == 200 && body is Map && body['success'] == true;
 
   Future<Duration?> call() async {
     final watch = Stopwatch()..start();
     try {
-      await _dio.get<void>(_url);
-      return watch.elapsed;
+      final res = await _dio.get<Object?>(_url);
+      return isHealthy(res.statusCode, res.data) ? watch.elapsed : null;
     } on DioException catch (e) {
       return switch (e.type) {
         DioExceptionType.connectionTimeout ||

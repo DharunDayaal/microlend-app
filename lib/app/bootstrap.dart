@@ -43,12 +43,12 @@ void _startOffline(ProviderContainer container) {
   });
 
   container.read(paymentOutboxProvider); // loads saved payments, syncs them
-  monitor.start();
+  monitor.start(); // listens to the phone's network; no check if all is well
 
   _lifecycle?.dispose(); // only one listener, even after a hot restart
   _lifecycle = AppLifecycleListener(
     onResume: () {
-      monitor.start(); // checks straight away
+      monitor.start(); // re-checks only if we were offline
       unawaited(container.read(paymentOutboxProvider.notifier).syncNow());
     },
     onPause: monitor.pause,
